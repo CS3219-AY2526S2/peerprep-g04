@@ -38,16 +38,14 @@ export async function handle_create_user(req, res) {
         }
 
         const new_user = await create_user(username, email, password, ACCESS.user);
-        const token = jwt.sign(new_user.id, process.env.JWT_SECRET_KEY);
+        const access_token = jwt.sign(new_user.id, process.env.JWT_SECRET_KEY);
         return res.status(201).json({
             message: 'user created successfully',
-            token,
+            access_token,
             ...format_user(new_user),
         })
     } catch (err) {
-        return res.status(500).json({
-            message: err.message,
-        });
+        return res.status(500).json({ message: err.message });
     }
 }
 
@@ -68,10 +66,10 @@ export async function handle_login(req, res) {
             return res.status(401).json({ message: 'wrong password' });
         }
 
-        const token = jwt.sign(user.id, process.env.JWT_SECRET_KEY);
+        const access_token = jwt.sign(user.id, process.env.JWT_SECRET_KEY);
         return res.status(200).json({
             message: 'user logged in',
-            token,
+            access_token,
             ...format_user(user),
         })
         

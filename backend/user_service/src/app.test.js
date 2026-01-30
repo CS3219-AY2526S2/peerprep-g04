@@ -1,5 +1,5 @@
 import { app } from "./app.js";
-import { create_user, pool } from "./db.js";
+import { create_user, get_user_by_email, pool } from "./db.js";
 import { beforeEach, afterAll, test, expect } from "vitest";
 import request from 'supertest';
 import { ACCESS } from "./access.js";
@@ -31,7 +31,14 @@ test('create user successful', async () => {
         email: 'tom@gmail.com',
         access: ACCESS.user,
     })
-    .toHaveProperty('token');
+    .toHaveProperty('access_token');
+
+    const db_res = await get_user_by_email('tom@gmail.com');
+    expect(db_res).toMatchObject({
+        username: 'tom',
+        email: 'tom@gmail.com',
+        access: ACCESS.user,
+    })
 })
 
 test('create user missing fields', async () => {
@@ -78,7 +85,7 @@ test('login successful', async () => {
         });
     
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token').toHaveProperty('message');
+    expect(res.body).toHaveProperty('access_token').toHaveProperty('message');
     expect(res.body).toMatchObject({
         username: 'tom',
         email: 'tom@gmail.com',
