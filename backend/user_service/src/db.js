@@ -9,6 +9,11 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
+export async function get_user_by_id(user_id) {
+    const res = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
+    return res.rows[0];
+}
+
 export async function get_user_by_username(username) {
     const res = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     return res.rows[0];

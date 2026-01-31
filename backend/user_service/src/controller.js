@@ -1,5 +1,5 @@
 import { ACCESS } from "./access.js";
-import { get_user_by_email, get_user_by_username } from "./db.js";
+import { get_user_by_email, get_user_by_id, get_user_by_username } from "./db.js";
 import { create_user } from "./db.js";
 import jwt from 'jsonwebtoken';
 
@@ -66,7 +66,12 @@ export async function handle_login(req, res) {
             return res.status(401).json({ message: 'wrong password' });
         }
 
-        const access_token = jwt.sign(user.id, process.env.JWT_SECRET_KEY);
+        const access_token = jwt.sign(
+            { user_id: user.id }, 
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1d'}
+        );
+        
         return res.status(200).json({
             message: 'user logged in',
             access_token,
@@ -76,5 +81,37 @@ export async function handle_login(req, res) {
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
+}
 
+export async function verify_token(req, res) {
+    const auth_header = req.headers['authorization'];
+    if (!auth_header || !auth_header.startsWith('Bearer ')) {
+        return res.status(400).json({ message: 'missing token' });
+    }
+
+    const access_token = auth_header.split(' ')[1];
+    try {
+        jwt.verify(access_token, process.env.JWT_SECRET_KEY);
+    } catch (err) {
+        return res.status(401).json({ message: 'invalid token'});
+    }
+
+    const { user_id } = jwt.verify(access_token, process.env.JWT_SECRET_KEY);
+    if (!user_id) {
+        return res.status(400).json({ message: 'user id is missing' });
+    }
+
+    try {
+        const user = await get_user_by_id(user_id);
+        if (!user) {
+            return res.status(404).json({ message: 'user not found' });
+        } else {
+            return res.status(200).json({ 
+                message: 'access token verified',
+                ...format_user(user),
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
 }

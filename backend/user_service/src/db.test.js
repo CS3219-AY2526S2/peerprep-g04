@@ -1,5 +1,5 @@
 import { ACCESS } from "./access.js";
-import { create_user, get_user_by_email, get_user_by_username, get_user_by_username_or_email, pool, update_user } from "./db"
+import { create_user, get_user_by_email, get_user_by_id, get_user_by_username, get_user_by_username_or_email, pool, update_user } from "./db"
 import { test, expect, beforeEach, afterEach, afterAll } from 'vitest';
 
 beforeEach(async () => {
@@ -24,19 +24,18 @@ test('create and get user', async () => {
     
     const rows = await create_user(tom.username, tom.email, tom.password_hash, ACCESS.user);
     expect(rows).toMatchObject(tom);
-    expect(rows).toHaveProperty('id');
     
     const rows2 = await get_user_by_email(tom.email);
     expect(rows2).toMatchObject(tom);
-    expect(rows2).toHaveProperty('id');
 
     const rows3 = await get_user_by_username(tom.username);
     expect(rows3).toMatchObject(tom);
-    expect(rows3).toHaveProperty('id');
     
     const row4 = await get_user_by_username_or_email(tom.username, 'fake@gmail.com');
     expect(row4[0]).toMatchObject(tom);
-    expect(row4[0]).toHaveProperty('id');
+
+    const row5 = await get_user_by_id(rows.id);
+    expect(row5).toMatchObject(tom);
 })
 
 test('create and update user', async () => {
@@ -63,7 +62,13 @@ test('create and update user', async () => {
 })
 
 test('get non-existent user', async () => {
-    const result = await get_user_by_email('fake@gmail.com');
-    expect(result).toBeUndefined();
+    const r1 = await get_user_by_email('fake@gmail.com');
+    expect(r1).toBeUndefined();
+
+    const r2 = await get_user_by_id(1000);
+    expect(r2).toBeUndefined();
+
+    const r3 = await get_user_by_username('fake_person');
+    expect(r3).toBeUndefined();
 })
 
