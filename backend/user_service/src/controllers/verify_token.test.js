@@ -46,3 +46,11 @@ test('verify token successful', async () => {
         access: ACCESS.user,
     });
 })
+
+test('verify token missing token', async () => {
+    const res = await request(app)
+        .get('/verify-token')
+        .set('authorization', `bearer abc`);
+    
+    expect(res.status).toBe(400);
+})
