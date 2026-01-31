@@ -15,3 +15,12 @@ app.post('/login', handle_login);
 app.get('/verify-token', verify_token_middleware, verify_token);
 app.patch('/update-user/:userId', verify_token_middleware, handle_update_user);
 app.delete('/delete-user/:userId', verify_token_middleware, handle_delete_user);
+
+app.use((err, req, res, next) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+    console.log(err);
+    res.status(status).json({
+        message: message,
+    });
+});
