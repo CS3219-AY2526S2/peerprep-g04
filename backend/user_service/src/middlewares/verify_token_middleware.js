@@ -24,7 +24,7 @@ export async function verify_token_middleware(req, res, next) {
     try {
         const user = await get_user_by_id(user_id);
         if (!user) {
-            return res.status(404).json({ message: 'user not found' });
+            return res.status(404).json({ message: 'user in access token not found' });
         } else {
             req.user = user;
             next();

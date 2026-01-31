@@ -1,5 +1,5 @@
 import { ACCESS } from "../access.js";
-import { create_user, get_user_by_email, get_user_by_id, get_user_by_username, get_user_by_username_or_email, pool, update_user } from "./db.js"
+import { create_user, delete_user, get_user_by_email, get_user_by_id, get_user_by_username, get_user_by_username_or_email, pool, update_user } from "./db.js"
 import { test, expect, beforeEach, afterEach, afterAll } from 'vitest';
 
 beforeEach(async () => {
@@ -70,5 +70,24 @@ test('get non-existent user', async () => {
 
     const r3 = await get_user_by_username('fake_person');
     expect(r3).toBeUndefined();
+})
+
+test('delete user', async () => {
+     const tom = {
+        username: 'tom',
+        email: 'tom@gmail.com',
+        password_hash: 'abc',
+        access: ACCESS.user,
+    }
+    
+    const row = await create_user(tom.username, tom.email, tom.password_hash, ACCESS.user);
+    expect(row).toMatchObject(tom);
+
+    await delete_user(row.id);
+    const row2 = await get_user_by_id(row.id);
+    expect(row2).toBeUndefined();
+
+    const row3 = await get_user_by_username(tom.username);
+    expect(row3).toBeUndefined();
 })
 

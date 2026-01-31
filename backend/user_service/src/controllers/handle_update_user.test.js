@@ -110,3 +110,30 @@ test('update user duplicate email', async () => {
     
     expect(res2.status).toBe(409);
 })
+
+test('update user non admin user try to update other use', async () => {
+    const res_tom = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'tom',
+            email: 'tom@gmail.com',
+            password: 'abc',
+        });
+
+    const res_jim = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'jim',
+            email: 'jim@gmail.com',
+            password: 'abc',
+        })
+
+    const res2 = await request(app)
+        .patch(`/update-user/${res_jim.body.user_id}`)
+        .set('authorization', `Bearer ${res_tom.body.access_token}`)
+        .send({
+            email: 'jim69@gmail.com'
+        });
+    
+    expect(res2.status).toBe(403);
+})

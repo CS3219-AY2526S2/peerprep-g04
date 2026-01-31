@@ -4,6 +4,7 @@ import { handle_login } from "./controllers/handle_login.js";
 import { handle_update_user } from "./controllers/handle_update_user.js";
 import { verify_token_middleware } from "./middlewares/verify_token_middleware.js";
 import { verify_token } from "./controllers/verify_token.js";
+import { handle_delete_user } from "./controllers/handle_delete_user.js";
 
 export const app = express()
 
@@ -12,4 +13,5 @@ app.use(express.json());
 app.post('/create-user', handle_create_user);
 app.post('/login', handle_login);
 app.get('/verify-token', verify_token_middleware, verify_token);
-app.patch('/update-user/:userId', verify_token_middleware, handle_update_user)
+app.patch('/update-user/:userId', verify_token_middleware, handle_update_user);
+app.delete('/delete-user/:userId', verify_token_middleware, handle_delete_user);

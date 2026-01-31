@@ -49,3 +49,10 @@ export async function update_user(id, username, email, password_hash) {
     `, [username, email, password_hash, id]);
     return res.rows[0];
 }
+
+export async function delete_user(id) {
+    await pool.query(`
+        DELETE FROM users
+        WHERE id = $1
+    `, [id]);
+}
