@@ -1,6 +1,6 @@
 import { get_user_by_username, get_user_by_email, create_user } from "../database/db.js";
 import jwt from 'jsonwebtoken';
-import { format_user, hash_password } from "./utils";
+import { format_user, hash_password } from "./utils.js";
 import { ACCESS } from "../access.js";
 
 export async function handle_create_user(req, res) {

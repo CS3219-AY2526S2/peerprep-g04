@@ -1,7 +1,7 @@
 import express from "express";
 import { handle_create_user } from "./controllers/handle_create_user.js";
 import { handle_login } from "./controllers/handle_login.js";
-import { handle_update_user } from "./controllers/handle_update_user";
+import { handle_update_user } from "./controllers/handle_update_user.js";
 import { verify_token_middleware } from "./middlewares/verify_token_middleware.js";
 import { verify_token } from "./controllers/verify_token.js";
 
