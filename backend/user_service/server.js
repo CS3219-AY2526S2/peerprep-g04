@@ -1,4 +1,4 @@
-import { app } from "./app.js";
+import { app } from "./src/app.js";
 
 app.listen(3000, (err) => {
     if (err) console.log(err);
