@@ -1,5 +1,5 @@
-import { ACCESS } from "./access.js";
-import { create_user, get_user_by_email, get_user_by_id, get_user_by_username, get_user_by_username_or_email, pool, update_user } from "./db"
+import { ACCESS } from "../access.js";
+import { create_user, get_user_by_email, get_user_by_id, get_user_by_username, get_user_by_username_or_email, pool, update_user } from "./db.js"
 import { test, expect, beforeEach, afterEach, afterAll } from 'vitest';
 
 beforeEach(async () => {

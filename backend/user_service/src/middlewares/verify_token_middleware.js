@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { get_user_by_id } from './db.js';
+import { get_user_by_id } from '../database/db.js';
 
 // check whether token is valid and user_id exists.
 // attaches user to req if token is valid and user_id exists.

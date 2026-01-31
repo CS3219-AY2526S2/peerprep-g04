@@ -1,5 +1,4 @@
 import { Pool } from 'pg';
-import { ACCESS } from './access.js';
 
 export const pool = new Pool({
     user: process.env.DB_USER,
