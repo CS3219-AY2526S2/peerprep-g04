@@ -1,5 +1,5 @@
-import { ACCESS } from "../access";
-import { delete_user, get_user_by_id } from "../database/db";
+import { ACCESS } from "../access.js";
+import { delete_user, get_user_by_id } from "../database/db.js";
 
 export async function handle_delete_user(req, res) {
     let user_id_to_del = req.params.userId;
