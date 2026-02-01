@@ -3,13 +3,16 @@ import { ToggleableTextField } from "../components/ToggleableTextField";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styles from './SignInForm.module.css';
+import { UserContext } from "../hooks/useUserService";
 
 export function SignInForm(props) {
   const { toggleForm } = props; 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const { login } = useContext(UserContext);
 
   function change_email(e) {
     setEmail(e.target.value);
@@ -19,8 +22,13 @@ export function SignInForm(props) {
     setPassword(e.target.value);
   }
 
+  function submit(e) {
+    e.preventDefault();
+    login(email, password);
+  }
+
   return (
-    <form>
+    <form onSubmit={submit}>
       <Typography>Sign In</Typography>
       <TextField
         className={styles.inputField}
@@ -35,7 +43,7 @@ export function SignInForm(props) {
         value={password}
         onChange={change_password}
       />
-      <Button>Login</Button>
+      <Button type='submit'>Login</Button>
       <Typography variant='caption'>
         No account?&nbsp;
         <Link

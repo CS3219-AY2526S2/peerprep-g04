@@ -8,11 +8,9 @@ export function SignInOrUp() {
   const [whichForm, setWhichForm] = useState(1);
   
   function toggleForm() {
-    console.log(whichForm);
     setWhichForm(1 - whichForm);
   }
 
-  
   return (
     <div className={styles.main}>
       <Typography variant="h5" color="primary">Welcome to PeerPrep</Typography>

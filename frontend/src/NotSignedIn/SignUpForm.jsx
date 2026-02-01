@@ -2,9 +2,10 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import styles from './SignUpForm.module.css';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { ToggleableTextField } from '../components/ToggleableTextField';
 import { Link } from 'react-router';
+import { UserContext } from '../hooks/useUserService';
 
 
 export function SignUpForm(props) {
@@ -12,6 +13,8 @@ export function SignUpForm(props) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const { createUser } = useContext(UserContext); 
 
   function change_username(e) {
     setUsername(e.target.value);
@@ -25,8 +28,13 @@ export function SignUpForm(props) {
     setPassword(e.target.value);
   }
 
+  function submit(e) {
+    e.preventDefault();
+    createUser(username, email, password);
+  }
+
   return (
-    <form>
+    <form onSubmit={submit}>
       <Typography>Sign Up</Typography>
       <TextField 
         className={styles.inputField}
@@ -50,7 +58,7 @@ export function SignUpForm(props) {
         value={password}
         onChange={change_password}
       />
-      <Button>Create</Button>
+      <Button type='submit'>Create</Button>
       <Typography variant='caption'>
         Already have an account?&nbsp;
         <Link
