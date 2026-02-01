@@ -21,6 +21,7 @@ function getUser(resp_json) {
 }
 
 export function useUserService() {
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();
   const [accessToken, setAccessToken] = useState();
 
@@ -39,6 +40,7 @@ export function useUserService() {
   }
 
   async function login(email, password) {
+    setLoading(true);
     try {
       const res = await api.post('/login', {email, password});
       localStorage.setItem('accessToken', res.data.access_token);
@@ -47,9 +49,11 @@ export function useUserService() {
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
     }
+    setLoading(false);
   }
 
   async function createUser(username, email, password) {
+    setLoading(true);
     try {
       const res = await api.post('/create-user', { username, email, password });
       localStorage.setItem('accessToken', res.data.access_token);
@@ -58,10 +62,12 @@ export function useUserService() {
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
     }
+    setLoading(false);
   }
 
   return {
     user, 
+    loading,
     checkForAccessTokenAndLogin,
     login,
     createUser,

@@ -14,7 +14,7 @@ export function SignUpForm(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { createUser } = useContext(UserContext); 
+  const { loading, createUser } = useContext(UserContext); 
 
   function change_username(e) {
     setUsername(e.target.value);
@@ -58,7 +58,7 @@ export function SignUpForm(props) {
         value={password}
         onChange={change_password}
       />
-      <Button type='submit'>Create</Button>
+      <Button type='submit' loading={loading}>Create</Button>
       <Typography variant='caption'>
         Already have an account?&nbsp;
         <Link

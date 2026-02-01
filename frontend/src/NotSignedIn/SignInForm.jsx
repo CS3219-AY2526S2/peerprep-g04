@@ -12,7 +12,7 @@ export function SignInForm(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { login } = useContext(UserContext);
+  const { login, loading } = useContext(UserContext);
 
   function change_email(e) {
     setEmail(e.target.value);
@@ -43,7 +43,7 @@ export function SignInForm(props) {
         value={password}
         onChange={change_password}
       />
-      <Button type='submit'>Login</Button>
+      <Button type='submit' loading={loading}>Login</Button>
       <Typography variant='caption'>
         No account?&nbsp;
         <Link
