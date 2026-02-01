@@ -5,9 +5,11 @@ import { handle_update_user } from "./controllers/handle_update_user.js";
 import { verify_token_middleware } from "./middlewares/verify_token_middleware.js";
 import { verify_token } from "./controllers/verify_token.js";
 import { handle_delete_user } from "./controllers/handle_delete_user.js";
+import cors from 'cors';
 
 export const app = express()
 
+app.use(cors());
 app.use(express.json());
 
 app.post('/create-user', handle_create_user);
