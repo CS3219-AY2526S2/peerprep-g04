@@ -1,0 +1,27 @@
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 16px;
+    gap: 12px;
+    border: 1px solid black;
+    padding: 12px;
+}
+
+.inputField {
+    width: 92%;
+}
+
+.header {
+    align-self: flex-start;
+    padding-left: 8px;
+}
+
+.gutter {
+    font-size: 8px;
+}
+
+.changeFormLink:hover {
+    cursor: pointer;
+}
+
