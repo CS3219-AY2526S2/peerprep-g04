@@ -31,7 +31,6 @@ test('delete user successful', async () => {
         .delete(`/delete-user/${res.body.user_id}`)
         .set('authorization', `Bearer ${res.body.access_token}`);
     
-    console.log(res2.body);
     expect(res2.status).toBe(200);
 
 })
