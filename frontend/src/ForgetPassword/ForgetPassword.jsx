@@ -20,6 +20,7 @@ export function ForgetPassword() {
       <form onSubmit={submit}>
         <Typography color='primary'>Forget Password</Typography>
         <TextField 
+          type='email'
           label='Email'
           value={input}
           onChange={e => setInput(e.target.value)}

@@ -76,6 +76,21 @@ export function useUserService() {
     setLoading(false);
   }
 
+  async function resetPassword(token, userId, password) {
+    setLoading(true);
+    try {
+      const res = await api.patch(`/update-user/${userId}`,{ password },
+        {
+          headers: {authorization: `Bearer ${token}`}
+        }
+      );
+      toast('password reset successfully');
+    } catch (err) {
+      toast(err?.response?.data?.message ?? err.message);
+    }
+    setLoading(false);
+  }
+
   return {
     user, 
     loading,
@@ -83,6 +98,7 @@ export function useUserService() {
     login,
     createUser,
     forgetPassword,
+    resetPassword,
   }
 }
 

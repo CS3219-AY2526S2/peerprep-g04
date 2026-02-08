@@ -22,7 +22,7 @@ function App() {
   useEffect(() => {
     if (
       ['/forget-password', '/reset-password']
-        .findIndex(path => location.pathname.startsWith(path)) > -1
+        .find(path => location.pathname.startsWith(path))
     ) {
       return;
     }

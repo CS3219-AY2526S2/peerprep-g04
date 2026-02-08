@@ -1,16 +1,24 @@
 import Button from "@mui/material/Button";
 import { ToggleableTextField } from "../components/ToggleableTextField";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styles from './ResetPassword.module.css';
 import Typography from "@mui/material/Typography";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { UserContext } from "../hooks/useUserService";
 
 export function ResetPasswordForm() {
   const [input, setInput] = useState('');
   const { token, userId } = useParams();
+  const { loading, resetPassword } = useContext(UserContext);
+  const navigate = useNavigate();
 
-  function submit(ev) {
-    ev.preventDefault();
+  async function submit(ev) {
+    try {
+      ev.preventDefault();
+      await resetPassword(token, userId, input);
+      navigate('/not-signed-in');
+    } catch (err) {}
+    setInput('');
   }
 
   return (

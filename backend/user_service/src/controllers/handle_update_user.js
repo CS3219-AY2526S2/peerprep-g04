@@ -1,6 +1,7 @@
 import { ACCESS } from "../access.js";
 import { get_user_by_email, get_user_by_id, get_user_by_username, update_user } from "../database/db.js";
 import { format_user } from "./utils.js";
+import { hash_password } from "./utils.js";
 
 // must be called after verify_token_middleware
 export async function handle_update_user(req, res) {
