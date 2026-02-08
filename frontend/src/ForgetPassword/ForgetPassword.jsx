@@ -9,9 +9,9 @@ export function ForgetPassword() {
   const [input, setInput] = useState('');
   const { loading, forgetPassword } = useContext(UserContext);
 
-  function submit(ev) {
+  async function submit(ev) {
     ev.preventDefault();
-    forgetPassword(input);
+    await forgetPassword(input);
     setInput('');
   }
 

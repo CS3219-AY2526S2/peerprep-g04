@@ -3,12 +3,11 @@ import { ToggleableTextField } from "../components/ToggleableTextField";
 import { useState } from "react";
 import styles from './ResetPassword.module.css';
 import Typography from "@mui/material/Typography";
+import { useParams } from "react-router";
 
 export function ResetPasswordForm() {
   const [input, setInput] = useState('');
-  const {
-    userId
-  } = useResetPassword();
+  const { token, userId } = useParams();
 
   function submit(ev) {
     ev.preventDefault();

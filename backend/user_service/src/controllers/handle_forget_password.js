@@ -26,7 +26,7 @@ export async function handle_forget_password(req, res) {
     }
    
     const token = jwt.sign({user_id: user.id}, process.env.JWT_SECRET_KEY, {expiresIn: '15m'});
-    const resetUrl = `${process.env.WEBSITE_URL}/${token}/${user.id}`;
+    const resetUrl = `${process.env.WEBSITE_URL}/reset-password/${token}/${user.id}`;
 
     let mailOptions = {
         from: process.env.GMAIL,
