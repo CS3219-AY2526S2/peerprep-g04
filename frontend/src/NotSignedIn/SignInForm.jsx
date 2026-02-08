@@ -6,6 +6,7 @@ import Link from "@mui/material/Link";
 import { useContext, useState } from "react";
 import styles from './SignInForm.module.css';
 import { UserContext } from "../hooks/useUserService";
+import { Link as RouterLink } from 'react-router';
 
 export function SignInForm(props) {
   const { toggleForm } = props; 
@@ -55,6 +56,14 @@ export function SignInForm(props) {
         >
           Create
         </Link>
+      </Typography>
+      <Typography variant='caption'>
+        Forget password?&nbsp;
+        <RouterLink
+          to='/forget-password'
+        >
+          Reset
+        </RouterLink>
       </Typography>
     </form>
   )

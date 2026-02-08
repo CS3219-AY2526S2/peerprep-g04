@@ -65,12 +65,24 @@ export function useUserService() {
     setLoading(false);
   }
 
+  async function forgetPassword(email) {
+    setLoading(true);
+    try {
+      const res = await api.post(`forget-password/${email}`);
+      toast(res.data.message);
+    } catch (err) {
+      toast(err?.response?.data?.message ?? err.message);
+    }
+    setLoading(false);
+  }
+
   return {
     user, 
     loading,
     checkForAccessTokenAndLogin,
     login,
     createUser,
+    forgetPassword,
   }
 }
 

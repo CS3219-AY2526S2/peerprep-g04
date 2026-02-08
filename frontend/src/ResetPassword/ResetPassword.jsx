@@ -3,7 +3,6 @@ import { ToggleableTextField } from "../components/ToggleableTextField";
 import { useState } from "react";
 import styles from './ResetPassword.module.css';
 import Typography from "@mui/material/Typography";
-import { useResetPassword } from "../hooks/useResetPassword";
 
 export function ResetPasswordForm() {
   const [input, setInput] = useState('');
@@ -20,6 +19,7 @@ export function ResetPasswordForm() {
       <form onSubmit={submit}>
         <Typography color='primary'>Reset password</Typography>
         <ToggleableTextField 
+          className={styles.inputField}
           value={input}
           label='New password'
           onChange={e => setInput(e.target.value)}

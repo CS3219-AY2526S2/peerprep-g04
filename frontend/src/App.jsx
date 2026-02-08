@@ -20,7 +20,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (location.pathname.startsWith('/reset-password')) return;
+    if (
+      ['/forget-password', '/reset-password']
+        .findIndex(path => location.pathname.startsWith(path)) > -1
+    ) {
+      return;
+    }
     navigate(!user ? '/not-signed-in' : '/signed-in');
   }, [user]);
 

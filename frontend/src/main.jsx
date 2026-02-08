@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { SignInOrUp } from './NotSignedIn/SignInOrSignUp.jsx';
 import { ResetPasswordForm } from './ResetPassword/ResetPassword.jsx';
+import { ForgetPassword } from './ForgetPassword/ForgetPassword.jsx';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: 'reset-password/:token/:userId',
         element: <ResetPasswordForm />
+      },
+      {
+        path: 'forget-password',
+        element: <ForgetPassword />
       },
       {
         path: 'signed-in',
