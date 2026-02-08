@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { SignInOrUp } from './NotSignedIn/SignInOrSignUp.jsx';
+import { ResetPasswordForm } from './ResetPassword/ResetPassword.jsx';
 
 const router = createBrowserRouter([
   {
@@ -11,12 +12,15 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        index: true,
-        path: '/not-signed-in',
+        path: 'not-signed-in',
         element: <SignInOrUp />
       },
       {
-        path: '/signed-in',
+        path: 'reset-password/:token/:userId',
+        element: <ResetPasswordForm />
+      },
+      {
+        path: 'signed-in',
         element: <div>Signed in</div>
       }
     ],

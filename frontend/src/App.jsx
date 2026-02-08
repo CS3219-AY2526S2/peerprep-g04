@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router'
+import { Outlet, useLocation, useNavigate } from 'react-router'
 import './App.css'
 import { useEffect } from 'react';
 import { UserContext, useUserService } from './hooks/useUserService.jsx';
@@ -13,12 +13,15 @@ function App() {
     checkForAccessTokenAndLogin,
   } = userService;
 
+  const location = useLocation();
+
   useEffect(() => {
     checkForAccessTokenAndLogin();
   }, []);
 
   useEffect(() => {
-    navigate((!user) ? 'not-signed-in' : 'signed-in');
+    if (location.pathname.startsWith('/reset-password')) return;
+    navigate(!user ? '/not-signed-in' : '/signed-in');
   }, [user]);
 
   return (
