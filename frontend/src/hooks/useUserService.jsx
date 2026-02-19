@@ -113,6 +113,11 @@ export function useUserService() {
     setLoading(false);
   }
 
+  function logout() {
+    setUser(null);
+    localStorage.removeItem('accessToken');
+  }
+
   return {
     user, 
     loading,
@@ -122,6 +127,7 @@ export function useUserService() {
     forgetPassword,
     resetPassword,
     updateUser,
+    logout
   }
 }
 

@@ -7,6 +7,7 @@ import { SignInOrUp } from './NotSignedIn/SignInOrSignUp.jsx';
 import { ResetPasswordForm } from './ResetPassword/ResetPassword.jsx';
 import { ForgetPassword } from './ForgetPassword/ForgetPassword.jsx';
 import { SignedInPage } from './SignedInPage/SignedInPage.jsx';
+import { AccountPage } from './AccountPage/AccountPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
         element: <ForgetPassword />
       },
       {
+        path: 'account',
+        element: <AccountPage />
+      },
+      {
         path: 'signed-in',
         element: <SignedInPage />,
       }
@@ -35,6 +40,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider  router={router} />
+    <RouterProvider router={router} />
   </StrictMode>,
 )

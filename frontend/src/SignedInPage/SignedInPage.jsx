@@ -1,25 +1,29 @@
 import Typography from "@mui/material/Typography";
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import styles from './SignedInPage.module.css';
 import { UserContext } from "../hooks/useUserService";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { AccountPage } from "../AccountPage/AccountPage";
 
-const labels = ['Home', 'Match', 'Questions', 'Account'];
+const states = Object.freeze({
+  home: 0,
+  match: 1,
+  questions: 2,
+})
 
 export function SignedInPage() {
   const { user } = useContext(UserContext)
-  const [idx, setIdx] = useState(labels.length - 1);
+  const [idx, setIdx] = useState(3);
 
   function tabsChange(ev, val) {
     setIdx(val);
   }
 
-  function getPage(idx) {
-    switch (idx) {
-      case 3:
+  function getPage(state) {
+    switch (state) {
+      case states.account:
         return <AccountPage />
         break;
       
@@ -36,12 +40,11 @@ export function SignedInPage() {
           value={idx}
           onChange={tabsChange}
         >
-          <Tab label='Home' value={0}></Tab>
-          <Tab label='Match' value={1}></Tab>
-          <Tab label='Questions' value={2} disabled={user?.access !== 'admin'}></Tab>
-          <Tab label='Account' value={3}></Tab>
+          <Tab label='Home' value={states.home} />
+          <Tab label='Match' value={states.match} />
+          <Tab label='Questions' value={states.questions} disabled={user?.access !== 'admin'} />
         </Tabs>
-        <Typography>{user?.username ?? 'undefined'}</Typography>
+        <Link to="../account">{user?.username}</Link>
       </div>
       {getPage(idx)}
     </div>

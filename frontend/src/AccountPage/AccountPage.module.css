@@ -1,4 +1,20 @@
 .main {
+    width: 100vw;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: 64px 1fr;
+}
+
+.header {
+    grid-area: 1 / 1 / 2 / -1;
+    background-color: lightblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.body {
+    grid-area: 2 / 1 / -1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,7 +22,7 @@
     gap: 12px;
 }
 
-.main > form {
+.body > form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -15,11 +31,11 @@
     width: 400px;
 }
 
-.main > form > * {
+.body > form > * {
     width: 92%;
 }
 
-.main > form > div {
+.body > form > div {
     display: flex;
     justify-content: space-between;
     align-items: center;
