@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import { SignInOrUp } from './NotSignedIn/SignInOrSignUp.jsx';
 import { ResetPasswordForm } from './ResetPassword/ResetPassword.jsx';
 import { ForgetPassword } from './ForgetPassword/ForgetPassword.jsx';
+import { SignedInPage } from './SignedInPage/SignedInPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'signed-in',
-        element: <div>Signed in</div>
+        element: <SignedInPage />,
       }
     ],
   }
