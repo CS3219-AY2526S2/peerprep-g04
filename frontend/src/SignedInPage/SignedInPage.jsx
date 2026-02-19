@@ -5,6 +5,7 @@ import styles from './SignedInPage.module.css';
 import { UserContext } from "../hooks/useUserService";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import { AccountPage } from "../AccountPage/AccountPage";
 
 const labels = ['Home', 'Match', 'Questions', 'Account'];
 
@@ -15,7 +16,18 @@ export function SignedInPage() {
   function tabsChange(ev, val) {
     setIdx(val);
   }
-  console.log(user?.access !== 'admin');
+
+  function getPage(idx) {
+    switch (idx) {
+      case 3:
+        return <AccountPage />
+        break;
+      
+      default:
+        return <div>Hello World {idx}</div>
+    }
+  }
+
   return (
     <div className={styles.main}>
       <div className={styles.header}>
@@ -31,7 +43,7 @@ export function SignedInPage() {
         </Tabs>
         <Typography>{user?.username ?? 'undefined'}</Typography>
       </div>
-      <div>hello world</div>
+      {getPage(idx)}
     </div>
   )
 }

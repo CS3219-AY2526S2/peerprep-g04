@@ -13,7 +13,7 @@ const api = axios.create({
 
 function getUser(resp_json) {
   return {
-    user_id: resp_json.id,
+    user_id: resp_json.user_id,
     username: resp_json.username,
     email: resp_json.email,
     access: resp_json.access,
@@ -33,6 +33,7 @@ export function useUserService() {
       const res = await api.get('/verify-token', {
         headers: {authorization: `Bearer ${accessToken}`},
       });
+      setAccessToken(accessToken);
       setUser(getUser(res.data));
     } catch (err) {
       toast('checkFoAccessTokenAndLogin ' + err.message);
@@ -91,6 +92,27 @@ export function useUserService() {
     setLoading(false);
   }
 
+  // obj may contain the following fields: username, email, password
+  async function updateUser(obj) {
+    setLoading(true);
+    try {
+      const res = await api.patch(
+        `/update-user/${user.user_id}`, 
+        obj,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        },
+      );
+      setUser(getUser(res.data));
+      toast('User data updated successfully');
+    } catch (err) {
+      toast(err?.response?.data?.message ?? err.message);
+    }
+    setLoading(false);
+  }
+
   return {
     user, 
     loading,
@@ -99,6 +121,7 @@ export function useUserService() {
     createUser,
     forgetPassword,
     resetPassword,
+    updateUser,
   }
 }
 
