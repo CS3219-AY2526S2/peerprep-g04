@@ -14,7 +14,8 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    checkForAccessTokenAndLogin().then(res => res && navigate(location.pathname));
+    checkForAccessTokenAndLogin()
+      .then(res => res && navigate(location.pathname === '/' ? '/signed-in' : location.pathname));
   }, []);
 
   return (
