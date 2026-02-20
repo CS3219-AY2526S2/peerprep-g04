@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { createContext } from "react";
+import { useNavigate } from "react-router";
 
 const api = axios.create({
   baseURL: `http://${import.meta.env.VITE_USER_SERVICE_API}`, 
@@ -24,6 +25,7 @@ export function useUserService() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();
   const [accessToken, setAccessToken] = useState();
+  const navigate = useNavigate();
 
   async function checkForAccessTokenAndLogin() {
     const accessToken = localStorage.getItem('accessToken');
@@ -35,6 +37,7 @@ export function useUserService() {
       });
       setAccessToken(accessToken);
       setUser(getUser(res.data));
+      navigate('/signed-in');
     } catch (err) {
       toast('checkFoAccessTokenAndLogin ' + err.message);
     }
@@ -47,6 +50,7 @@ export function useUserService() {
       localStorage.setItem('accessToken', res.data.access_token);
       setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
+      navigate('/signed-in');
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
     }
@@ -116,6 +120,7 @@ export function useUserService() {
   function logout() {
     setUser(null);
     localStorage.removeItem('accessToken');
+    navigate('/not-signed-in');
   }
 
   return {

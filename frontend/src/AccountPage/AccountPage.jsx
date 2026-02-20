@@ -7,6 +7,7 @@ import { UserContext } from '../hooks/useUserService';
 import { ToggleableTextField } from '../components/ToggleableTextField';
 import { getCardHeaderUtilityClass } from '@mui/material/CardHeader';
 import { useNavigate } from 'react-router';
+import { Navigate } from 'react-router';
 
 export function AccountPage() {
   const { user, loading, updateUser, logout } = useContext(UserContext);
@@ -28,6 +29,11 @@ export function AccountPage() {
       navigate('/account');
     }
   }
+
+  if (!user) {
+    return <Navigate to='/not-signed-in' />
+  }
+
   return (
     <div className={styles.main}>
       <div className={styles.header}>
