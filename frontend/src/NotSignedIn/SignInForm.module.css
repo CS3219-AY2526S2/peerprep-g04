@@ -1,0 +1,16 @@
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid black;
+}
+
+.inputField {
+    width: 92%;
+}
+
+.changeFormLink:hover {
+    cursor: pointer;
+}
