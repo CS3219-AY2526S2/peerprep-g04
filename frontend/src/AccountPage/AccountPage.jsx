@@ -14,6 +14,7 @@ export function AccountPage() {
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   function getSubmitFunc(type) {
     return async (ev) => {
@@ -28,8 +29,13 @@ export function AccountPage() {
     }
   }
 
+  async function myLogout() {
+    await logout();
+    navigate('/');
+  }
+
   if (!user) {
-    return <Navigate to='/not-signed-in' />
+    return <Navigate to='/' />
   }
 
   return (
@@ -41,7 +47,7 @@ export function AccountPage() {
         <Button 
           variant='outlined' 
           color='error'
-          onClick={logout}
+          onClick={myLogout}
         >
           Logout
         </Button>

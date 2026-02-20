@@ -37,7 +37,7 @@ export function HomePage() {
   }
 
   if (!user) {
-    return <Navigate to='/not-signed-in' />
+    return <Navigate to='/' />
   }
 
   return (

@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: 'not-signed-in',
+        index: true,
         element: <SignInOrUp />
       },
       {
