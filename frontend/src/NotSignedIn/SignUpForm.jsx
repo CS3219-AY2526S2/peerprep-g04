@@ -4,7 +4,7 @@ import styles from './SignUpForm.module.css';
 import Button from '@mui/material/Button';
 import { useContext, useState } from 'react';
 import { ToggleableTextField } from '../components/ToggleableTextField';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { UserContext } from '../hooks/useUserService';
 
 
@@ -13,6 +13,7 @@ export function SignUpForm(props) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const { loading, createUser } = useContext(UserContext); 
 
@@ -28,9 +29,10 @@ export function SignUpForm(props) {
     setPassword(e.target.value);
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
-    createUser(username, email, password);
+    const res = await createUser(username, email, password);
+    if (res) navigate('/signed-in');
   }
 
   return (

@@ -6,12 +6,13 @@ import Link from "@mui/material/Link";
 import { useContext, useState } from "react";
 import styles from './SignInForm.module.css';
 import { UserContext } from "../hooks/useUserService";
-import { Link as RouterLink } from 'react-router';
+import { Link as RouterLink, useNavigate } from 'react-router';
 
 export function SignInForm(props) {
   const { toggleForm } = props; 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const { login, loading } = useContext(UserContext);
 
@@ -23,9 +24,10 @@ export function SignInForm(props) {
     setPassword(e.target.value);
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
-    login(email, password);
+    const res = await login(email, password);
+    if (res) navigate('/signed-in');
   }
 
   return (

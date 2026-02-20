@@ -14,7 +14,6 @@ export function AccountPage() {
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
 
   function getSubmitFunc(type) {
     return async (ev) => {
@@ -26,7 +25,6 @@ export function AccountPage() {
       else if (type === 'password') value = password;
       
       await updateUser({ [type]: value });
-      navigate('/account');
     }
   }
 

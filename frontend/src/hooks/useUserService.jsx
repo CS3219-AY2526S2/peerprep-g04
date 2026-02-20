@@ -4,13 +4,14 @@ import axios from 'axios';
 import { createContext } from "react";
 import { useNavigate } from "react-router";
 
+// Note: no url navigation in state hooks, only react components handle navigation.
+
 const api = axios.create({
   baseURL: `http://${import.meta.env.VITE_USER_SERVICE_API}`, 
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
 
 function getUser(resp_json) {
   return {
@@ -25,7 +26,6 @@ export function useUserService() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();
   const [accessToken, setAccessToken] = useState();
-  const navigate = useNavigate();
 
   async function checkForAccessTokenAndLogin() {
     const accessToken = localStorage.getItem('accessToken');
@@ -37,37 +37,43 @@ export function useUserService() {
       });
       setAccessToken(accessToken);
       setUser(getUser(res.data));
-      navigate('/signed-in');
+      return true;
     } catch (err) {
       toast('checkFoAccessTokenAndLogin ' + err.message);
+      return false;
     }
   }
 
   async function login(email, password) {
+    let out = false;
     setLoading(true);
     try {
       const res = await api.post('/login', {email, password});
       localStorage.setItem('accessToken', res.data.access_token);
       setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
-      navigate('/signed-in');
+      out = true;
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
     }
     setLoading(false);
+    return out;
   }
 
   async function createUser(username, email, password) {
+    let out = false;
     setLoading(true);
     try {
       const res = await api.post('/create-user', { username, email, password });
       localStorage.setItem('accessToken', res.data.access_token);
       setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
+      out = true;
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
     }
     setLoading(false);
+    return out;
   }
 
   async function forgetPassword(email) {
@@ -120,7 +126,6 @@ export function useUserService() {
   function logout() {
     setUser(null);
     localStorage.removeItem('accessToken');
-    navigate('/not-signed-in');
   }
 
   return {

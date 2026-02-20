@@ -15,8 +15,8 @@ export function ResetPasswordForm() {
   async function submit(ev) {
     try {
       ev.preventDefault();
-      await resetPassword(token, userId, input);
-      navigate('/not-signed-in');
+      const res = await resetPassword(token, userId, input);
+      if (res) navigate('/not-signed-in');
     } catch (err) {}
     setInput('');
   }

@@ -10,6 +10,8 @@ function App() {
     user, 
     checkForAccessTokenAndLogin,
   } = userService;
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     checkForAccessTokenAndLogin();
