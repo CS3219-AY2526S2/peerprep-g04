@@ -88,6 +88,7 @@ export function useUserService() {
   }
 
   async function resetPassword(token, userId, password) {
+    let out = false;
     setLoading(true);
     try {
       const res = await api.patch(`/update-user/${userId}`,{ password },
@@ -96,10 +97,12 @@ export function useUserService() {
         }
       );
       toast('password reset successfully');
+      out = true;
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
     }
     setLoading(false);
+    return out;
   }
 
   // obj may contain the following fields: username, email, password

@@ -16,7 +16,7 @@ export function ResetPasswordForm() {
     try {
       ev.preventDefault();
       const res = await resetPassword(token, userId, input);
-      if (res) navigate('/not-signed-in');
+      if (res) navigate('/');
     } catch (err) {}
     setInput('');
   }
