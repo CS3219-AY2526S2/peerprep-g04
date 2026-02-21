@@ -13,6 +13,7 @@ export async function get_question_by_id(id) {
     const result = await pool.query(
         `
         SELECT 
+            q.id,
             q.title, 
             q.difficulty, 
             q.body,
@@ -31,6 +32,7 @@ export async function get_question_by_title(title) {
     const result = await pool.query(
         `
         SELECT 
+            q.id,
             q.title, 
             q.difficulty, 
             q.body,
@@ -48,6 +50,7 @@ export async function get_all_questions_without_body() {
     const result = await pool.query(
         `
         SELECT 
+            q.id,
             q.title, 
             q.difficulty, 
             COALESCE(ARRAY_AGG(qt.tag) FILTER (WHERE qt.tag IS NOT NULL), '{}') as tags

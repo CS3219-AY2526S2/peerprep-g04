@@ -35,6 +35,7 @@ test('get question by id', async () => {
     const res2 = await request(app).get(`/get-question-by-id/${id2}`);
     expect(res2.status).toBe(200);
     expect(res2.body).toMatchObject(q2);
+    expect(res.body).toHaveProperty('id');
 });
 
 test('get non-existant question id', async () => {
@@ -64,4 +65,5 @@ test('get all questions without body', async () => {
     delete q1.body;
     delete q2.body;
     expect(res.body.questions).toMatchObject([q1, q2]);
+    expect(res.body.questions.filter(q => q.id)).toHaveLength(2);
 })
