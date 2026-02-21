@@ -1,4 +1,4 @@
-import { get_question_by_id, update_question } from "../database/db";
+import { get_question_by_id, update_question } from "../database/db.js";
 
 // send a body that contain
 // { title: string, difficulty: string, tags: string[], body: string }

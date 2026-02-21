@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, test, expect } from "vitest";
-import { create_question, create_question_from_obj, get_question_by_id, pool } from "../database/db";
+import { create_question, create_question_from_obj, get_question_by_id, pool } from "../database/db.js";
 import request from 'supertest';
-import { app } from "../app";
+import { app } from "../app.js";
 
 beforeEach(async () => {
     await pool.query(`DELETE FROM questions`);
