@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, afterEach, afterAll } from 'vitest';
-import { create_question, create_question_from_obj, get_all_questions_without_body, get_question_by_id, get_question_by_title, pool, update_question } from './db';
+import { create_question, create_question_from_obj, get_all_questions_without_body, get_question_by_id, get_question_by_title, get_question_for_match, pool, update_question } from './db';
 
 beforeEach(async () => {
     await pool.query(`
@@ -105,4 +105,41 @@ test('update question', async () => {
     await update_question(id, q2);
     const question = await get_question_by_id(id);
     expect(question).toMatchObject(q2);
+})
+
+test('get question for match', async () => {
+    const q1 = {
+        title: 't1',
+        difficulty: 'medium',
+        tags: ['pq', 'dp'],
+        body: 'hello world',
+    }
+
+    const q2 = {
+        title: 't2',
+        difficulty: 'hard',
+        tags: ['pq', 'heap'],
+        body: 'hello world',
+    }
+
+    const req = {
+        difficulty_lst: ['easy', 'medium'],
+        tags: ['dp', 'segment tree'],
+    }
+
+    const req2 = {
+        difficulty_lst: ['hard'],
+        tags: ['pq'],
+    }
+
+    const id1 = await create_question_from_obj(q1);
+    const id2 = await create_question_from_obj(q2);
+    
+    const res = await get_question_for_match(req.difficulty_lst, req.tags);
+    expect(res).toMatchObject(q1);
+    expect(res.id).toBe(id1);
+
+    const res2 = await get_question_for_match(req2.difficulty_lst, req2.tags);
+    expect(res2).toMatchObject(q2);
+    expect(res2.id).toBe(id2);
 })

@@ -12,7 +12,7 @@ export async function handle_create_question(req, res) {
 
     try {
         const id = await create_question_from_obj(req.body);
-        return res.status(200).json({
+        return res.status(201).json({
             message: 'question created succesfully',
             id,
         });

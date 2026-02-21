@@ -42,7 +42,7 @@ test('get non-existant question id', async () => {
     const res = await request(app).get('/get-question-by-id/6969');
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('message');
-})
+});
 
 test('get all questions without body', async () => {
     const q1 = {
@@ -66,4 +66,59 @@ test('get all questions without body', async () => {
     delete q2.body;
     expect(res.body.questions).toMatchObject([q1, q2]);
     expect(res.body.questions.filter(q => q.id)).toHaveLength(2);
-})
+});
+
+test('get question for match successful', async () => {
+    const q1 = {
+        title: 't1',
+        difficulty: 'medium',
+        tags: ['pq', 'dp'],
+        body: 'hello world',
+    }
+    const q2 = {
+        title: 't2',
+        difficulty: 'hard',
+        tags: ['pq', 'heap'],
+        body: 'hello world',
+    }
+
+    const req = {
+        difficulties: ['easy', 'hard'],
+        tags: ['pq', 'segment tree'],
+    }
+
+    const id1 = await create_question_from_obj(q1);
+    const id2 = await create_question_from_obj(q2);
+
+    const res = await request(app).get('/get-question-for-match').send(req);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(id2);
+    expect(res.body).toMatchObject(q2);
+});
+
+test('get question for match no question found', async () => {
+    const q1 = {
+        title: 't1',
+        difficulty: 'medium',
+        tags: ['pq', 'dp'],
+        body: 'hello world',
+    };
+    const q2 = {
+        title: 't2',
+        difficulty: 'hard',
+        tags: ['pq', 'heap'],
+        body: 'hello world',
+    };
+
+    const req = {
+        difficulties: ['medium'],
+        tags: ['segment tree', 'greedy'],
+    };
+
+    const id1 = await create_question_from_obj(q1);
+    const id2 = await create_question_from_obj(q2);
+
+    const res = await request(app).get('/get-question-for-match').send(req);
+    expect(res.status).toBe(404);
+
+});
