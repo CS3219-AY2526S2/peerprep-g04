@@ -3,7 +3,7 @@ import { get_all_questions_without_body, get_question_by_id } from "../database/
 export async function handle_get_question_by_id(req, res) {
     const questionId = req.params.questionId;
     if (!questionId) {
-        return res.status(400).json({ message: 'question id is missing in url'});
+        return res.status(400).json({ message: 'question id to get is missing in url'});
     }
     
     try {
