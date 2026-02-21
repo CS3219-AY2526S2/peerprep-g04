@@ -1,5 +1,7 @@
 import { create_question_from_obj } from "../database/db";
 
+// in the request body, send a json obj
+// { title: string, difficulty: string, tags: string[], body: string }
 export async function handle_create_question(req, res) {
     const { title, difficulty, tags, body } = req.body;
     if (!(title && difficulty && tags && body)) {
