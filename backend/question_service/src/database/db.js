@@ -64,6 +64,31 @@ export async function get_all_questions_without_body() {
     return result.rows;
 }
 
+export async function get_question_for_match(difficulties, tags) {
+    const result = await pool.query(
+        `
+        SELECT 
+            q.id,
+            q.title,
+            q.difficulty,
+            q.body,
+            ARRAY_AGG(qt.tag) AS tags
+        FROM questions q
+        JOIN question_tag qt ON qt.question_id = q.id
+        WHERE q.difficulty = ANY($1)
+        AND EXISTS (
+            SELECT 1
+            FROM question_tag qt2
+            WHERE qt2.question_id = q.id
+                AND qt2.tag = ANY($2)
+        )
+        GROUP BY q.id
+        ORDER BY RANDOM()
+        LIMIT 1;
+        `, [difficulties, tags]);
+    return result.rows[0];
+}
+
 export async function create_question_from_obj(obj) {
     return await create_question(obj.title, obj.difficulty, obj.tags, obj.body);
 }

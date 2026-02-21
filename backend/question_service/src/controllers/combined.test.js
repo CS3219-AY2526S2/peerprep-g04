@@ -20,12 +20,12 @@ test('create and get question', async () => {
     }
 
     const res = await request(app).post('/create-question').send(q1);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');
     
     const id = res.body.id;
     const res2 = await request(app).get(`/get-question-by-id/${id}`);
-    expect(res.status).toBe(200);
+    expect(res2.status).toBe(200);
     expect(res2.body).toMatchObject(q1);
 })
 
@@ -41,12 +41,12 @@ test('create, get and update question', async () => {
     }
 
     const res = await request(app).post('/create-question').send(q1);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');
 
     const id = res.body.id;
     const res2 = await request(app).patch(`/update-question/${id}`).send(q2);
-    expect(res.status).toBe(200);
+    expect(res2.status).toBe(200);
 
     const res3 = await request(app).get(`/get-question-by-id/${id}`);
     expect(res3.status).toBe(200);
