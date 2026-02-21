@@ -27,6 +27,23 @@ export async function get_question_by_id(id) {
     return result.rows[0];
 }
 
+export async function get_question_by_title(title) {
+    const result = await pool.query(
+        `
+        SELECT 
+            q.title, 
+            q.difficulty, 
+            q.body,
+            COALESCE(ARRAY_AGG(qt.tag) FILTER (WHERE qt.tag IS NOT NULL), '{}') as tags
+        FROM questions q
+        LEFT JOIN question_tag qt on q.id = qt.question_id
+        WHERE q.title = $1
+        GROUP BY q.id
+        `
+        , [title]);
+    return result.rows[0];
+}
+
 export async function get_all_questions_without_body() {
     const result = await pool.query(
         `

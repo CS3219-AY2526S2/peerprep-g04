@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, afterEach, afterAll } from 'vitest';
-import { create_question, create_question_from_obj, get_all_questions_without_body, get_question_by_id, pool, update_question } from './db';
+import { create_question, create_question_from_obj, get_all_questions_without_body, get_question_by_id, get_question_by_title, pool, update_question } from './db';
 
 beforeEach(async () => {
     await pool.query(`
@@ -26,6 +26,20 @@ test('create and get question', async () => {
     const result = await get_question_by_id(id);
     expect(result).toMatchObject(question);
 });
+
+test('get question by title', async () => {
+    const question = {
+        title: 'Two Sum',
+        difficulty: 'easy',
+        tags: ['array', 'dp'],
+        body: 'hello world',
+    };
+
+    await create_question(question.title, question.difficulty, question.tags, question.body);
+
+    const result = await get_question_by_title(question.title);
+    expect(result).toMatchObject(question);
+})
 
 test('create question with no tags', async () => {
     const question = {
