@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import { handle_get_all_questions_without_body, handle_get_question_by_id } from "./controllers/handle_get_questions";
-import { handle_create_question } from "./controllers/handle_create_question";
-import { handle_delete_question } from "./controllers/handle_delete_question";
-import { handle_update_question } from "./controllers/handle_update_question";
+import { handle_get_all_questions_without_body, handle_get_question_by_id } from "./controllers/handle_get_question.js";
+import { handle_create_question } from "./controllers/handle_create_question.js";
+import { handle_delete_question } from "./controllers/handle_delete_question.js";
+import { handle_update_question } from "./controllers/handle_update_question.js";
 
 export const app = express();
 

@@ -1,4 +1,4 @@
-import { delete_question, get_question_by_id } from "../database/db";
+import { delete_question, get_question_by_id } from "../database/db.js";
 
 export async function handle_delete_question(req, res) {
     const questionId = req.params.questionId;

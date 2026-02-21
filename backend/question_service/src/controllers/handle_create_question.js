@@ -1,4 +1,4 @@
-import { create_question_from_obj } from "../database/db";
+import { create_question_from_obj } from "../database/db.js";
 
 // in the request body, send a json obj
 // { title: string, difficulty: string, tags: string[], body: string }

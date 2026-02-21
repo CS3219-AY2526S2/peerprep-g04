@@ -1,4 +1,4 @@
-import { get_all_questions_without_body, get_question_by_id } from "../database/db";
+import { get_all_questions_without_body, get_question_by_id } from "../database/db.js";
 
 export async function handle_get_question_by_id(req, res) {
     const questionId = req.params.questionId;
