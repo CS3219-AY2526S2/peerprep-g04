@@ -23,8 +23,8 @@ export async function handle_update_question(req, res) {
         const new_question = {
             ...question,
             ...(title && { title }),
-            ...(difficulty && { difficulty }),
-            ...(tags && { tags }),
+            ...(difficulty && { difficulty: difficulty.toLowerCase() }),
+            ...(tags && { tags: tags.map(tag => tag.toLowerCase()) }),
             ...(body && { body }),
         };
         await update_question(question.id, new_question);
