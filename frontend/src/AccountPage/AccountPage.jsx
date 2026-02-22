@@ -8,7 +8,6 @@ import { ToggleableTextField } from '../components/ToggleableTextField';
 import { getCardHeaderUtilityClass } from '@mui/material/CardHeader';
 import { useLocation, useNavigate } from 'react-router';
 import { Navigate } from 'react-router';
-import { goBack } from '../utils/goBack';
 
 export function AccountPage() {
   const { user, loading, updateUser, logout } = useContext(UserContext);
@@ -47,7 +46,7 @@ export function AccountPage() {
           <Typography>Account Management for {user?.username}</Typography>
         </div>
         <div className={styles.end}>
-          <Button variant='outlined' onClick={() => goBack(location.pathname, navigate)}>Back</Button>
+          <Button variant='outlined' onClick={() => navigate('/signed-in')}>Back</Button>
         </div>
       </div>
       <div className={styles.body}>

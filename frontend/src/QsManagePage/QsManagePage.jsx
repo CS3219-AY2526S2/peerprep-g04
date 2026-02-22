@@ -3,7 +3,14 @@ import styles from './QsManage.module.css'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useState } from 'react';
 import Button from '@mui/material/Button';
-import { goBack } from '../utils/goBack';
+
+function goBack(path, navigate) {
+  if (path.includes('create-question') || path.includes('edit-question')) {
+    navigate('/signed-in/question-management');
+  } else {
+    navigate('/signed-in');
+  }
+}
 
 export function QsManagePage() {
   const [reload, setReload] = useState(true);

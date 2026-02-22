@@ -1,20 +1,20 @@
 import Typography from '@mui/material/Typography';
-import styles from './QsCreatePage.module.css';
-import { useNavigate, useOutletContext } from 'react-router';
+import styles from './QsUpdatePage.module.css';
+import { useNavigate, useOutletContext, useParams } from 'react-router';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import MDEditor from "@uiw/react-md-editor";
 import Button from '@mui/material/Button';
-import { create_question } from '../hooks/useQuestionService';
-import { toast } from 'react-toastify';
+import { get_question_by_id, update_question } from '../hooks/useQuestionService';
 
-export function QsCreatePage() {
+export function QsUpdatePage() {
   const { setReload } = useOutletContext();
+  const { id } = useParams();
   const [title, setTitle] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
   const [tags, setTags] = useState([]);
@@ -31,22 +31,29 @@ export function QsCreatePage() {
     return () => setTags(tags.filter(t => t !== tag));
   }
 
-  async function myCreate() {
-    if (!(title && difficulty && tags.length && body)) {
-      toast('some fields needed to create a question are still empty');
-      return;
-    }
-
-    const res = await create_question({ title, difficulty, tags, body});
+  async function myUpdate() {
+    const res = await update_question(id, { title, difficulty, tags, body });
     if (res) {
       setReload(v => !v);
-      navigate('..');
+      navigate('/signed-in/question-management');
     }
+    
   }
+
+  useEffect(() => {
+    get_question_by_id(id)
+    .then(data => {
+        const { title, difficulty, tags, body } = data;
+        setTitle(title);
+        setDifficulty(difficulty);
+        setTags(tags);
+        setBody(body);
+    });
+  }, [id])
 
   return (
     <div className={styles.main}>
-      <Typography>Create new question</Typography>
+      <Typography>Update question</Typography>
       <div className={styles.field}>
         <Typography variant='h6'>Title:</Typography>
         <TextField 
@@ -101,7 +108,7 @@ export function QsCreatePage() {
         onChange={val => setBody(val)}
         style={{ minWidth: '800px', minHeight: '450px' }}
       />
-      <Button variant='outlined' onClick={myCreate}>Submit</Button>
+      <Button variant='outlined' onClick={myUpdate}>Update</Button>
     </div>
   )
 }

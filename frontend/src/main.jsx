@@ -12,6 +12,7 @@ import { SignedInPage } from './SignedInPage/SignedInPage.jsx';
 import { QsManagePage } from './QsManagePage/QsManagePage.jsx';
 import { QsList } from './QsList/QsList.jsx';
 import { QsCreatePage } from './QsCreatePage/QsCreatePage.jsx'
+import { QsUpdatePage } from './QsUpdatePage/QsUpdatePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -56,7 +57,7 @@ const router = createBrowserRouter([
               },
               {
                 path: 'edit-question/:id',
-                element: <div>edit question</div>,
+                element: <QsUpdatePage />,
               }
             ]
           }

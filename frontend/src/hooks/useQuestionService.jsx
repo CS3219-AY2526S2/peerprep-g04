@@ -8,6 +8,7 @@ const question_api = axios.create({
   },
 });
 
+// all methods here return a truthy value if successful, else a falsy value.
 export async function get_question_by_id(id) {
   try {
     const res = await question_api.get(`/get-question-by-id/${id}`);
@@ -29,11 +30,12 @@ export async function get_all_questions_without_body() {
   }
 }
 
-// question_obj must have { title: string, difficulty: string, tags: string[], body: string }
+// question_obj must have { title: string, difficulty: string, tags: string[], body: string }.
 export async function create_question(question_obj) {
   try {
     const res = await question_api.post('/create-question' , question_obj);
     toast('question successfully created');
+    return res.data.id;
   } catch (err) {
     toast(err?.response?.data?.message ?? err.message);
     return undefined;
@@ -44,9 +46,11 @@ export async function create_question(question_obj) {
 export async function update_question(id, question_obj) {
   try {
     const res = await question_api.patch(`/update-question/${id}`, question_obj);
-    toast('question successfullt updated');
+    toast('question successfull updated');
+    return true;
   } catch (err) {
     toast(err?.response?.data?.message ?? err.message);
+    return false;
   }
 }
 
@@ -54,7 +58,9 @@ export async function delete_question(id) {
   try {
     const res = await question_api.delete(`/delete-question/${id}`);
     toast('question successfully deleted');
+    return true;
   } catch (err) {
     toast(err?.response?.data?.message ?? err.message);
+    return false;
   }
 }

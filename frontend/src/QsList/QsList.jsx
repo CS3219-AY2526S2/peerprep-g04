@@ -27,6 +27,7 @@ function getDifficultyColor(difficulty) {
 function QsRow(props) {
   const { question, setReload } = props;
   const { id, title, difficulty, tags } = question;
+  const navigate = useNavigate();
   
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -49,7 +50,7 @@ function QsRow(props) {
       </td>
       <td>
         <div className={styles.tagList}>
-          {tags.map(tag => <Chip label={tag} />)}
+          {tags.map(tag => <Chip key={tag} label={tag} />)}
         </div>
       </td>
       <td>
@@ -62,7 +63,7 @@ function QsRow(props) {
           onClose={() => setAnchorEl(null)}
         >
           <MenuItem>
-            <Typography>Edit</Typography>
+            <Typography onClick={() => navigate(`edit-question/${id}`)}>Edit</Typography>
           </MenuItem>
           <MenuItem onClick={myDelete}>
             <Typography>Delete</Typography>
