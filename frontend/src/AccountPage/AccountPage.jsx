@@ -6,8 +6,9 @@ import { useContext, useState } from 'react';
 import { UserContext } from '../hooks/useUserService';
 import { ToggleableTextField } from '../components/ToggleableTextField';
 import { getCardHeaderUtilityClass } from '@mui/material/CardHeader';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { Navigate } from 'react-router';
+import { goBack } from '../utils/goBack';
 
 export function AccountPage() {
   const { user, loading, updateUser, logout } = useContext(UserContext);
@@ -15,6 +16,7 @@ export function AccountPage() {
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   function getSubmitFunc(type) {
     return async (ev) => {
@@ -41,7 +43,12 @@ export function AccountPage() {
   return (
     <div className={styles.main}>
       <div className={styles.header}>
-        <Typography>Account Management for {user?.username}</Typography>
+        <div className={styles.middle}>
+          <Typography>Account Management for {user?.username}</Typography>
+        </div>
+        <div className={styles.end}>
+          <Button variant='outlined' onClick={() => goBack(location.pathname, navigate)}>Back</Button>
+        </div>
       </div>
       <div className={styles.body}>
         <Button 
