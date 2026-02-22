@@ -2,7 +2,6 @@
     display: grid;
     grid-template-rows: 64px 1fr;
     width: 100vw;
-    height: 100vh;
 }
 
 .header {

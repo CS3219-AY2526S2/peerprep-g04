@@ -2,7 +2,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import './App.css'
 import { useEffect } from 'react';
 import { UserContext, useUserService } from './hooks/useUserService.jsx';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const userService = useUserService();
@@ -21,7 +21,7 @@ function App() {
   return (
     <UserContext value={userService}>
       <Outlet />
-      <ToastContainer />
+      <ToastContainer autoClose={2000}/>
     </UserContext>
   )
 }

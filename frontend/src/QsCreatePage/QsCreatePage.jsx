@@ -78,8 +78,14 @@ export function QsCreatePage() {
           <TextField 
             size='small'
             value={tag}
-            onChange={ev => setTag(ev.target.value)}
             fullWidth
+            onChange={ev => setTag(ev.target.value)}
+            onKeyDown={ev => {
+              if (ev.key === 'Enter' && tag) {
+                ev.preventDefault();
+                addTag(tag);
+              }
+            }}
           />
           <IconButton
             onClick={() => tag && addTag(tag)}
