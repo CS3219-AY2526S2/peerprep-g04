@@ -9,6 +9,8 @@ import { ForgetPassword } from './ForgetPassword/ForgetPassword.jsx';
 import { HomePage } from './HomePage/HomePage.jsx';
 import { AccountPage } from './AccountPage/AccountPage.jsx';
 import { SignedInPage } from './SignedInPage/SignedInPage.jsx';
+import { QsManagePage } from './QsManagePage/QsManagePage.jsx';
+import { QsList } from './QsList/QsList.jsx';
 
 const router = createBrowserRouter([
   {
@@ -41,10 +43,10 @@ const router = createBrowserRouter([
           },
           {
             path: 'question-management',
-            element: <div>question</div>,
+            element: <QsManagePage />,
             children: [
               {
-                element: <div>question list</div>,
+                element: <QsList />,
                 index: true,
               },
               {

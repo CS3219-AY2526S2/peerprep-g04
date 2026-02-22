@@ -1,0 +1,40 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    
+    width: 1024px;
+    justify-self: center;
+    margin-top: 16px;
+    border: 1px solid black;
+    border-radius: 16px;
+    padding: 16px;
+   
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-self: stretch;
+    padding: 8px;
+}
+
+.table {
+    align-self: stretch;
+    border-collapse: collapse;
+}
+
+.table td, .table th {
+    text-align: center;
+    padding: 4px;
+    border-bottom: 1px solid grey;
+}
+
+.tagList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}

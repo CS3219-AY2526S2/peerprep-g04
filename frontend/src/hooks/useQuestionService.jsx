@@ -8,7 +8,7 @@ const question_api = axios.create({
   },
 });
 
-async function get_question_by_id(id) {
+export async function get_question_by_id(id) {
   try {
     const res = await question_api.get(`/get-question-by-id/${id}`);
     return res.data;
@@ -18,10 +18,11 @@ async function get_question_by_id(id) {
   }
 }
 
-async function get_all_questions_without_body() {
+// return the questions array;
+export async function get_all_questions_without_body() {
   try {
     const res = await question_api.get('/get-all-questions-without-body');
-    return res.data;
+    return res.data.questions;
   } catch (err) {
     toast(err?.response?.data?.message ?? err.message);
     return undefined;
@@ -29,7 +30,7 @@ async function get_all_questions_without_body() {
 }
 
 // question_obj must have { title: string, difficulty: string, tags: string[], body: string }
-async function create_question(question_obj) {
+export async function create_question(question_obj) {
   try {
     const res = await question_api.post('/create-question' , question_obj);
     toast('question successfully created');
@@ -40,7 +41,7 @@ async function create_question(question_obj) {
 }
 
 // question obj must have at least 1 field in { title: string, difficulty: string, tags: string[], body: string}
-async function update_question(id, question_obj) {
+export async function update_question(id, question_obj) {
   try {
     const res = await question_api.patch(`/update-question/${id}`, question_obj);
     toast('question successfullt updated');
@@ -49,7 +50,7 @@ async function update_question(id, question_obj) {
   }
 }
 
-async function delete_question(id) {
+export async function delete_question(id) {
   try {
     const res = await question_api.delete(`/delete-question/${id}`);
     toast('question successfully deleted');
