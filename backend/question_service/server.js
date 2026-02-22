@@ -1,7 +1,7 @@
 import { app } from "./src/app.js";
-import { create_question_from_obj } from "./src/database/db.js";
+import { create_question_from_obj, pool } from "./src/database/db.js";
 
-function insert_dummy_questions() {
+async function insert_dummy_questions() {
     const q1 = {
         title: 't1',
         difficulty: 'easy',
@@ -15,9 +15,12 @@ function insert_dummy_questions() {
         tags: ['pq', 'tree'],
         body: 'hello q2'
     }
-
-    create_question_from_obj(q1);
-    create_question_from_obj(q2);
+    
+    try {
+        await create_question_from_obj(q1);
+        await create_question_from_obj(q2);
+    } catch (err) {}
+    
 }
 
 app.listen(process.env.PORT, (err) => {

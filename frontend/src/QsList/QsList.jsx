@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useNavigate, useOutletContext } from "react-router";
 
 function getDifficultyColor(difficulty) {
   switch (difficulty) {
@@ -24,14 +25,14 @@ function getDifficultyColor(difficulty) {
 }
 
 function QsRow(props) {
-  const { question, setToggle } = props;
+  const { question, setReload } = props;
   const { id, title, difficulty, tags } = question;
   
   const [anchorEl, setAnchorEl] = useState(null);
 
   async function myDelete() {
     await delete_question(id)
-    setToggle(t => !t);
+    setReload(t => !t);
   }
   return (
     <tr>
@@ -74,20 +75,26 @@ function QsRow(props) {
 }
 export function QsList() {
   const [questions, setQuestions] = useState([]);
-  const [toggle, setToggle] = useState(true);
+  const { reload, setReload } = useOutletContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const data = get_all_questions_without_body()
       .then(data => {
         data && setQuestions(data);
       });
-  }, [toggle]);
+  }, [reload]);
 
   return (
     <div className={styles.main}>
       <div className={styles.header}>
         <Typography variant="h6">Questions</Typography>
-        <Button variant="outlined">Create</Button>
+        <Button 
+          variant="outlined" 
+          onClick={() => navigate('create-question')}
+        >
+          Create
+        </Button>
       </div>
       <table className={styles.table}>
         <thead>
@@ -108,7 +115,7 @@ export function QsList() {
           </tr>
         </thead>
         <tbody>
-          {questions.map(q => <QsRow key={q.id} question={q} setToggle={setToggle} />)}
+          {questions.map(q => <QsRow key={q.id} question={q} setReload={setReload} />)}
         </tbody>
       </table>
     </div>
