@@ -63,7 +63,7 @@ export function HomePage() {
           onClose={() => setAnchorElem(null)}
         >
           <MenuItem onClick={() => navigate('account')}>Account</MenuItem>
-          <MenuItem>Questions Management</MenuItem>
+          <MenuItem>Question Management</MenuItem>
         </Menu>
       </div>
       {getPage(idx)}

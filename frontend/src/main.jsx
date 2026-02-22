@@ -34,9 +34,28 @@ const router = createBrowserRouter([
           {
             element: <HomePage />,
             index: true,
-          },{
+          },
+          {
             path: 'account',
             element: <AccountPage />
+          },
+          {
+            path: 'question-management',
+            element: <div>question</div>,
+            children: [
+              {
+                element: <div>question list</div>,
+                index: true,
+              },
+              {
+                path: 'create-question',
+                element: <div>create question</div>,
+              },
+              {
+                path: 'edit-question/:id',
+                element: <div>edit question</div>,
+              }
+            ]
           }
         ]
       }
