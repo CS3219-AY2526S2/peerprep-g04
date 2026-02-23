@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, afterEach, afterAll } from 'vitest';
-import { create_question, create_question_from_obj, get_all_questions_without_body, get_question_by_id, get_question_by_title, get_question_for_match, pool, update_question } from './db';
+import { create_question, create_question_from_obj, get_all_questions_without_body, get_all_tags, get_question_by_id, get_question_by_title, get_question_for_match, pool, update_question } from './db';
 
 beforeEach(async () => {
     await pool.query(`
@@ -142,4 +142,27 @@ test('get question for match', async () => {
     const res2 = await get_question_for_match(req2.difficulty_lst, req2.tags);
     expect(res2).toMatchObject(q2);
     expect(res2.id).toBe(id2);
+})
+
+test('get all tags', async () => {
+    const q1 = {
+        title: 't1',
+        difficulty: 'medium',
+        tags: ['pq', 'dp'],
+        body: 'hello world',
+    }
+
+    const q2 = {
+        title: 't2',
+        difficulty: 'hard',
+        tags: ['pq', 'heap'],
+        body: 'hello world',
+    }
+
+    await create_question_from_obj(q1);
+    await create_question_from_obj(q2);
+
+    const res = await get_all_tags();
+    expect(new Set(res)).toEqual(new Set(['pq', 'heap', 'dp']));
+
 })
