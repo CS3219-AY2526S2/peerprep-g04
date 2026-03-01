@@ -1,4 +1,4 @@
-import { get_all_tags } from "../database/db";
+import { get_all_tags } from "../database/db.js";
 
 export async function handle_get_all_tags(req, res) {
     try {
