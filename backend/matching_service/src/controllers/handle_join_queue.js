@@ -1,6 +1,8 @@
-import { enqueue_user } from "../database/db.js";
+import { enqueue_user, dequeue_user } from "../database/db.js";
+import { notify_timeout } from "../websocket.js";
 
 const VALID_DIFFICULTIES = ["easy", "medium", "hard"];
+const QUEUE_TIMEOUT_MS = parseInt(process.env.QUEUE_TIMEOUT_SECONDS || "30") * 1000;
 
 export async function handle_join_queue(req, res) {
     const { topic, difficulty } = req.body;
@@ -16,6 +18,14 @@ export async function handle_join_queue(req, res) {
 
     try {
         await enqueue_user(user_id, topic, difficulty);
+
+        setTimeout(async () => {
+            const removed = await dequeue_user(user_id);
+            if (removed) {
+                notify_timeout(user_id);
+            }
+        }, QUEUE_TIMEOUT_MS);
+
         return res.status(200).json({ message: 'user added to queue', topic, difficulty });
     } catch (err) {
         return res.status(500).json({ message: err.message });
