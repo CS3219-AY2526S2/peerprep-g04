@@ -13,6 +13,7 @@ import { QsManagePage } from './QsManagePage/QsManagePage.jsx';
 import { QsList } from './QsList/QsList.jsx';
 import { QsCreatePage } from './QsCreatePage/QsCreatePage.jsx'
 import { QsUpdatePage } from './QsUpdatePage/QsUpdatePage.jsx';
+import { MatchMainPage } from './Match/MatchMain.jsx';
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
           {
             path: 'account',
             element: <AccountPage />
+          },
+          {
+            path: 'match',
+            element: <MatchMainPage />
           },
           {
             path: 'question-management',
