@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 const difficulties = ['easy', 'medium', 'hard'];
 
 export function MatchPage(props) {
+  const { request_match } = props;
   const [tags, setTags] = useState([]);
   const [selectedDiff, setSelectedDiff] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -73,7 +74,7 @@ export function MatchPage(props) {
           }
         </div>
       </div>
-      <Button variant='outlined'>Match</Button>
+      <Button variant='outlined' onClick={() => request_match(selectedDiff, selectedTags)}>Match</Button>
     </div>
   )
 }

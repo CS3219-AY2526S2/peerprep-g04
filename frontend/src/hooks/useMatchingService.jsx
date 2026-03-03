@@ -3,20 +3,20 @@ import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { UserContext } from "./useUserService";
 
-// must give the username, this is very important.
 export function useMatchingService() {
   const username = useContext(UserContext)?.user?.username;
   const [state, setState] = useState();
   const socketRef = useRef();
-
+  
   useEffect(() => {
+    // username can be undefined, when the website first loads and then check for the cached jwt token.
+    // in that case, we should not connect to the server yet.
     if (!username) {
       return;
     }
 
     socketRef.current = io(`http://${import.meta.env.VITE_MATCHING_SERVICE_API}`);
     socketRef.current.emitWithAck('register', username).then(state => {
-      //console.log(state);
       setState(state);
     });
     
