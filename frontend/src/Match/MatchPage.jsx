@@ -32,7 +32,6 @@ export function MatchPage(props) {
   useEffect(() => {
     get_all_question_tags().
     then(tags => {
-      console.log(tags);
       tags && setTags(tags);
     });
   }, []);

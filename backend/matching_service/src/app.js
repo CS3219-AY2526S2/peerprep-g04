@@ -33,7 +33,8 @@ io.on('connection', (socket) => {
 
         if (state.state === states.matched) {
             const other_user = state.users.find(user => user !== username);
-            socket.emit('user rejoined', other_user);
+            const other_socketid = username_to_socketid.get(other_user);
+            io.to(other_socketid).emit('user rejoined', username);
         }
     });
 

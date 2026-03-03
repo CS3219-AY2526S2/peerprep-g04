@@ -7,7 +7,7 @@ export function useMatchingService() {
   const username = useContext(UserContext)?.user?.username;
   const [state, setState] = useState();
   const socketRef = useRef();
-  console.log(state);
+
   useEffect(() => {
     // username can be undefined, when the website first loads and then check for the cached jwt token.
     // in that case, we should not connect to the server yet.
