@@ -10,7 +10,9 @@ export function useMatchingService() {
   const socketRef = useRef();
 
   useEffect(() => {
-    if (!username) return;
+    if (!username) {
+      return;
+    }
 
     socketRef.current = io(`http://${import.meta.env.VITE_MATCHING_SERVICE_API}`);
     socketRef.current.emitWithAck('register', username).then(state => {
@@ -42,6 +44,7 @@ export function useMatchingService() {
   }
 
   return {
+    username,
     state, 
     leave,
     request_match,

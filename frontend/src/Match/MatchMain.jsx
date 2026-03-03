@@ -7,6 +7,7 @@ import { useMatchingService } from '../hooks/useMatchingService';
 import { UserContext } from '../hooks/useUserService';
 import { MatchPage } from './MatchPage';
 import { useNavigate } from 'react-router';
+import { LoadingPage } from './LoadingPage';
 
 export const states = Object.freeze({
     invalid: 'invalid',
@@ -20,6 +21,7 @@ export const states = Object.freeze({
 export function MatchMainPage() {
   const [tags, setTags] = useState([]);
   const {
+    username,
     state,
     leave,
     request_match
@@ -49,7 +51,7 @@ export function MatchMainPage() {
       <div className={styles.header}>
         <Button variant='outlined' onClick={onLeave}>Leave</Button>
       </div>
-      {whatPage(state)}
+      {!username ? <LoadingPage /> : whatPage(state)}
     </div>
   )
 }

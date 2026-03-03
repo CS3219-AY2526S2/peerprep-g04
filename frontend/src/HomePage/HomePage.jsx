@@ -68,7 +68,7 @@ export function HomePage() {
         </Menu>
       </div>
       <div className={styles.body}>
-        <Button onClick={() => navigate('/signed-in/match')}>Start</Button>
+        <Button variant='outlined' onClick={() => navigate('/signed-in/match')}>Start</Button>
       </div>
     </div>
   )
