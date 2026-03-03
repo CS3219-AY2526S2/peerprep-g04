@@ -4,6 +4,7 @@ import styles from './ForgetPassword.module.css';
 import { useContext, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { UserContext } from "../hooks/useUserService";
+import { Link } from "react-router";
 
 export function ForgetPassword() {
   const [input, setInput] = useState('');
@@ -28,6 +29,10 @@ export function ForgetPassword() {
         <Button type='submit' loading={loading}>
           Send email
         </Button>
+        <Typography variant="caption">
+          Remembered password?&nbsp;
+          <Link to="/">Login</Link>
+        </Typography>
       </form>
     </div>
   )
