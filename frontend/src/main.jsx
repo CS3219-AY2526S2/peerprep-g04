@@ -13,7 +13,7 @@ import { QsManagePage } from './QsManagePage/QsManagePage.jsx';
 import { QsList } from './QsList/QsList.jsx';
 import { QsCreatePage } from './QsCreatePage/QsCreatePage.jsx'
 import { QsUpdatePage } from './QsUpdatePage/QsUpdatePage.jsx';
-import { MatchMainPage } from './Match/MatchMain.jsx';
+import { MatchMainPage } from './Match/MatchMainPage.jsx';
 
 const router = createBrowserRouter([
   {

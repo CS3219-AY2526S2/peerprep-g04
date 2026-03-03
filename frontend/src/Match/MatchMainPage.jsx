@@ -1,11 +1,12 @@
 import Button from '@mui/material/Button';
-import styles from './MatchMain.module.css';
+import styles from './MatchMainPage.module.css';
 import { useState } from 'react';
-import { useMatchingService } from '../hooks/useMatchingService';
+import { useMatchingService } from '../hooks/useMatchingService.jsx';
 import { MatchPage } from './MatchPage.jsx';
 import { useNavigate } from 'react-router';
 import { LoadingPage } from './LoadingPage.jsx';
 import { MatchingPage } from './MatchingPage.jsx';
+import { MatchedPage } from './MatchedPage.jsx';
 
 export const states = Object.freeze({
     invalid: 'invalid',
@@ -35,7 +36,7 @@ export function MatchMainPage() {
         return <MatchingPage />
 
       case states.matched:
-        return <div>Matched</div>
+        return <MatchedPage state={state} />
 
       default:
         return <div>error</div>
