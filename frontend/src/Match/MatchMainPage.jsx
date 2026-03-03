@@ -30,7 +30,7 @@ export function MatchMainPage() {
   function whatPage(state) {
     switch (state?.state) {
       case states.register:
-        return <MatchPage request_match={request_match} />
+        return <MatchPage request_match={request_match} username={username} />
 
       case states.matching:
         return <MatchingPage />

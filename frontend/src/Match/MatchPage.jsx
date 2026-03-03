@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 const difficulties = ['easy', 'medium', 'hard'];
 
 export function MatchPage(props) {
-  const { request_match } = props;
+  const { request_match, username } = props;
   const [tags, setTags] = useState([]);
   const [selectedDiff, setSelectedDiff] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -39,7 +39,7 @@ export function MatchPage(props) {
 
   return (
     <div className={styles.matchPage}>
-      <Typography variant='h5'>Choose your requirements</Typography>
+      <Typography variant='h5'>{username}, choose your requirements</Typography>
       <div className={styles.diffField}>
         <Typography variant="h6">Difficulty</Typography>
         {difficulties.map((d, i) => {
