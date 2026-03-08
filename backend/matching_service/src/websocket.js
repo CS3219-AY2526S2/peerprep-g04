@@ -7,12 +7,25 @@ export function init_websocket_server(server) {
     const wss = new WebSocketServer({ server });
 
     wss.on("connection", (ws) => {
-        ws.on("message", (data) => {
+        ws.on("message", async (data) => {
             try {
                 const msg = JSON.parse(data);
                 if (msg.type === "register" && msg.user_id) {
                     clients.set(msg.user_id, ws);
                     ws.send(JSON.stringify({ type: "registered", user_id: msg.user_id }));
+
+                    // if user was already matched, send match info again
+                    const match = await get_match_by_user_id(msg.user_id);
+                    if (match) {
+                        const opponent_id = match.user1_id === msg.user_id ? match.user2_id : match.user1_id;
+                        ws.send(JSON.stringify({
+                            type: "reconnected",
+                            match_id: match.id,
+                            opponent_id,
+                            topic: match.topic,
+                            difficulty: match.difficulty,
+                        }));
+                    }
                 }
             } catch {
                 // ignore malformed messages
