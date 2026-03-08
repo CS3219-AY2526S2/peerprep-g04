@@ -1,6 +1,6 @@
 import { test, expect, beforeEach, afterAll, vi } from 'vitest';
 import { redis, enqueue_user, is_user_in_queue, dequeue_user } from './database/db.js';
-import { clients, notify_timeout, notify_match } from './websocket.js';
+import { clients, notify_timeout, notify_match, notify_opponent_disconnected, notify_opponent_left } from './websocket.js';
 
 beforeEach(async () => {
     await redis.flushAll();
@@ -53,4 +53,28 @@ test('user is removed from queue on disconnect', async () => {
     const removed = await dequeue_user(1);
     expect(removed).toBe(true);
     expect(await is_user_in_queue(1)).toBe(false);
+});
+
+test('notify_opponent_disconnected sends message to opponent', () => {
+    const opponent_id = 2;
+    const mock_ws = { readyState: 1, send: vi.fn() };
+    clients.set(opponent_id, mock_ws);
+
+    notify_opponent_disconnected(opponent_id, 1);
+
+    expect(mock_ws.send).toHaveBeenCalledWith(
+        JSON.stringify({ type: "opponent_disconnected", user_id: 1 })
+    );
+});
+
+test('notify_opponent_left sends message to opponent', () => {
+    const opponent_id = 2;
+    const mock_ws = { readyState: 1, send: vi.fn() };
+    clients.set(opponent_id, mock_ws);
+
+    notify_opponent_left(opponent_id, 1);
+
+    expect(mock_ws.send).toHaveBeenCalledWith(
+        JSON.stringify({ type: "opponent_left", user_id: 1 })
+    );
 });

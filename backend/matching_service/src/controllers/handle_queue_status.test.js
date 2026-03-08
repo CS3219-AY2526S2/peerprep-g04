@@ -28,7 +28,7 @@ test('queue status is true after user joins queue', async () => {
     await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${valid_token}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     const res = await request(app)
         .get('/queue-status')
@@ -42,7 +42,7 @@ test('queue status is false after user leaves queue', async () => {
     await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${valid_token}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     await request(app)
         .delete('/leave-queue')
