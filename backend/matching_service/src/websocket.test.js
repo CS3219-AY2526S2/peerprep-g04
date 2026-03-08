@@ -25,7 +25,6 @@ test('notify_timeout sends timeout message to registered client', () => {
 });
 
 test('notify_timeout does nothing if user is not connected', () => {
-    // user 999 has no WebSocket connection
     expect(() => notify_timeout(999)).not.toThrow();
 });
 
@@ -37,18 +36,18 @@ test('notify_match sends matched message to both users', () => {
     clients.set(user_id1, mock_ws1);
     clients.set(user_id2, mock_ws2);
 
-    notify_match(user_id1, user_id2, 'arrays', 'easy');
+    notify_match(user_id1, user_id2, ['arrays'], ['easy']);
 
     expect(mock_ws1.send).toHaveBeenCalledWith(
-        JSON.stringify({ type: "matched", opponent_id: user_id2, topic: 'arrays', difficulty: 'easy' })
+        JSON.stringify({ type: "matched", opponent_id: user_id2, topics: ['arrays'], difficulties: ['easy'] })
     );
     expect(mock_ws2.send).toHaveBeenCalledWith(
-        JSON.stringify({ type: "matched", opponent_id: user_id1, topic: 'arrays', difficulty: 'easy' })
+        JSON.stringify({ type: "matched", opponent_id: user_id1, topics: ['arrays'], difficulties: ['easy'] })
     );
 });
 
-test('user is removed from queue after timeout', async () => {
-    await enqueue_user(1, 'arrays', 'easy');
+test('user is removed from queue on disconnect', async () => {
+    await enqueue_user(1, ['arrays'], ['easy']);
     expect(await is_user_in_queue(1)).toBe(true);
 
     const removed = await dequeue_user(1);

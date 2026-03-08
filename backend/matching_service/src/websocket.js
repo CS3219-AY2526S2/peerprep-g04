@@ -1,4 +1,5 @@
 import { WebSocketServer } from "ws";
+import { dequeue_user } from "./database/db.js";
 
 const clients = new Map();
 
@@ -18,10 +19,11 @@ export function init_websocket_server(server) {
             }
         });
 
-        ws.on("close", () => {
+        ws.on("close", async () => {
             for (const [user_id, socket] of clients.entries()) {
                 if (socket === ws) {
                     clients.delete(user_id);
+                    await dequeue_user(user_id);
                     break;
                 }
             }
@@ -38,11 +40,11 @@ export function notify_timeout(user_id) {
     }
 }
 
-export function notify_match(user_id1, user_id2, topic, difficulty) {
+export function notify_match(user_id1, user_id2, topics, difficulties) {
     const send_to = (user_id, opponent_id) => {
         const ws = clients.get(user_id);
         if (ws && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: "matched", opponent_id, topic, difficulty }));
+            ws.send(JSON.stringify({ type: "matched", opponent_id, topics, difficulties }));
         }
     };
     send_to(user_id1, user_id2);
