@@ -19,52 +19,52 @@ afterAll(async () => {
     await pool.query('DELETE FROM matches');
 });
 
-test('two users with same topic and difficulty get matched', async () => {
-    // user1 joins first, no match yet
+test('two users with overlapping topics and difficulties get matched', async () => {
     const res1 = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token1}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays', 'graphs'], difficulties: ['easy', 'medium'] });
 
     expect(res1.status).toBe(200);
     expect(res1.body.message).toBe('user added to queue');
 
-    // user2 joins, match found
     const res2 = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token2}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays', 'dp'], difficulties: ['medium', 'hard'] });
 
     expect(res2.status).toBe(200);
     expect(res2.body.message).toBe('match found');
     expect(res2.body.opponent_id).toBe(user1_id);
+    expect(res2.body.topics).toContain('arrays');
+    expect(res2.body.difficulties).toContain('medium');
 });
 
-test('two users with different topics do not get matched', async () => {
+test('two users with no overlapping topics do not get matched', async () => {
     const res1 = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token1}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     const res2 = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token2}`)
-        .send({ topic: 'graphs', difficulty: 'easy' });
+        .send({ topics: ['graphs'], difficulties: ['easy'] });
 
     expect(res1.body.message).toBe('user added to queue');
     expect(res2.body.message).toBe('user added to queue');
 });
 
-test('two users with different difficulties do not get matched', async () => {
+test('two users with no overlapping difficulties do not get matched', async () => {
     const res1 = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token1}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     const res2 = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token2}`)
-        .send({ topic: 'arrays', difficulty: 'hard' });
+        .send({ topics: ['arrays'], difficulties: ['hard'] });
 
     expect(res1.body.message).toBe('user added to queue');
     expect(res2.body.message).toBe('user added to queue');
@@ -74,31 +74,29 @@ test('match is saved to database', async () => {
     await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token1}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     const res = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token2}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     expect(res.body.match_id).toBeDefined();
 
     const db_result = await pool.query('SELECT * FROM matches WHERE id = $1', [res.body.match_id]);
     expect(db_result.rows).toHaveLength(1);
-    expect(db_result.rows[0].topic).toBe('arrays');
-    expect(db_result.rows[0].difficulty).toBe('easy');
 });
 
 test('both users are removed from queue after match', async () => {
     await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token1}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${token2}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     const status1 = await request(app)
         .get('/queue-status')

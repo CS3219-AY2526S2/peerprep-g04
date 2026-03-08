@@ -15,11 +15,11 @@ afterAll(async () => {
     await redis.flushAll();
 });
 
-test('user can join queue with valid topic and difficulty', async () => {
+test('user can join queue with valid topics and difficulties', async () => {
     const res = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${valid_token}`)
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays', 'graphs'], difficulties: ['easy', 'medium'] });
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('user added to queue');
@@ -28,16 +28,25 @@ test('user can join queue with valid topic and difficulty', async () => {
 test('join queue fails without token', async () => {
     const res = await request(app)
         .post('/join-queue')
-        .send({ topic: 'arrays', difficulty: 'easy' });
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
 
     expect(res.status).toBe(400);
 });
 
-test('join queue fails with missing topic', async () => {
+test('join queue fails when topics is not an array', async () => {
     const res = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${valid_token}`)
-        .send({ difficulty: 'easy' });
+        .send({ topics: 'arrays', difficulties: ['easy'] });
+
+    expect(res.status).toBe(400);
+});
+
+test('join queue fails with empty topics', async () => {
+    const res = await request(app)
+        .post('/join-queue')
+        .set('Authorization', `Bearer ${valid_token}`)
+        .send({ topics: [], difficulties: ['easy'] });
 
     expect(res.status).toBe(400);
 });
@@ -46,7 +55,7 @@ test('join queue fails with invalid difficulty', async () => {
     const res = await request(app)
         .post('/join-queue')
         .set('Authorization', `Bearer ${valid_token}`)
-        .send({ topic: 'arrays', difficulty: 'invalid' });
+        .send({ topics: ['arrays'], difficulties: ['invalid'] });
 
     expect(res.status).toBe(400);
 });

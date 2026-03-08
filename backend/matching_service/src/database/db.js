@@ -17,23 +17,24 @@ await redis.connect();
 
 const QUEUE_TIMEOUT_SECONDS = parseInt(process.env.QUEUE_TIMEOUT_SECONDS || "30");
 
-function queue_key(topic, difficulty) {
-    return `queue:${topic}:${difficulty}`;
-}
+const QUEUE_KEY = "matching_queue";
 
 function user_queue_key(user_id) {
     return `user_queue:${user_id}`;
 }
 
-export async function enqueue_user(user_id, topic, difficulty) {
-    const key = queue_key(topic, difficulty);
+function get_intersection(arr1, arr2) {
+    const set1 = new Set(arr1);
+    return arr2.filter(x => set1.has(x));
+}
+
+export async function enqueue_user(user_id, topics, difficulties) {
     const userKey = user_queue_key(user_id);
     const score = Date.now();
+    const value = JSON.stringify({ user_id, topics, difficulties });
 
-    await redis.zAdd(key, { score, value: String(user_id) });
-    await redis.set(userKey, JSON.stringify({ topic, difficulty }), {
-        EX: QUEUE_TIMEOUT_SECONDS,
-    });
+    await redis.zAdd(QUEUE_KEY, { score, value });
+    await redis.set(userKey, value, { EX: QUEUE_TIMEOUT_SECONDS });
 }
 
 export async function dequeue_user(user_id) {
@@ -41,8 +42,15 @@ export async function dequeue_user(user_id) {
     const raw = await redis.get(userKey);
     if (!raw) return false;
 
-    const { topic, difficulty } = JSON.parse(raw);
-    await redis.zRem(queue_key(topic, difficulty), String(user_id));
+    const entries = await redis.zRange(QUEUE_KEY, 0, -1);
+    for (const entry of entries) {
+        const data = JSON.parse(entry);
+        if (data.user_id === user_id) {
+            await redis.zRem(QUEUE_KEY, entry);
+            break;
+        }
+    }
+
     await redis.del(userKey);
     return true;
 }
@@ -52,23 +60,34 @@ export async function is_user_in_queue(user_id) {
     return raw !== null;
 }
 
-// returns { matched: true, opponent_id } or { matched: false }
-export async function try_match(user_id, topic, difficulty) {
-    const key = queue_key(topic, difficulty);
-    const entries = await redis.zRange(key, 0, 1);
+// returns { matched: true, opponent_id, common_topics, common_difficulties } or { matched: false }
+export async function try_match(user_id, topics, difficulties) {
+    const entries = await redis.zRange(QUEUE_KEY, 0, -1);
 
-    if (entries.length < 2 || !entries.includes(String(user_id))) {
-        return { matched: false };
+    for (const entry of entries) {
+        const data = JSON.parse(entry);
+        if (data.user_id === user_id) continue;
+
+        const common_topics = get_intersection(topics, data.topics);
+        const common_difficulties = get_intersection(difficulties, data.difficulties);
+
+        if (common_topics.length > 0 && common_difficulties.length > 0) {
+            const my_entry = entries.find(e => JSON.parse(e).user_id === user_id);
+            await redis.zRem(QUEUE_KEY, entry);
+            if (my_entry) await redis.zRem(QUEUE_KEY, my_entry);
+            await redis.del(user_queue_key(user_id));
+            await redis.del(user_queue_key(data.user_id));
+
+            return {
+                matched: true,
+                opponent_id: data.user_id,
+                common_topics,
+                common_difficulties,
+            };
+        }
     }
 
-    const opponent_id = parseInt(entries.find((id) => id !== String(user_id)));
-
-    await redis.zRem(key, String(user_id));
-    await redis.zRem(key, String(opponent_id));
-    await redis.del(user_queue_key(user_id));
-    await redis.del(user_queue_key(opponent_id));
-
-    return { matched: true, opponent_id };
+    return { matched: false };
 }
 
 export async function save_match(user1_id, user2_id, topic, difficulty, question_id = null) {
@@ -78,4 +97,12 @@ export async function save_match(user1_id, user2_id, topic, difficulty, question
         [user1_id, user2_id, topic, difficulty, question_id]
     );
     return result.rows[0].id;
+}
+
+export async function get_match_by_user_id(user_id) {
+    const result = await pool.query(
+        `SELECT * FROM matches WHERE user1_id = $1 OR user2_id = $1 ORDER BY created_at DESC LIMIT 1`,
+        [user_id]
+    );
+    return result.rows[0];
 }
