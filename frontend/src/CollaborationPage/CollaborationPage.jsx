@@ -15,7 +15,7 @@ export function CollaborationPage() {
 
     // P2P connection using webrtc
     const provider = new WebrtcProvider("roomname", ydoc, 
-        //{ signaling: ["ws://localhost:4444"] } // Connect to our own backend signaling server
+        { signaling: [import.meta.env.VITE_SIGNALING_URL || "ws://localhost:4444"] } // Connect to our own backend signaling server
     ); // Change roomname to some unique ID from matching service
     const yText = ydoc.getText("monaco"); // use key "monaco" and bind to editor
 

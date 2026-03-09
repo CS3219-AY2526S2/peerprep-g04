@@ -1,0 +1,17 @@
+services:
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        - VITE_SIGNALING_URL=ws://localhost:4444
+    ports:
+      - "5173:5173"
+    depends_on:
+      - collaboration_service
+    environment:
+      - VITE_SIGNALING_URL=ws://localhost:4444
+      
+  collaboration_service:
+    build: ./backend/collaboration_service
+    ports:
+      - "4444:4444"
