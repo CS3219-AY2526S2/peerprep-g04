@@ -1,5 +1,5 @@
 import { enqueue_user, dequeue_user, try_match, save_match } from "../database/db.js";
-import { notify_timeout, notify_match } from "../websocket.js";
+import { notify_timeout, notify_match, user_id_to_username } from "../websocket.js";
 
 const VALID_DIFFICULTIES = ["easy", "medium", "hard"];
 const QUEUE_TIMEOUT_MS = parseInt(process.env.QUEUE_TIMEOUT_SECONDS || "30") * 1000;
@@ -32,6 +32,7 @@ export async function handle_join_queue(req, res) {
                 message: 'match found',
                 match_id,
                 opponent_id: result.opponent_id,
+                opponent_username: user_id_to_username.get(opponent_id),
                 topics: result.common_topics,
                 difficulties: result.common_difficulties,
             });

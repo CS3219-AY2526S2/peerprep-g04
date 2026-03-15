@@ -2,6 +2,7 @@ import { WebSocketServer } from "ws";
 import { dequeue_user, get_match_by_user_id, get_user_state, leave, states } from "./database/db.js";
 
 const clients = new Map();
+export const user_id_to_username = new Map();
 
 export function init_websocket_server(server) {
     const wss = new WebSocketServer({ server });
@@ -12,6 +13,7 @@ export function init_websocket_server(server) {
                 const msg = JSON.parse(data);
                 if (msg.type === "register" && msg.user_id) {
                     clients.set(msg.user_id, ws);
+                    user_id_to_username.set(msg.user_id, msg.username);
                     ws.send(JSON.stringify({ type: "registered", user_id: msg.user_id }));
 
                     const state = get_user_state(msg.user_id);
@@ -23,11 +25,14 @@ export function init_websocket_server(server) {
                             type: "reconnected",
                             match_id: match.id,
                             opponent_id,
+                            opponent_username: user_id_to_username.get(opponent_id),
                             topic: match.topic,
                             difficulty: match.difficulty,
                             question_id: match.question_id,
                         }));
-                    } else if (state === states.matching) {
+                    } 
+                    
+                    else if (state === states.matching) {
                         ws.send(JSON.stringify({
                             type: 'matching',
                         }));
@@ -90,15 +95,17 @@ export function notify_match(user_id1, user_id2, topics, difficulties) {
 
 export function notify_opponent_disconnected(opponent_id, user_id) {
     const ws = clients.get(opponent_id);
+    const username = user_id_to_username.get(user_id);
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: "opponent_disconnected", user_id }));
+        ws.send(JSON.stringify({ type: "opponent_disconnected", user_id, username }));
     }
 }
 
 export function notify_opponent_left(opponent_id, user_id) {
     const ws = clients.get(opponent_id);
+    const username = user_id_to_username.get(user_id);
     if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify({ type: "opponent_left", user_id }));
+        ws.send(JSON.stringify({ type: "opponent_left", user_id, username }));
     }
 }
 

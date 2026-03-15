@@ -9,6 +9,7 @@ import { AccountPage } from "../AccountPage/AccountPage";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Button from "@mui/material/Button";
 
 const states = Object.freeze({
   home: 0,
@@ -66,7 +67,9 @@ export function HomePage() {
           {user?.access === 'admin' && <MenuItem onClick={() => navigate('question-management')}>Question Management</MenuItem>}
         </Menu>
       </div>
-      {getPage(idx)}
+       <div className={styles.body}>
+        <Button variant='outlined' onClick={() => navigate('/signed-in/match')}>Start</Button>
+      </div>
     </div>
   )
 }

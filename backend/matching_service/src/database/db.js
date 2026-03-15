@@ -34,10 +34,6 @@ function get_intersection(arr1, arr2) {
     return arr2.filter(x => set1.has(x));
 }
 
-function create_room_id() {
-    return Math.floor(Math.random() * 100);
-}
-
 // mocked function, to integrate with question service.
 async function get_question(topics, difficulties) {
     return {
@@ -114,7 +110,6 @@ export async function try_match(user_id, topics, difficulties) {
                 opponent_id: data.user_id,
                 common_topics,
                 common_difficulties,
-                room_id: create_room_id(),
                 question: get_question(),
             };
         }
