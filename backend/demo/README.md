@@ -17,7 +17,7 @@ body: {
   "topic": "Array",
   "body": "given a nums and a target..."
 }
-2. Run front end. Instead of using the original one, directly enter: http://localhost:3000/collab/fake-match-123
+2. Run front end. Instead of using the given url, directly enter: http://localhost:3000/collab/fake-match-123
 
 
 Port issue:
