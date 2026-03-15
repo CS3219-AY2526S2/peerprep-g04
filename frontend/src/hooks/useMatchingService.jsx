@@ -26,7 +26,6 @@ export function useMatchingService() {
 
   useEffect(() => {
     if (!user_id) return;
-    console.log(username);
 
     socketRef.current = new WebSocket(`ws://${import.meta.env.VITE_MATCHING_SERVICE_API}`);
 
@@ -34,8 +33,9 @@ export function useMatchingService() {
       socketRef.current?.send(JSON.stringify({ type: 'register', user_id, username }));
     });
 
-    socketRef.current?.addEventListener('message', (data) => {
-      data = JSON.parse(data);
+    socketRef.current?.addEventListener('message', (res) => {
+      const data = JSON.parse(res.data);
+      console.log(data);
 
       if (data?.type === 'timeout') {
         setState(null);
@@ -50,7 +50,6 @@ export function useMatchingService() {
       }
 
       else if (data?.type === 'matched') {
-        console.log('matched', data);
         setState(states.matched);
         setStateData(data);
       }
@@ -64,10 +63,10 @@ export function useMatchingService() {
         setState(states.matching);
         setStateData(data);
       }
+    });
 
-      return () => socketRef.current?.close();
-    })
-
+    
+    return () => socketRef.current?.close();
   }, [user_id]);
 
   function leave() {

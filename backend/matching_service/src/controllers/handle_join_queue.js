@@ -27,14 +27,15 @@ export async function handle_join_queue(req, res) {
 
         if (result.matched) {
             const match_id = await save_match(user_id, result.opponent_id, result.common_topics[0], result.common_difficulties[0]);
-            notify_match(user_id, result.opponent_id, result.common_topics, result.common_difficulties);
+            notify_match(user_id, result.opponent_id, result.common_topics, result.common_difficulties, match_id, result.question);
             return res.status(200).json({
                 message: 'match found',
                 match_id,
                 opponent_id: result.opponent_id,
-                opponent_username: user_id_to_username.get(opponent_id),
+                opponent_username: user_id_to_username.get(result.opponent_id),
                 topics: result.common_topics,
                 difficulties: result.common_difficulties,
+                question: result.question,
             });
         }
 

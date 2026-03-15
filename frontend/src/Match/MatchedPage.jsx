@@ -4,8 +4,8 @@ import MDEditor from "@uiw/react-md-editor";
 
 // this is just a placeholder component.
 export function MatchedPage(props) {
-  const { username } = props;
-  const { opponent_username, question } = state
+  const { username, stateData } = props;
+  const { opponent_username, question } = stateData;
 
   return (
     <div className={styles.matchedPage}>
