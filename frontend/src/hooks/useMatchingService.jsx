@@ -42,11 +42,15 @@ export function useMatchingService() {
       } 
       
       else if (data?.type === 'opponent_disconnected') {
-        toast(`${data?.username} disconnected`);
+        toast(`${data?.username} disconnected`, { position: 'top-center'});
       } 
       
       else if (data?.type === 'opponent_left') {
-        toast(`${data?.username} left`);
+        toast(`${data?.username} left`, { position: 'top-center'});
+      }
+
+      else if (data?.type === 'opponent_reconnect') {
+        toast(`${data?.username} reconnected`, { position: 'top-center' });
       }
 
       else if (data?.type === 'matched') {

@@ -30,6 +30,7 @@ export function init_websocket_server(server) {
                             difficulty: match.difficulty,
                             question_id: match.question_id,
                         }));
+                        notify_reconnect(opponent_id, msg.user_id);
                     } else if (state === states.matching) {
                         ws.send(JSON.stringify({
                             type: 'matching',
@@ -112,8 +113,15 @@ export function notify_opponent_left(opponent_id, user_id) {
     const ws = clients.get(opponent_id);
     const username = user_id_to_username.get(user_id);
     if (ws && ws.readyState === 1) {
-        console.log(opponent_id + ' left');
         ws.send(JSON.stringify({ type: "opponent_left", user_id, username }));
+    }
+}
+
+export function notify_reconnect(opponent_id, user_id) {
+    const ws = clients.get(opponent_id);
+    const username = user_id_to_username.get(user_id);
+    if (ws && ws.readyState === 1) {
+        ws.send(JSON.stringify({ type: "opponent_reconnect", user_id, username }));
     }
 }
 
