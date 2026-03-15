@@ -35,7 +35,7 @@ export async function handle_join_queue(req, res) {
                 opponent_username: user_id_to_username.get(result.opponent_id),
                 topics: result.common_topics,
                 difficulties: result.common_difficulties,
-                question: result.question,
+                question_id: result.question_id,
             });
         }
 

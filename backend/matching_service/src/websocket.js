@@ -81,7 +81,7 @@ export function notify_timeout(user_id) {
     }
 }
 
-export function notify_match(user_id1, user_id2, topics, difficulties, match_id, question) {
+export function notify_match(user_id1, user_id2, topics, difficulties, match_id, question_id) {
     const send_to = (user_id, opponent_id) => {
         const ws = clients.get(user_id);
         const opponent_username = user_id_to_username.get(opponent_id);
@@ -93,7 +93,7 @@ export function notify_match(user_id1, user_id2, topics, difficulties, match_id,
                 opponent_username,
                 topics,
                 difficulties,
-                question,
+                question_id,
             }));
         }
     };

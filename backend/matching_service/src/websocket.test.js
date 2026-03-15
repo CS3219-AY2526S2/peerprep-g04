@@ -38,13 +38,13 @@ test('notify_match sends matched message to both users', () => {
 
     user_id_to_username.set(user_id1, 'user1');
     user_id_to_username.set(user_id2, 'user2');
-    notify_match(user_id1, user_id2, ['arrays'], ['easy'], 99, { title: 'two sum' });
+    notify_match(user_id1, user_id2, ['arrays'], ['easy'], 99, 1);
 
     expect(mock_ws1.send).toHaveBeenCalledWith(
-        JSON.stringify({ type: "matched", match_id: 99, opponent_id: user_id2, opponent_username: 'user2', topics: ['arrays'], difficulties: ['easy'], question: { title: 'two sum' } })
+        JSON.stringify({ type: "matched", match_id: 99, opponent_id: user_id2, opponent_username: 'user2', topics: ['arrays'], difficulties: ['easy'], question_id: 1 })
     );
     expect(mock_ws2.send).toHaveBeenCalledWith(
-        JSON.stringify({ type: "matched", match_id: 99, opponent_id: user_id1, opponent_username: 'user1', topics: ['arrays'], difficulties: ['easy'], question: { title: 'two sum' } })
+        JSON.stringify({ type: "matched", match_id: 99, opponent_id: user_id1, opponent_username: 'user1', topics: ['arrays'], difficulties: ['easy'], question_id: 1 })
     );
 });
 

@@ -35,13 +35,8 @@ function get_intersection(arr1, arr2) {
 }
 
 // mocked function, to integrate with question service.
-async function get_question(topics, difficulties) {
-    return {
-        title: 'two sum',
-        difficulty: 'easy',
-        tags: ['array'],
-        body: ['hello world'],
-    }
+async function get_question_id(topics, difficulties) {
+    return 69;
 }
 
 export async function enqueue_user(user_id, topics, difficulties) {
@@ -110,7 +105,7 @@ export async function try_match(user_id, topics, difficulties) {
                 opponent_id: data.user_id,
                 common_topics,
                 common_difficulties,
-                question: get_question(),
+                question_id: get_question_id(),
             };
         }
     }
