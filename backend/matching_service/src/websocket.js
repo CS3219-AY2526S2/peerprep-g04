@@ -1,5 +1,5 @@
 import { WebSocketServer } from "ws";
-import { dequeue_user, get_match_by_user_id } from "./database/db.js";
+import { dequeue_user, get_match_by_user_id, get_user_state, leave, states } from "./database/db.js";
 
 const clients = new Map();
 
@@ -14,9 +14,10 @@ export function init_websocket_server(server) {
                     clients.set(msg.user_id, ws);
                     ws.send(JSON.stringify({ type: "registered", user_id: msg.user_id }));
 
+                    const state = get_user_state(msg.user_id);
                     // if user was already matched, send match info again
-                    const match = await get_match_by_user_id(msg.user_id);
-                    if (match) {
+                    if (state === states.matched) {
+                        const match = await get_match_by_user_id(msg.user_id);
                         const opponent_id = match.user1_id === msg.user_id ? match.user2_id : match.user1_id;
                         ws.send(JSON.stringify({
                             type: "reconnected",
@@ -24,14 +25,28 @@ export function init_websocket_server(server) {
                             opponent_id,
                             topic: match.topic,
                             difficulty: match.difficulty,
+                            question_id: match.question_id,
+                        }));
+                    } else if (state === states.matching) {
+                        ws.send(JSON.stringify({
+                            type: 'matching',
                         }));
                     }
+                } else if (msg.type === 'leave' && msg.user_id) {
+                    const state = get_user_state(msg.user_id);
+                    if (state === states.matched) {
+                        const match = await get_match_by_user_id(msg.user_id);
+                        const opponent_id = match.user1_id === msg.user_id ? match.user2_id : match.user1_id;
+                        notify_opponent_left(opponent_id, msg.user_id);
+                    }
+                    leave(msg.user_id);
                 }
             } catch {
                 // ignore malformed messages
             }
         });
 
+        // 'close' event is a disconnect.
         ws.on("close", async () => {
             for (const [user_id, socket] of clients.entries()) {
                 if (socket === ws) {
@@ -39,8 +54,9 @@ export function init_websocket_server(server) {
                     await dequeue_user(user_id);
 
                     // notify opponent if user was matched
-                    const match = await get_match_by_user_id(user_id);
-                    if (match) {
+                    const state = await get_user_state(user_id);
+                    if (state === states.matched) {
+                        const match = await get_match_by_user_id(user_id);
                         const opponent_id = match.user1_id === user_id ? match.user2_id : match.user1_id;
                         notify_opponent_disconnected(opponent_id, user_id);
                     }
