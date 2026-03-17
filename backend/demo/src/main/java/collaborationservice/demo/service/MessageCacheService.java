@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import collaborationservice.demo.entity.SessionData;
@@ -125,7 +127,7 @@ public class MessageCacheService {
     public void cacheUserStatus(String sessionId, String user, String status) {
         String key = keyForUserStatus(sessionId, user);
         redis.opsForValue().set(key, status);
-        redis.expire(key, Duration.ofMillis(roomTtlMillis));
+        //redis.expire(key, Duration.ofMillis(roomTtlMillis));
     }
 
     /**
@@ -146,7 +148,7 @@ public class MessageCacheService {
         String key = keyForSessionUsers(sessionId);
         String json = mapper.writeValueAsString(sessionData);
         redis.opsForValue().set(key, json);
-        redis.expire(key, Duration.ofMillis(roomTtlMillis));
+        //redis.expire(key, Duration.ofMillis(roomTtlMillis));
     }
 
     public SessionData getSessionData(String sessionId) throws JsonProcessingException {
@@ -158,6 +160,18 @@ public class MessageCacheService {
         }
 
         return mapper.readValue(json, SessionData.class);
+    }
+
+    public void saveLatestCode(String roomId, String code) {
+        String redisKey = "session_code:" + roomId;
+
+        try {
+            redis.opsForValue().set(redisKey, code);
+
+            // stringRedisTemplate.expire(redisKey, 24, java.util.concurrent.TimeUnit.HOURS);
+
+        } catch (Exception e) {
+        }
     }
 
 }

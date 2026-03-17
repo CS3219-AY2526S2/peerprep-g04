@@ -46,7 +46,7 @@ function App() {
           setLoading(false);
         }
       } else {
-        // 处理其他类型的消息（比如实时代码同步、聊天消息等）
+
         console.log(rawMessage);
       }
     };
@@ -111,7 +111,7 @@ function App() {
 
         {/* editor */}
         <div style={{ flex: '1.5', minWidth: 0 }}>
-          <Editor sessionId={sessionId} />
+          <Editor sessionId={sessionId} wsRef = {ws} />
         </div>
       </div>
     </div>

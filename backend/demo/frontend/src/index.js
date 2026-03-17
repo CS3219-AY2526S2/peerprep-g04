@@ -2,7 +2,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-// 屏蔽 ResizeObserver 引起的无害全屏报错
 window.addEventListener('error', e => {
   if (
     e.message === 'ResizeObserver loop limit exceeded' ||
