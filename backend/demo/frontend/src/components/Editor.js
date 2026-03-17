@@ -1,44 +1,81 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
+import Editor from "@monaco-editor/react";
+import * as Y from "yjs";
+import { WebrtcProvider } from "y-webrtc";
+import { MonacoBinding } from "y-monaco";
 
-export default function Editor({ sessionId }) {
-  const [code, setCode] = useState('');
-  const ws = useRef(null);
+export default function CollaborativeEditor({ sessionId, wsRef }) { 
+  const editorRef = useRef(null);
+  const providerRef = useRef(null);
+  const docRef = useRef(null);
+  const bindingRef = useRef(null);
+  
 
-  useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const host = window.location.host;
-    ws.current = new WebSocket(`${protocol}://${host}/ws?session=${sessionId}`);
+  const lastSavedCode = useRef(''); 
 
-    ws.current.onopen = () => {
-      console.log('websocket opened');
-    };
+  function handleEditorDidMount(editor, monaco) {
+    editorRef.current = editor;
 
-    ws.current.onmessage = (evt) => {
-      setCode(evt.data);
-    };
+    const ydoc = new Y.Doc();
+    docRef.current = ydoc; 
 
-    ws.current.onclose = () => {
-      console.log('websocket closed');
-    };
+    const provider = new WebrtcProvider(sessionId, ydoc, {
+      signaling: ['ws://localhost:4444'] 
+    });
+    providerRef.current = provider;
 
-    return () => {
-      if (ws.current) ws.current.close();
-    };
-  }, [sessionId]);
-
-  function handleChange(e) {
-    const newCode = e.target.value;
-    setCode(newCode);
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(newCode);
-    }
+    const yText = ydoc.getText("monaco");
+    const binding = new MonacoBinding(
+      yText,
+      editorRef.current.getModel(),
+      new Set([editorRef.current]),
+      provider.awareness
+    );
+    bindingRef.current = binding;
   }
 
+  // send code to backend every 5 seconds if there are changes
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (docRef.current && wsRef && wsRef.current?.readyState === WebSocket.OPEN) {
+        
+        const currentCode = docRef.current.getText("monaco").toString();
+
+        if (currentCode !== lastSavedCode.current) {
+          const payload = {
+            type: "CODE_SAVE",
+            code: currentCode
+          };
+          
+          wsRef.current.send(JSON.stringify(payload));
+          lastSavedCode.current = currentCode;
+        
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(timer); 
+  }, [wsRef]); 
+
+
+  useEffect(() => {
+    return () => {
+      if (bindingRef.current) bindingRef.current.destroy();
+      if (providerRef.current) providerRef.current.destroy();
+      if (docRef.current) docRef.current.destroy();
+    };
+  }, []);
+
   return (
-    <textarea
-      value={code}
-      onChange={handleChange}
-      style={{ width: '100%', height: '90vh', fontFamily: 'monospace' }}
-    />
+    <div style={{ height: '100%', width: '100%', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden' }}>
+      <Editor
+        height="85vh"
+        width="100%"
+        theme="vs-dark"
+        defaultLanguage="java"
+        onMount={handleEditorDidMount}
+        options={{ minimap: { enabled: false }, fontSize: 15, wordWrap: "on" }}
+      />
+    </div>
   );
 }

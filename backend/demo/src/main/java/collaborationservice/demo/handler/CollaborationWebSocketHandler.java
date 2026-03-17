@@ -1,5 +1,6 @@
 package collaborationservice.demo.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -73,7 +74,32 @@ public class CollaborationWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String roomId = extractRoomId(session.getUri());
+        String payload = message.getPayload();
         log.debug("message in room {} from {} length={}", roomId, session.getId(), message.getPayloadLength());
+
+        // 🚩 新增拦截逻辑：解析 JSON 并判断是否为代码保存请求
+        try {
+            com.fasterxml.jackson.databind.JsonNode jsonNode = objectMapper.readTree(payload);
+            if (jsonNode.has("type") && "CODE_SAVE".equals(jsonNode.get("type").asText())) {
+                String code = jsonNode.has("code") ? jsonNode.get("code").asText() : "";
+
+                // 丢给单线程池去异步保存，防止阻塞 WebSocket 主线程
+                getExecutorForRoom(roomId).execute(() -> {
+                    try {
+                        cacheService.saveLatestCode(roomId, code);
+                        log.info("💾 Saved latest code for room {}", roomId);
+                    } catch (Exception ex) {
+                        log.error("Failed to save latest code for room {}", roomId, ex);
+                    }
+                });
+
+                return; // 🛑 拦截成功，直接返回，不再执行后续的广播逻辑
+            }
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            // 如果解析 JSON 报错，说明这是一条普通文本消息，忽略异常，继续往下走
+        }
+
+        // --- 以下是原有的广播逻辑 ---
         List<WebSocketSession> list = roomSessions.getOrDefault(roomId, List.of());
         // broadcast asynchronously so that one slow client doesn't block others
         for (WebSocketSession s : list) {
@@ -88,7 +114,7 @@ public class CollaborationWebSocketHandler extends TextWebSocketHandler {
             }
         }
         // cache message for replay
-        cacheService.saveMessage(roomId, message.getPayload());
+        cacheService.saveMessage(roomId, payload);
     }
 
     @Override
@@ -119,7 +145,7 @@ public class CollaborationWebSocketHandler extends TextWebSocketHandler {
         return roomExecutors.getOrDefault((Object) roomId, messageExecutor);
     }
 
-    private void notifyUserServicesOnRoomClose(String roomId) {
+    private void notifyUserServicesOnRoomClose(String roomId) throws JsonProcessingException {
         SessionData sessionData = cacheService.getSessionData(roomId);
         if (sessionData == null) {
             log.warn("No session data found for room {}", roomId);

@@ -1,5 +1,6 @@
 package collaborationservice.demo.controller;
 
+import collaborationservice.demo.entity.SessionData;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import collaborationservice.demo.service.MessageCacheService;
  * session id that both users will use when they open the websocket
  * collaboration page.
  */
+
 @RestController
 @RequestMapping("/collab")
 public class RoomController {
@@ -34,7 +36,7 @@ public class RoomController {
             // disconnect.  Here we simply store the websocket URL but the matching
             // service could send any metadata it needs.
             cacheService.cacheRoomInfo(request);
-            cacheService.cacheSessionUsers(request.getSessionId(), request.getUserA(), request.getUserB(), request.getQuestionId());
+            cacheService.cacheSessionUsers(request.getSessionId(), new SessionData( request.getUserA(), request.getUserB(), request.getQuestionId()));
 
             MatchResponse resp = new MatchResponse(request.getSessionId());
             return ResponseEntity.ok(resp);

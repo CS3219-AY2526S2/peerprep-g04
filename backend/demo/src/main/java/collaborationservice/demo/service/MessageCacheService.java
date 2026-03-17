@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import collaborationservice.demo.entity.SessionData;
@@ -125,7 +127,7 @@ public class MessageCacheService {
     public void cacheUserStatus(String sessionId, String user, String status) {
         String key = keyForUserStatus(sessionId, user);
         redis.opsForValue().set(key, status);
-        redis.expire(key, Duration.ofMillis(roomTtlMillis));
+        //redis.expire(key, Duration.ofMillis(roomTtlMillis));
     }
 
     /**
@@ -142,23 +144,34 @@ public class MessageCacheService {
         return "sessionusers:" + sessionId;
     }
 
-    public void cacheSessionUsers(String sessionId, String userA, String userB, String questionId) {
+    public void cacheSessionUsers(String sessionId, SessionData sessionData) throws JsonProcessingException {
         String key = keyForSessionUsers(sessionId);
-        redis.opsForHash().put(key, "userA", userA);
-        redis.opsForHash().put(key, "userB", userB);
-        redis.opsForHash().put(key, "questionId", questionId);
-        redis.expire(key, Duration.ofMillis(roomTtlMillis));
+        String json = mapper.writeValueAsString(sessionData);
+        redis.opsForValue().set(key, json);
+        //redis.expire(key, Duration.ofMillis(roomTtlMillis));
     }
 
-    public SessionData getSessionData(String sessionId) {
+    public SessionData getSessionData(String sessionId) throws JsonProcessingException {
         String key = keyForSessionUsers(sessionId);
-        String userA = (String) redis.opsForHash().get(key, "userA");
-        String userB = (String) redis.opsForHash().get(key, "userB");
-        String questionId = (String) redis.opsForHash().get(key, "questionId");
-        if (userA == null || userB == null || questionId == null) {
+
+        String json = redis.opsForValue().get(key);
+        if (json == null) {
             return null;
         }
-        return new SessionData(userA, userB, questionId);
+
+        return mapper.readValue(json, SessionData.class);
+    }
+
+    public void saveLatestCode(String roomId, String code) {
+        String redisKey = "session_code:" + roomId;
+
+        try {
+            redis.opsForValue().set(redisKey, code);
+
+            // stringRedisTemplate.expire(redisKey, 24, java.util.concurrent.TimeUnit.HOURS);
+
+        } catch (Exception e) {
+        }
     }
 
 }
