@@ -1,5 +1,6 @@
 package collaborationservice.demo.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -119,7 +120,7 @@ public class CollaborationWebSocketHandler extends TextWebSocketHandler {
         return roomExecutors.getOrDefault((Object) roomId, messageExecutor);
     }
 
-    private void notifyUserServicesOnRoomClose(String roomId) {
+    private void notifyUserServicesOnRoomClose(String roomId) throws JsonProcessingException {
         SessionData sessionData = cacheService.getSessionData(roomId);
         if (sessionData == null) {
             log.warn("No session data found for room {}", roomId);

@@ -142,23 +142,22 @@ public class MessageCacheService {
         return "sessionusers:" + sessionId;
     }
 
-    public void cacheSessionUsers(String sessionId, String userA, String userB, String questionId) {
+    public void cacheSessionUsers(String sessionId, SessionData sessionData) throws JsonProcessingException {
         String key = keyForSessionUsers(sessionId);
-        redis.opsForHash().put(key, "userA", userA);
-        redis.opsForHash().put(key, "userB", userB);
-        redis.opsForHash().put(key, "questionId", questionId);
+        String json = mapper.writeValueAsString(sessionData);
+        redis.opsForValue().set(key, json);
         redis.expire(key, Duration.ofMillis(roomTtlMillis));
     }
 
-    public SessionData getSessionData(String sessionId) {
+    public SessionData getSessionData(String sessionId) throws JsonProcessingException {
         String key = keyForSessionUsers(sessionId);
-        String userA = (String) redis.opsForHash().get(key, "userA");
-        String userB = (String) redis.opsForHash().get(key, "userB");
-        String questionId = (String) redis.opsForHash().get(key, "questionId");
-        if (userA == null || userB == null || questionId == null) {
+
+        String json = redis.opsForValue().get(key);
+        if (json == null) {
             return null;
         }
-        return new SessionData(userA, userB, questionId);
+
+        return mapper.readValue(json, SessionData.class);
     }
 
 }

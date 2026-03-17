@@ -110,7 +110,7 @@ function App() {
         </div>
 
         {/* editor */}
-        <div style={{ flex: '1.5' }}>
+        <div style={{ flex: '1.5', minWidth: 0 }}>
           <Editor sessionId={sessionId} />
         </div>
       </div>
