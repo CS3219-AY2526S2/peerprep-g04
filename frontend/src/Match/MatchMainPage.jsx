@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import styles from './MatchMainPage.module.css';
 import { useState } from 'react';
 import { useMatchingService } from '../hooks/useMatchingService.jsx';
@@ -40,8 +39,40 @@ export function MatchMainPage() {
   
   return (
     <div className={styles.main}>
-      <div className={styles.header}>
-        <Button variant='outlined' onClick={onLeave}>Leave</Button>
+      <div className={styles.header} style={{
+        background: 'transparent',
+        borderBottom: 'none',
+        boxShadow: 'none',
+        backdropFilter: 'none',
+        backgroundColor: 'transparent',
+      }}>
+        <button
+          onClick={onLeave}
+          style={{
+            fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+            fontSize: '0.78rem',
+            fontWeight: 600,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: '#1d4ed8',
+            background: 'rgba(29,78,216,0.07)',
+            border: '1.5px solid rgba(29,78,216,0.22)',
+            borderRadius: '999px',
+            padding: '7px 22px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'rgba(29,78,216,0.14)';
+            e.currentTarget.style.borderColor = 'rgba(29,78,216,0.45)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'rgba(29,78,216,0.07)';
+            e.currentTarget.style.borderColor = 'rgba(29,78,216,0.22)';
+          }}
+        >
+          Leave
+        </button>
       </div>
       {!username ? <LoadingPage /> : whatPage(state)}
     </div>

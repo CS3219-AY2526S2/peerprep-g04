@@ -1,20 +1,54 @@
-import Typography from '@mui/material/Typography';
 import styles from './MatchedPage.module.css';
-import MDEditor from "@uiw/react-md-editor";
 
-// this is just a placeholder component.
 export function MatchedPage(props) {
   const { username, stateData } = props;
-  const { opponent_username, question } = stateData;
+  const { opponent_username, difficulty, topic } = stateData;
+
+  const diffColor = {
+    easy: styles.easy,
+    medium: styles.medium,
+    hard: styles.hard,
+  };
 
   return (
     <div className={styles.matchedPage}>
-      <Typography>{`${username} and ${opponent_username}`}</Typography>
-      <MDEditor
-        value={question?.title}
-        preview="preview"   // makes it view-only
-        height={400}        // optional, set height
-      />
+      <div className={styles.container}>
+
+        {/* Match found badge */}
+        <div className={styles.badge}>
+          <span className={styles.badgeDot} />
+          Match found
+        </div>
+
+        {/* VS row */}
+        <div className={styles.vsRow}>
+          <div className={styles.player}>
+            <div className={styles.avatar}>{username?.[0]?.toUpperCase()}</div>
+            <span className={styles.playerName}>{username}</span>
+          </div>
+          <span className={styles.vs}>vs</span>
+          <div className={`${styles.player} ${styles.playerRight}`}>
+            <div className={styles.avatar}>{opponent_username?.[0]?.toUpperCase()}</div>
+            <span className={styles.playerName}>{opponent_username}</span>
+          </div>
+        </div>
+
+        {/* Match info */}
+        <div className={styles.infoCard}>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>Topic</span>
+            <span className={styles.infoValue}>{topic}</span>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>Difficulty</span>
+            <span className={`${styles.diffBadge} ${diffColor[difficulty] ?? ''}`}>
+              {difficulty}
+            </span>
+          </div>
+        </div>
+
+      </div>
     </div>
-  )
+  );
 }
