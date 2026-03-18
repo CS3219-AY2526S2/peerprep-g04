@@ -8,6 +8,7 @@ function App() {
   const userService = useUserService();
   const  {
     user, 
+    accessToken,
     checkForAccessTokenAndLogin,
   } = userService;
   const navigate = useNavigate();
