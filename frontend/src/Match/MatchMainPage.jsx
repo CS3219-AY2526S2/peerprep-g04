@@ -33,7 +33,7 @@ export function MatchMainPage() {
   }
 
   async function onLeave() {
-    await leave();
+    leave();
     navigate('/signed-in');
   }
   
