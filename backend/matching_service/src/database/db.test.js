@@ -23,7 +23,7 @@ test('redis connection is working', async () => {
 });
 
 test('insert into matches', async () => {
-    await save_match(1, 2, 'array', 'easy', '100');
+    await save_match(1, 2, ['array'], ['easy'], '100');
     const res = await get_match_by_user_id(1);
     expect([1, 2]).toContain(res.user1_id);
 });
@@ -66,4 +66,16 @@ test('2 enqueue and match', async () => {
     await leave(user2.user_id);
     const state3 = await get_user_state(user2.user_id);
     expect(state3).toBeNull();
-})
+});
+
+test('add and get match', async () => {
+    const match = {
+        user1_id: 1,
+        user2_id: 2,
+        question_id: 888,
+        difficulties: ['easy', 'hard'],
+        topics: ['dp', 'array'],
+    };
+
+    const result = await save_match(match.user1_id, match.user2_id, match.topics, match.difficulties, match.question_id);
+});

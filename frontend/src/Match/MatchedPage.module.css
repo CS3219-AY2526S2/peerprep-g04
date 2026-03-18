@@ -153,6 +153,12 @@
     font-weight: 600;
     color: #1e293b;
     text-transform: capitalize;
+    border-radius: 999px;
+    padding: 4px;
+    min-width: 32px;
+    text-align: center;
+    border: 1px solid #000;
+    background-color: rgb(225, 218, 218);
   }
   
   .divider {

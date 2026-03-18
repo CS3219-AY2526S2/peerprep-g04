@@ -26,8 +26,8 @@ export function init_websocket_server(server) {
                             match_id: match.id,
                             opponent_id,
                             opponent_username: user_id_to_username.get(opponent_id),
-                            topic: match.topic,
-                            difficulty: match.difficulty,
+                            topics: match.topics,
+                            difficulties: match.difficulties,
                             question_id: match.question_id,
                         }));
                         notify_reconnect(opponent_id, msg.user_id);

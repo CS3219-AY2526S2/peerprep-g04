@@ -2,7 +2,9 @@ import styles from './MatchedPage.module.css';
 
 export function MatchedPage(props) {
   const { username, stateData } = props;
-  const { opponent_username, difficulty, topic } = stateData;
+  const { opponent_username, difficulties = [], topics = [] } = stateData;
+
+  console.log(topics, difficulties);
 
   const diffColor = {
     easy: styles.easy,
@@ -37,14 +39,20 @@ export function MatchedPage(props) {
         <div className={styles.infoCard}>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Topic</span>
-            <span className={styles.infoValue}>{topic}</span>
+            <div style={{display: 'flex', gap: '4px'}}>
+              {topics.map(topic => <span key={topic} className={styles.infoValue}>{topic}</span>)}
+            </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Difficulty</span>
-            <span className={`${styles.diffBadge} ${diffColor[difficulty] ?? ''}`}>
-              {difficulty}
-            </span>
+            <div style={{display: 'flex', gap: '4px'}}>
+              {difficulties.map(difficulty => 
+                <span className={`${styles.diffBadge} ${diffColor[difficulty] ?? ''}`}>
+                  {difficulty}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 

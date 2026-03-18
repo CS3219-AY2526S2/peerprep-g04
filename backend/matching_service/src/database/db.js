@@ -36,7 +36,7 @@ function get_intersection(arr1, arr2) {
 
 // mocked function, to integrate with question service.
 async function get_question_id(topics, difficulties) {
-    return 69;
+    return 888;
 }
 
 export async function enqueue_user(user_id, topics, difficulties) {
@@ -99,13 +99,15 @@ export async function try_match(user_id, topics, difficulties) {
             
             await redis.set(user_state_key(user_id), states.matched);
             await redis.set(user_state_key(data.user_id), states.matched);
+            
+            const question_id = await get_question_id()
 
             return {
                 matched: true,
                 opponent_id: data.user_id,
                 common_topics,
                 common_difficulties,
-                question_id: get_question_id(),
+                question_id,
             };
         }
     }
@@ -126,7 +128,7 @@ export async function leave(user_id) {
     await redis.del(userStateKey);
 }
 
-export async function save_match(user1_id, user2_id, topic, difficulty, question_id = null) {
+/*export async function save_match(user1_id, user2_id, topic, difficulty, question_id = null) {
     const result = await pool.query(
         `INSERT INTO matches (user1_id, user2_id, topic, difficulty, question_id)
          VALUES ($1, $2, $3, $4, $5) RETURNING id`,
@@ -140,5 +142,41 @@ export async function get_match_by_user_id(user_id) {
         `SELECT * FROM matches WHERE user1_id = $1 OR user2_id = $1 ORDER BY created_at DESC LIMIT 1`,
         [user_id]
     );
+    return result.rows[0];
+}*/
+
+export async function save_match(user1_id, user2_id, topics, difficulties, question_id) {
+    const res = await pool.query(
+        `INSERT INTO matches (user1_id, user2_id, question_id) VALUES ($1, $2, $3) RETURNING *`, 
+        [user1_id, user2_id, question_id]
+    );
+
+    const match_id = res.rows[0].id
+
+    await pool.query(`INSERT INTO difficulties SELECT $1, UNNEST($2::TEXT[])`, [match_id, difficulties]);
+
+    await pool.query(`INSERT INTO topics SELECT $1, UNNEST($2::TEXT[])`, [match_id, topics]);
+
+    return res.rows[0].id
+}
+
+export async function get_match_by_user_id(user_id) {
+    const result = await pool.query(
+        `
+        SELECT 
+            m.*,
+            COALESCE(array_agg(DISTINCT d.difficulty) FILTER (WHERE d.difficulty IS NOT NULL), '{}') AS difficulties,
+            COALESCE(array_agg(DISTINCT t.topic) FILTER (WHERE t.topic IS NOT NULL), '{}') AS topics
+        FROM matches m
+        LEFT JOIN difficulties d on m.id = d.match_id
+        LEFT JOIN topics t on m.id = t.match_id
+        WHERE m.user1_id = $1 OR m.user2_id = $1
+        GROUP BY m.id
+        ORDER BY m.created_at DESC
+        LIMIT 1
+
+        `
+    , [user_id]);
+
     return result.rows[0];
 }

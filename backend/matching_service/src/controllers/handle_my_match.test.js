@@ -43,8 +43,8 @@ test('returns match info after user is matched', async () => {
         .set('Authorization', `Bearer ${token1}`);
 
     expect(res.status).toBe(200);
-    expect(res.body.topic).toBe('arrays');
-    expect(res.body.difficulty).toBe('easy');
+    expect(res.body.topics).toEqual(['arrays']);
+    expect(res.body.difficulties).toEqual(['easy']);
 });
 
 test('returns 401 without token', async () => {

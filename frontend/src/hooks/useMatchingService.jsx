@@ -35,7 +35,6 @@ export function useMatchingService() {
 
     socketRef.current?.addEventListener('message', (res) => {
       const data = JSON.parse(res.data);
-      console.log(data);
 
       if (data?.type === 'timeout') {
         setState(null);
