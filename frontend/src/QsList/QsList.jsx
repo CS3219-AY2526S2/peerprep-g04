@@ -9,6 +9,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate, useOutletContext } from "react-router";
+import { useContext } from "react";
+import { UserContext } from "../hooks/useUserService";
 
 function getDifficultyColor(difficulty) {
   switch (difficulty) {
@@ -25,6 +27,7 @@ function getDifficultyColor(difficulty) {
 }
 
 function QsRow(props) {
+  const { accessToken } = useContext(UserContext);
   const { question, setReload } = props;
   const { id, title, difficulty, tags } = question;
   const navigate = useNavigate();
@@ -32,7 +35,7 @@ function QsRow(props) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   async function myDelete() {
-    await delete_question(id)
+    await delete_question(id, accessToken);
     setReload(t => !t);
   }
   return (

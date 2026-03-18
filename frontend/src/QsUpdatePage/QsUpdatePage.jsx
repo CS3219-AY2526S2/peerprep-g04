@@ -11,8 +11,11 @@ import AddIcon from '@mui/icons-material/Add';
 import MDEditor from "@uiw/react-md-editor";
 import Button from '@mui/material/Button';
 import { get_question_by_id, update_question } from '../hooks/useQuestionService';
+import { useContext } from 'react';
+import { UserContext } from '../hooks/useUserService';
 
 export function QsUpdatePage() {
+  const { accessToken } = useContext(UserContext);
   const { setReload } = useOutletContext();
   const { id } = useParams();
   const [title, setTitle] = useState('');
@@ -32,7 +35,7 @@ export function QsUpdatePage() {
   }
 
   async function myUpdate() {
-    const res = await update_question(id, { title, difficulty, tags, body });
+    const res = await update_question(id, { title, difficulty, tags, body }, accessToken);
     if (res) {
       setReload(v => !v);
       navigate('/signed-in/question-management');
