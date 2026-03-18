@@ -30,6 +30,17 @@ export async function get_all_questions_without_body() {
   }
 }
 
+// get all question tags
+export async function get_all_question_tags() {
+  try {
+    const res = await question_api.get('/get-all-tags');
+    return res.data.tags;
+  } catch (err) {
+    toast(err?.response?.data?.message ?? err.message);
+    return undefined;
+  }
+}
+
 // question_obj must have { title: string, difficulty: string, tags: string[], body: string }.
 export async function create_question(question_obj) {
   try {

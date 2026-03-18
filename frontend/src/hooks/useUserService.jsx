@@ -133,6 +133,7 @@ export function useUserService() {
 
   return {
     user, 
+    accessToken,
     loading,
     checkForAccessTokenAndLogin,
     login,
