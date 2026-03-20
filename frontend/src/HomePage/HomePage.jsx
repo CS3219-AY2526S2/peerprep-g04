@@ -64,7 +64,8 @@ export function HomePage() {
           onClose={() => setAnchorElem(null)}
         >
           <MenuItem onClick={() => navigate('account')}>Account</MenuItem>
-          {<MenuItem onClick={() => navigate('question-management')}>Question Management</MenuItem>}
+          <MenuItem onClick={() => navigate('question-management')}>Question Management</MenuItem>
+          <MenuItem onClick={() => navigate('user-management')}>User Management</MenuItem>
         </Menu>
       </div>
        <div className={styles.body}>
