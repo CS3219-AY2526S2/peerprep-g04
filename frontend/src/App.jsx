@@ -22,7 +22,7 @@ function App() {
   return (
     <UserContext value={userService}>
       <Outlet />
-      <ToastContainer autoClose={2000}/>
+      <ToastContainer autoClose={1000}/>
     </UserContext>
   )
 }

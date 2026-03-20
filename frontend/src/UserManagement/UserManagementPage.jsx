@@ -5,15 +5,22 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useContext } from 'react';
 import { UserContext } from '../hooks/useUserService';
 import { NotAllowedPage } from './NotAllowedPage';
+import { useState } from 'react';
 
 function goBack(navigate, path) {
-  navigate('/signed-in')
+  if (path.includes('edit-user')) {
+    navigate('/signed-in/user-management');
+  } else {
+    navigate('/signed-in')
+  }
+  
 }
 
 export function UserManagementPage() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const [reload, setReload] = useState(false);
   
   return (
     <div className={styles.main}>
@@ -25,7 +32,7 @@ export function UserManagementPage() {
           <Button variant='outlined' onClick={() => goBack(navigate, location.pathname)}>Back</Button>
         </div>
       </div>
-      {user?.access !== 'admin' ? <NotAllowedPage /> : <Outlet />}
+      {user?.access !== 'admin' ? <NotAllowedPage /> : <Outlet context={{ reload, setReload }}/>}
     </div>
   )
 }

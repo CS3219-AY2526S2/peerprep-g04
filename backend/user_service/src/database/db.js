@@ -43,15 +43,16 @@ export async function create_user(username, email, password_hash, access) {
     return res.rows[0];
 }
 
-export async function update_user(id, username, email, password_hash) {
+export async function update_user(id, username, email, password_hash, access) {
     const res = await pool.query(`
         UPDATE users 
         SET username = $1,
             email = $2,
-            password_hash = $3
-        WHERE id = $4
+            password_hash = $3,
+            access = $4
+        WHERE id = $5
         RETURNING *;
-    `, [username, email, password_hash, id]);
+    `, [username, email, password_hash, access, id]);
     return res.rows[0];
 }
 

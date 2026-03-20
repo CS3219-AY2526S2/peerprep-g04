@@ -34,6 +34,17 @@ export async function get_user_by_id(id, token) {
   }
 }
 
+export async function external_update_user(id, user, token) {
+  try {
+    const res = await user_api.patch(`/update-user/${id}`, user, { headers: { authorization: `Bearer ${token}` } });
+    toast('user updated successfully');
+    return true;
+  } catch (err) {
+    toast(err?.response?.message || err.message);
+    return false;
+  }
+}
+
 function getUser(resp_json) {
   return {
     user_id: resp_json.user_id,
@@ -156,6 +167,7 @@ export function useUserService() {
     user, 
     accessToken,
     loading,
+    setUser,
     checkForAccessTokenAndLogin,
     login,
     createUser,

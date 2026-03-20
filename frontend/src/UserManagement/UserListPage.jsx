@@ -7,11 +7,13 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import { useNavigate, useOutletContext } from "react-router";
 
 function UserRow(props) {
   const { user } = props;
   const { id, username, email, access } = user;
   const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <tr>
@@ -28,7 +30,9 @@ function UserRow(props) {
           open={Boolean(anchorEl)}
           onClose={ev => setAnchorEl(null)}
         >
-          <MenuItem>Edit</MenuItem>
+          <MenuItem onClick={ev => navigate(`edit-user/${id}`)}>
+            Edit
+          </MenuItem>
         </Menu>
       </td>
     </tr>
@@ -38,13 +42,13 @@ function UserRow(props) {
 export function UserListPage() {
   const { accessToken } = useContext(UserContext);
   const [users, setUsers] = useState([]);
+  const { reload } = useOutletContext();
 
   useEffect(() => {
     get_all_users(accessToken).then(users => {
-      console.log(users);
       users && setUsers(users)
     });
-  }, [accessToken]);
+  }, [accessToken, reload]);
 
   return (
     <div className={styles.main}>

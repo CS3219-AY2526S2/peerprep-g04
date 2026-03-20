@@ -15,8 +15,8 @@ export async function handle_update_user(req, res) {
     }
 
     let { username, email, password, access } = req.body;
-    if (!(username || email || password)) {
-        return res.status(400).json({ message: 'username and email and password are missing' });
+    if (!(username || email || password || access)) {
+        return res.status(400).json({ message: 'username and email and password and access are missing' });
     }
 
     let user_to_update;
@@ -49,7 +49,7 @@ export async function handle_update_user(req, res) {
             return res.status(409).json({ message: 'new email is taken'});
         }
         
-        const new_user = await update_user(user_id_to_update, username, email, password_hash);
+        const new_user = await update_user(user_id_to_update, username, email, password_hash, access);
         return res.status(200).json({
             message: 'user updated successfully',
             ...format_user(new_user)

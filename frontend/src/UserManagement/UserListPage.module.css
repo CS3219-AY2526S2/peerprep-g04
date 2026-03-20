@@ -1,9 +1,9 @@
 .main {
-    grid-template-areas: 2 / 1 / -1 / 1;
+    grid-area: 2 / 1 / -1 / 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 32px;
+    margin-top: 32px;
 }
 
 .body {
@@ -15,6 +15,7 @@
     align-items: stretch;
     padding: 16px;
     gap: 16px;
+    animation: slideUp 0.2s ease forwards;
 }
 
 .header {
@@ -29,4 +30,14 @@ table {
 th, td {
     border-bottom: 1px solid black;
     text-align: center;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(999px);
+    }
+
+    to {
+        transform: translateY(0px);
+    } 
 }

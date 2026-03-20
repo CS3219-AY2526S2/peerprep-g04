@@ -57,7 +57,7 @@ test('create and update user', async () => {
     const rows = await create_user(tom.username, tom.email, tom.password_hash, tom.access);
     expect(rows).toMatchObject(tom);
 
-    const rows2 = await update_user(rows.id, jim.username, jim.email, jim.password_hash);
+    const rows2 = await update_user(rows.id, jim.username, jim.email, jim.password_hash, jim.access);
     expect(rows2).toMatchObject(jim);
 });
 

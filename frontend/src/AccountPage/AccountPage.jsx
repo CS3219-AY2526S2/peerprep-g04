@@ -15,7 +15,6 @@ export function AccountPage() {
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
 
   function getSubmitFunc(type) {
     return async (ev) => {
