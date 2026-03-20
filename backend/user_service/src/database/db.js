@@ -31,6 +31,11 @@ export async function get_user_by_username_or_email(username, email) {
     return res.rows;
 }
 
+export async function get_all_users() {
+    const res = await pool.query(`SELECT * FROM users`);
+    return res.rows;
+}
+
 export async function create_user(username, email, password_hash, access) {
     const res = await pool.query(
         'INSERT INTO USERS (username, email, password_hash, access) VALUES ($1, $2, $3, $4) RETURNING *',
