@@ -7,7 +7,7 @@ import { verify_token } from "./controllers/verify_token.js";
 import { handle_delete_user } from "./controllers/handle_delete_user.js";
 import cors from 'cors';
 import { handle_forget_password } from "./controllers/handle_forget_password.js";
-import { handle_get_all_users } from "./controllers/handle_get_all_users.js";
+import { handle_get_all_users, handle_get_user_by_id } from "./controllers/handle_get_all_users.js";
 
 export const app = express()
 
@@ -21,6 +21,7 @@ app.patch('/update-user/:userId', verify_token_middleware, handle_update_user);
 app.delete('/delete-user/:userId', verify_token_middleware, handle_delete_user);
 app.post('/forget-password/:email', handle_forget_password);
 app.get('/get-all-users', verify_token_middleware, handle_get_all_users);
+app.get('/get-user-by-id/:id', verify_token_middleware, handle_get_user_by_id);
 
 app.use((err, req, res, next) => {
     const status = err.status || err.statusCode || 500;

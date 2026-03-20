@@ -110,6 +110,19 @@ test('get all users', async () => {
     const res = await get_all_users();
     expect(res.some(user => user.username === tom.username)).toBe(true);
     expect(res.some(user => user.username === jim.username)).toBe(true);
+});
+
+test('get user by id', async () => {
+    const tom = {
+        username: 'tom',
+        email: 'tom@gmail.com',
+        password_hash: 'abc',
+        access: ACCESS.user,
+    };
+
+    const res = await create_user(...Object.values(tom));
+    const res2 = await get_user_by_id(res.id);
+    expect(res2).toMatchObject(tom);
 })
 
 

@@ -60,3 +60,48 @@ test('non admin user should not be able to access users info', async () => {
     expect(res.status).toBe(403);
 });
 
+test('get user by id', async () => {
+    const tom = {
+        username: 'tom',
+        email: 'tom@gmail.com',
+        password_hash: 'abc',
+        access: ACCESS.admin,
+    };
+
+    const jim = {
+        username: 'jim',
+        email: 'jim@gmail.com',
+        password_hash: '123',
+        access: ACCESS.user,
+    }
+
+    const arr = await Promise.all([create_user(...Object.values(tom)), create_user(...Object.values(jim))]);
+    const valid_token = jwt.sign({ user_id: arr[0].id, access: 'admin' }, process.env.JWT_SECRET_KEY);
+
+    const res = await request(app).get(`/get-user-by-id/${arr[1].id}`).set('authorization', `Bearer ${valid_token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.user).toMatchObject(jim);
+});
+
+test('non admin cannot get user by id', async () => {
+    const tom = {
+        username: 'tom',
+        email: 'tom@gmail.com',
+        password_hash: 'abc',
+        access: ACCESS.admin,
+    };
+
+    const jim = {
+        username: 'jim',
+        email: 'jim@gmail.com',
+        password_hash: '123',
+        access: ACCESS.user,
+    }
+
+    const arr = await Promise.all([create_user(...Object.values(tom)), create_user(...Object.values(jim))]);
+    const invalid_token = jwt.sign({ user_id: arr[1].id, access: 'user' }, process.env.JWT_SECRET_KEY);
+
+     const res = await request(app).get(`/get-user-by-id/${arr[1].id}`).set('authorization', `Bearer ${invalid_token}`);
+    expect(res.status).toBe(403);
+})
+
