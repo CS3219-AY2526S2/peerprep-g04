@@ -2,16 +2,37 @@ import { useState } from "react";
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { createContext } from "react";
-import { useNavigate } from "react-router";
 
 // Note: no url navigation in state hooks, only react components handle navigation.
 
-const api = axios.create({
+const user_api = axios.create({
   baseURL: `http://${import.meta.env.VITE_USER_SERVICE_API}`, 
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+export async function get_all_users(token) {
+  if (!token) return;
+  try {
+    const res = await user_api.get('/get-all-users', { headers: { authorization: `Bearer ${token}` } });
+    return res.data.users;
+  } catch (err) {
+    toast(err?.response?.message || err.message);
+    return undefined;
+  }
+}
+
+export async function get_user_by_id(id, token) {
+  if (!token) return;
+  try {
+    const res = await user_api.get(`/get-user-by-id/${id}`, { headers: { authorization: `Bearer ${token}` } });
+    return res.data.user;
+  } catch (err) {
+    toast(err?.response?.message || err.message);
+    return undefined;
+  }
+}
 
 function getUser(resp_json) {
   return {
@@ -32,7 +53,7 @@ export function useUserService() {
     if (!accessToken) return;
     
     try {
-      const res = await api.get('/verify-token', {
+      const res = await user_api.get('/verify-token', {
         headers: {authorization: `Bearer ${accessToken}`},
       });
       setAccessToken(accessToken);
@@ -48,7 +69,7 @@ export function useUserService() {
     let out = false;
     setLoading(true);
     try {
-      const res = await api.post('/login', {email, password});
+      const res = await user_api.post('/login', {email, password});
       localStorage.setItem('accessToken', res.data.access_token);
       setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
@@ -64,7 +85,7 @@ export function useUserService() {
     let out = false;
     setLoading(true);
     try {
-      const res = await api.post('/create-user', { username, email, password });
+      const res = await user_api.post('/create-user', { username, email, password });
       localStorage.setItem('accessToken', res.data.access_token);
       setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
@@ -79,7 +100,7 @@ export function useUserService() {
   async function forgetPassword(email) {
     setLoading(true);
     try {
-      const res = await api.post(`forget-password/${email}`);
+      const res = await user_api.post(`forget-password/${email}`);
       toast(res.data.message);
     } catch (err) {
       toast(err?.response?.data?.message ?? err.message);
@@ -91,7 +112,7 @@ export function useUserService() {
     let out = false;
     setLoading(true);
     try {
-      const res = await api.patch(`/update-user/${userId}`,{ password },
+      const res = await user_api.patch(`/update-user/${userId}`,{ password },
         {
           headers: {authorization: `Bearer ${token}`}
         }
@@ -109,7 +130,7 @@ export function useUserService() {
   async function updateUser(obj) {
     setLoading(true);
     try {
-      const res = await api.patch(
+      const res = await user_api.patch(
         `/update-user/${user.user_id}`, 
         obj,
         {

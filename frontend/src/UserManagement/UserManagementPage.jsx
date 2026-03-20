@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import styles from './UserManagementPage.module.css';
 import Typography from '@mui/material/Typography';
-import { useLocation, useNavigate } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useContext } from 'react';
 import { UserContext } from '../hooks/useUserService';
 import { NotAllowedPage } from './NotAllowedPage';
@@ -25,7 +25,7 @@ export function UserManagementPage() {
           <Button variant='outlined' onClick={() => goBack(navigate, location.pathname)}>Back</Button>
         </div>
       </div>
-      <NotAllowedPage />
+      {user?.access !== 'admin' ? <NotAllowedPage /> : <Outlet />}
     </div>
   )
 }

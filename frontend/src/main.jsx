@@ -15,6 +15,7 @@ import { QsCreatePage } from './QsCreatePage/QsCreatePage.jsx'
 import { QsUpdatePage } from './QsUpdatePage/QsUpdatePage.jsx';
 import { MatchMainPage } from './Match/MatchMainPage.jsx';
 import { UserManagementPage } from './UserManagement/UserManagementPage.jsx';
+import { UserListPage } from './UserManagement/UserListPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -72,7 +73,7 @@ const router = createBrowserRouter([
             element: <UserManagementPage />,
             children: [
               {
-                element: <div>User list</div>,
+                element: <UserListPage />,
                 index: true,
               },
               {

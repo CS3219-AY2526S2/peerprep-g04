@@ -1,5 +1,5 @@
-import { ACCESS } from "../access";
-import { get_all_users, get_user_by_id } from "../database/db";
+import { ACCESS } from "../access.js";
+import { get_all_users, get_user_by_id } from "../database/db.js";
 
 export async function handle_get_all_users(req, res) {
     if (!req.access || req.access !== ACCESS.admin) {
