@@ -2,6 +2,7 @@ import { afterAll, beforeEach, test, expect } from "vitest";
 import { create_question, create_question_from_obj, get_question_by_id, pool } from "../database/db.js";
 import request from 'supertest';
 import { app } from "../app.js";
+import { valid_token } from "./handle_create_question.test.js";
 
 beforeEach(async () => {
     await pool.query(`DELETE FROM questions`);
@@ -27,6 +28,7 @@ test('update question successful', async () => {
     const id = await create_question_from_obj(q1);
     const res = await request(app)
         .patch(`/update-question/${id}`)
+        .set('Authorization', `Bearer ${valid_token}`)
         .send(q2);
     expect(res.status).toBe(200);
     const question = await get_question_by_id(id);

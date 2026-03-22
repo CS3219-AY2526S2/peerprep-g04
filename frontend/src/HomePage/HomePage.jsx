@@ -9,6 +9,8 @@ import { AccountPage } from "../AccountPage/AccountPage";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Button from "@mui/material/Button";
+import { AiChatPage } from "../AiChat/AiChatPage";
 
 const states = Object.freeze({
   home: 0,
@@ -63,10 +65,13 @@ export function HomePage() {
           onClose={() => setAnchorElem(null)}
         >
           <MenuItem onClick={() => navigate('account')}>Account</MenuItem>
-          {user?.access === 'admin' && <MenuItem onClick={() => navigate('question-management')}>Question Management</MenuItem>}
+          <MenuItem onClick={() => navigate('question-management')}>Question Management</MenuItem>
+          <MenuItem onClick={() => navigate('user-management')}>User Management</MenuItem>
         </Menu>
       </div>
-      {getPage(idx)}
+       <div className={styles.body}>
+        <Button variant='outlined' onClick={() => navigate('/signed-in/match')}>Start</Button>
+      </div>
     </div>
   )
 }

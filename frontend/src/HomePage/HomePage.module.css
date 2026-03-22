@@ -13,3 +13,10 @@
     align-items: center;
     padding: 12px;
 }
+
+.body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 16px;
+}

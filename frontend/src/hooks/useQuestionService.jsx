@@ -30,10 +30,23 @@ export async function get_all_questions_without_body() {
   }
 }
 
-// question_obj must have { title: string, difficulty: string, tags: string[], body: string }.
-export async function create_question(question_obj) {
+// get all question tags
+export async function get_all_question_tags() {
   try {
-    const res = await question_api.post('/create-question' , question_obj);
+    const res = await question_api.get('/get-all-tags');
+    return res.data.tags;
+  } catch (err) {
+    toast(err?.response?.data?.message ?? err.message);
+    return undefined;
+  }
+}
+
+// question_obj must have { title: string, difficulty: string, tags: string[], body: string }.
+export async function create_question(question_obj, token) {
+  try {
+    const res = await question_api.post('/create-question' , question_obj, 
+      { headers: {Authorization: `Bearer ${token}`}}
+    );
     toast('question successfully created');
     return res.data.id;
   } catch (err) {
@@ -43,9 +56,11 @@ export async function create_question(question_obj) {
 }
 
 // question obj must have at least 1 field in { title: string, difficulty: string, tags: string[], body: string}
-export async function update_question(id, question_obj) {
+export async function update_question(id, question_obj, token) {
   try {
-    const res = await question_api.patch(`/update-question/${id}`, question_obj);
+    const res = await question_api.patch(`/update-question/${id}`, question_obj,
+      { headers: {Authorization: `Bearer ${token}`}}
+    );
     toast('question successfull updated');
     return true;
   } catch (err) {
@@ -54,9 +69,11 @@ export async function update_question(id, question_obj) {
   }
 }
 
-export async function delete_question(id) {
+export async function delete_question(id, token) {
   try {
-    const res = await question_api.delete(`/delete-question/${id}`);
+    const res = await question_api.delete(`/delete-question/${id}`, 
+      { headers: {Authorization: `Bearer ${token}`}}
+    );
     toast('question successfully deleted');
     return true;
   } catch (err) {

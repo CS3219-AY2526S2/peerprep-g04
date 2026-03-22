@@ -5,9 +5,10 @@
     grid-template-rows: 64px 1fr;
 }
 
+
 .header {
     grid-area: 1 / 1 / 2 / -1;
-    background-color: lightblue;
+    background-color: rgb(209, 200, 200);
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
@@ -42,15 +43,28 @@
     justify-content: center;
     border: 1px solid black;
     border-radius: 12px;
-    width: 400px;
+    width: 480px;
+    animation: slideUp 0.2s ease forwards;
 }
 
 .body > form > * {
-    width: 92%;
+    width: 96%;
 }
 
 .body > form > div {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(2000px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0px);
+        opacity: 1;
+    }
 }

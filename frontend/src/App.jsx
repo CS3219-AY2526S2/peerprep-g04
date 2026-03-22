@@ -8,6 +8,7 @@ function App() {
   const userService = useUserService();
   const  {
     user, 
+    accessToken,
     checkForAccessTokenAndLogin,
   } = userService;
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function App() {
   return (
     <UserContext value={userService}>
       <Outlet />
-      <ToastContainer autoClose={2000}/>
+      <ToastContainer autoClose={1000}/>
     </UserContext>
   )
 }

@@ -1,0 +1,22 @@
+.loadingPage {
+    grid-area: 2 / 1 / -1 / -1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loadingSpinner {
+    height: 64px;
+    width: 64px;
+    animation: spinning 1s linear infinite;
+}
+
+@keyframes spinning {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

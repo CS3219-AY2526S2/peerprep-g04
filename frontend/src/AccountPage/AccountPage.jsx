@@ -15,7 +15,6 @@ export function AccountPage() {
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
 
   function getSubmitFunc(type) {
     return async (ev) => {
@@ -60,7 +59,7 @@ export function AccountPage() {
         <form onSubmit={getSubmitFunc('username')}>
           <div>
             <Typography>Change username</Typography>
-            <Button type='submit' loading={loading}>Send</Button>
+            <Button variant='outlined' type='submit' loading={loading}>Send</Button>
           </div>
           <TextField
             style={{paddingBottom: '4px'}}
@@ -73,7 +72,7 @@ export function AccountPage() {
         <form onSubmit={getSubmitFunc('email')}>
           <div>
             <Typography>Change email</Typography>
-            <Button type='submit' loading={loading}>Send</Button>
+            <Button variant='outlined' type='submit' loading={loading}>Send</Button>
           </div>
           <TextField
             style={{paddingBottom: '4px'}}
@@ -87,7 +86,7 @@ export function AccountPage() {
         <form onSubmit={getSubmitFunc('password')}>
           <div>
             <Typography>Change password</Typography>
-            <Button type='submit' loading={loading}>Send</Button>
+            <Button variant='outlined' type='submit' loading={loading}>Send</Button>
           </div>
           <ToggleableTextField
             style={{paddingBottom: '4px'}}

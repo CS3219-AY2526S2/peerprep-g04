@@ -16,7 +16,7 @@ export async function verify_token_middleware(req, res, next) {
         return res.status(401).json({ message: 'invalid token'});
     }
 
-    const { user_id } = payload;
+    const { user_id, access } = payload;
     if (!user_id) {
         return res.status(400).json({ message: 'user id is missing' });
     }
@@ -27,6 +27,7 @@ export async function verify_token_middleware(req, res, next) {
             return res.status(404).json({ message: 'user in access token not found' });
         } else {
             req.user = user;
+            req.access = access;
             next();
         }
     } catch (err) {

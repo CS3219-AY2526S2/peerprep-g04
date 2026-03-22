@@ -12,8 +12,11 @@ import MDEditor from "@uiw/react-md-editor";
 import Button from '@mui/material/Button';
 import { create_question } from '../hooks/useQuestionService';
 import { toast } from 'react-toastify';
+import { useContext } from 'react';
+import { UserContext } from '../hooks/useUserService';
 
 export function QsCreatePage() {
+  const { accessToken } = useContext(UserContext); 
   const { setReload } = useOutletContext();
   const [title, setTitle] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
@@ -37,7 +40,7 @@ export function QsCreatePage() {
       return;
     }
 
-    const res = await create_question({ title, difficulty, tags, body});
+    const res = await create_question({ title, difficulty, tags, body}, accessToken);
     if (res) {
       setReload(v => !v);
       navigate('..');
