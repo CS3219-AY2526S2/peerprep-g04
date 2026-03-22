@@ -23,7 +23,7 @@ export async function handle_create_user(req, res) {
 
         const new_user = await create_user(username, email, hash_password(password), ACCESS.user);
         const access_token = jwt.sign(
-            { user_id: new_user.id }, 
+            { user_id: new_user.id, access: new_user.access }, 
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1d'}
         );

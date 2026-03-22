@@ -14,9 +14,9 @@ export async function handle_update_user(req, res) {
         return res.status(400).json({ message: 'user id is not a number'});
     }
 
-    let { username, email, password } = req.body;
-    if (!(username || email || password)) {
-        return res.status(400).json({ message: 'username and email and password are missing' });
+    let { username, email, password, access } = req.body;
+    if (!(username || email || password || access)) {
+        return res.status(400).json({ message: 'username and email and password and access are missing' });
     }
 
     let user_to_update;
@@ -32,6 +32,7 @@ export async function handle_update_user(req, res) {
     username = username || user_to_update.username;
     email = email || user_to_update.email;
     let password_hash = (password && hash_password(password)) || user_to_update.password_hash;
+    access = access || user_to_update.access;
 
     if (req.user.access !== ACCESS.admin && req.user.id !== user_id_to_update) {
         return res.status(403).json({ message: 'user is not admin, cannot update other users'});
@@ -48,7 +49,7 @@ export async function handle_update_user(req, res) {
             return res.status(409).json({ message: 'new email is taken'});
         }
         
-        const new_user = await update_user(user_id_to_update, username, email, password_hash);
+        const new_user = await update_user(user_id_to_update, username, email, password_hash, access);
         return res.status(200).json({
             message: 'user updated successfully',
             ...format_user(new_user)

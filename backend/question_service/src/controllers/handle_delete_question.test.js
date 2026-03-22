@@ -2,6 +2,7 @@ import { afterAll, beforeEach, test, expect } from "vitest";
 import { create_question, create_question_from_obj, get_question_by_id, pool } from "../database/db.js";
 import request from 'supertest';
 import { app } from "../app";
+import { valid_token } from "./handle_create_question.test.js";
 
 beforeEach(async () => {
     await pool.query(`DELETE FROM questions`);
@@ -21,7 +22,7 @@ test('delete question successful', async () => {
 
     const id = await create_question_from_obj(q1);
 
-    const res = await request(app).delete(`/delete-question/${id}`);
+    const res = await request(app).delete(`/delete-question/${id}`).set('Authorization', `Bearer ${valid_token}`);
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('message');
     const q = await get_question_by_id(id);

@@ -20,7 +20,7 @@ export async function handle_login(req, res) {
         }
 
         const access_token = jwt.sign(
-            { user_id: user.id }, 
+            { user_id: user.id, access: user.access }, 
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1d'},
         );
