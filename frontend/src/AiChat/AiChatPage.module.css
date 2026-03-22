@@ -12,9 +12,9 @@
 }
 
 .chatDisplay {
-    width: 320px;
-    height: 480px;
-    padding: 6px;
+    width: 400px;
+    height: 560px;
+    padding: 8px;
     border: 1px solid black;
     border-radius: 16px;
     position: absolute;
@@ -31,6 +31,27 @@
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.messageCtn {
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ai {
+    padding: 4px;
+    align-self: start;
+    border: 1px solid blue;
+    border-radius: 8px;
+}
+
+.user {
+    padding: 4px;
+    align-self: end;
+    border: 1px solid green;
+    border-radius: 8px;
 }
 
 .chatDisplay > div:last-child {

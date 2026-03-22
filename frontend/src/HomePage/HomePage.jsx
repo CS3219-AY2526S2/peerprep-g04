@@ -72,7 +72,6 @@ export function HomePage() {
        <div className={styles.body}>
         <Button variant='outlined' onClick={() => navigate('/signed-in/match')}>Start</Button>
       </div>
-      <AiChatPage />
     </div>
   )
 }
