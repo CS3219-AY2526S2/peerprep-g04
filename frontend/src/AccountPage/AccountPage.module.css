@@ -5,6 +5,7 @@
     grid-template-rows: 64px 1fr;
 }
 
+
 .header {
     grid-area: 1 / 1 / 2 / -1;
     background-color: rgb(209, 200, 200);
@@ -43,6 +44,7 @@
     border: 1px solid black;
     border-radius: 12px;
     width: 480px;
+    animation: slideUp 0.2s ease forwards;
 }
 
 .body > form > * {
@@ -53,4 +55,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(2000px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0px);
+        opacity: 1;
+    }
 }
