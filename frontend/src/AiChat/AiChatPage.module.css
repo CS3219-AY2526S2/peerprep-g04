@@ -1,0 +1,41 @@
+.chatBtn {
+    padding: 6px;
+    border-radius: 16px;
+    background-color: rgb(206, 203, 203);
+    position: absolute;
+    bottom: 64px;
+    right: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.chatDisplay {
+    width: 320px;
+    height: 480px;
+    padding: 6px;
+    border: 1px solid black;
+    border-radius: 16px;
+    position: absolute;
+    bottom: 64px;
+    right: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    background-color: ivory;
+}
+
+.chatDisplay > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chatDisplay > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+}

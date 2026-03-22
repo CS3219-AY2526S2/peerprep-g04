@@ -10,6 +10,7 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
+import { AiChatPage } from "../AiChat/AiChatPage";
 
 const states = Object.freeze({
   home: 0,
@@ -71,6 +72,7 @@ export function HomePage() {
        <div className={styles.body}>
         <Button variant='outlined' onClick={() => navigate('/signed-in/match')}>Start</Button>
       </div>
+      <AiChatPage />
     </div>
   )
 }

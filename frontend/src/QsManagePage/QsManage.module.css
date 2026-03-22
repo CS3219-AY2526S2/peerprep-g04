@@ -7,7 +7,7 @@
 
 .header {
     grid-area: 1 / 1 / 2 / -1;
-    background-color: lightblue;
+    background-color: lightcoral;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
