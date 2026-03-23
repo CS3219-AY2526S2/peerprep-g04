@@ -3,9 +3,7 @@ import styles from './MatchedPage.module.css';
 export function MatchedPage(props) {
   const { username, stateData } = props;
   const { opponent_username, difficulties = [], topics = [] } = stateData;
-
-  console.log(topics, difficulties);
-
+  
   const diffColor = {
     easy: styles.easy,
     medium: styles.medium,
