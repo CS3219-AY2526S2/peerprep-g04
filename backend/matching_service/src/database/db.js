@@ -43,15 +43,14 @@ function get_intersection(arr1, arr2) {
     return arr2.filter(x => set1.has(x));
 }
 
-// mocked function, to integrate with question service.
 async function get_question_id(topics, difficulties) {
     try {
         const res = await question_api.post('/get-question-for-match', { difficulties, tags: topics });
         const question = res.data;
         return question.id;
     } catch (err) {
-        console.log('get question from question service failed');
-        return -1;
+        //console.log('get question from question service failed');
+        return -1; // don't know what to return
     }
 }
 
