@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { Pool } from "pg";
+import axios from 'axios';
 
 export const pool = new Pool({
     user: process.env.DB_USER,
@@ -21,6 +22,14 @@ const QUEUE_KEY = "matching_queue";
 
 export const states = Object.freeze({matching: 'matching', matched:  'matched'});
 
+const question_api = axios.create({
+  baseURL: process.env.QUESTION_SERVICE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+
 function user_queue_key(user_id) {
     return `user_queue:${user_id}`;
 }
@@ -36,7 +45,14 @@ function get_intersection(arr1, arr2) {
 
 // mocked function, to integrate with question service.
 async function get_question_id(topics, difficulties) {
-    return 888;
+    try {
+        const res = await question_api.post('/get-question-for-match', { difficulties, tags: topics });
+        const question = res.data;
+        return question.id;
+    } catch (err) {
+        console.log('get question from question service failed');
+        return -1;
+    }
 }
 
 export async function enqueue_user(user_id, topics, difficulties) {
@@ -100,7 +116,7 @@ export async function try_match(user_id, topics, difficulties) {
             await redis.set(user_state_key(user_id), states.matched);
             await redis.set(user_state_key(data.user_id), states.matched);
             
-            const question_id = await get_question_id()
+            const question_id = await get_question_id(common_topics, common_difficulties);
 
             return {
                 matched: true,
@@ -127,23 +143,6 @@ export async function leave(user_id) {
     await dequeue_user(user_id);
     await redis.del(userStateKey);
 }
-
-/*export async function save_match(user1_id, user2_id, topic, difficulty, question_id = null) {
-    const result = await pool.query(
-        `INSERT INTO matches (user1_id, user2_id, topic, difficulty, question_id)
-         VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [user1_id, user2_id, topic, difficulty, question_id]
-    );
-    return result.rows[0].id;
-}
-
-export async function get_match_by_user_id(user_id) {
-    const result = await pool.query(
-        `SELECT * FROM matches WHERE user1_id = $1 OR user2_id = $1 ORDER BY created_at DESC LIMIT 1`,
-        [user_id]
-    );
-    return result.rows[0];
-}*/
 
 export async function save_match(user1_id, user2_id, topics, difficulties, question_id) {
     const res = await pool.query(

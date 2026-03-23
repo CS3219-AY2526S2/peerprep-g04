@@ -1,4 +1,4 @@
-import { get_all_questions_without_body, get_question_by_id, get_question_for_match } from "../database/db.js";
+import { get_all_questions_without_body, get_any_question, get_question_by_id, get_question_for_match } from "../database/db.js";
 
 export async function handle_get_question_by_id(req, res) {
     const questionId = req.params.questionId;
@@ -34,6 +34,7 @@ export async function handle_get_all_questions_without_body(req, res) {
 
 // the request body must contain { difficulties: string[], tags: string[] }.
 // the names are important.
+// even if no matching question found, just return a question. 
 export async function handle_get_question_for_match(req, res) {
     const { difficulties, tags } = req.body;
     if (!(difficulties && tags)) {
@@ -41,9 +42,10 @@ export async function handle_get_question_for_match(req, res) {
     }
 
     try {
-        const question = await get_question_for_match(difficulties, tags);
+        let question = await get_question_for_match(difficulties, tags);
+        // if we cannot find a suitable question, we return any question.
         if (!question) {
-            return res.status(404).json({ message: 'no question that satisfy requirements found' });
+            question = get_any_question();
         }
         return res.status(200).json({
             message: 'question for match get successfully',
