@@ -4,6 +4,7 @@ import axios from 'axios';
 import { createContext } from "react";
 
 // Note: no url navigation in state hooks, only react components handle navigation.
+console.log("USER API:", import.meta.env.VITE_USER_SERVICE_API);
 
 const user_api = axios.create({
   baseURL: `http://${import.meta.env.VITE_USER_SERVICE_API}`, 

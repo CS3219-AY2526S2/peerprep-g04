@@ -1,0 +1,11 @@
+CREATE DATABASE user_db;
+
+\c user_db;
+
+CREATE TABLE users (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    access TEXT
+);

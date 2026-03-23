@@ -9,7 +9,10 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
-export const redis = createClient({ url: process.env.REDIS_URL });
+// Add host for docker to accept connections from outside
+export const redis = createClient({
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+});
 
 redis.on("error", (err) => console.error("Redis error:", err));
 
@@ -82,7 +85,8 @@ export async function is_user_in_queue(user_id) {
 // returns { matched: true, opponent_id, common_topics, common_difficulties, room_id } or { matched: false }
 export async function try_match(user_id, topics, difficulties) {
     const entries = await redis.zRange(QUEUE_KEY, 0, -1);
-
+    console.log("QUEUE:", entries);
+    
     for (const entry of entries) {
         const data = JSON.parse(entry);
         if (data.user_id === user_id) continue;
@@ -100,7 +104,7 @@ export async function try_match(user_id, topics, difficulties) {
             await redis.set(user_state_key(user_id), states.matched);
             await redis.set(user_state_key(data.user_id), states.matched);
             
-            const question_id = await get_question_id()
+            const question_id = await get_question_id(common_topics, common_difficulties);  
 
             return {
                 matched: true,

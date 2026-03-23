@@ -1,8 +1,8 @@
 import {WebSocketServer} from 'ws';
 import http from 'http';
 
-// ws uses 4444 by default
-const port = process.env.PORT || 4444;
+// ws uses 1234 by default
+const port = process.env.PORT || 1234;
 const wss = new WebSocketServer({ noServer: true });
 
 

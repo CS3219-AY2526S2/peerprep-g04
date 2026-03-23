@@ -8,6 +8,19 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
+export async function waitForDB() {
+  while (true) {
+    try {
+      await pool.query("SELECT 1");
+      console.log("Database connected");
+      break;
+    } catch (err) {
+      console.log("Waiting for database...");
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+}
+
 // returns { title, difficulty, tags, body } or undefined if no question is found
 export async function get_question_by_id(id) {
     const result = await pool.query(

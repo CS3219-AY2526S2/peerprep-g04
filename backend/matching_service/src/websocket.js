@@ -7,9 +7,11 @@ export const user_id_to_username = new Map();
 export function init_websocket_server(server) {
     const wss = new WebSocketServer({ server });
 
-    wss.on("connection", (ws) => {
+    wss.on("connection", async(ws, req) => {
         ws.on("message", async (data) => {
             try {
+                if (!data) return;
+                
                 const msg = JSON.parse(data);
                 if (msg.type === "register" && msg.user_id) {
                     clients.set(msg.user_id, ws);

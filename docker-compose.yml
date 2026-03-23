@@ -1,17 +1,67 @@
 services:
   frontend:
-    build: 
-      context: ./frontend
-      args:
-        - VITE_SIGNALING_URL=ws://localhost:4444
+    build: ./frontend
     ports:
       - "5173:5173"
-    depends_on:
-      - collaboration_service
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     environment:
-      - VITE_SIGNALING_URL=ws://localhost:4444
+      - VITE_USER_SERVICE_API=localhost:3000
+      - VITE_QUESTION_SERVICE_API=localhost:3001
+      - VITE_MATCHING_SERVICE_API=localhost:3003
+      - VITE_COLLABORATION_SERVICE_API=localhost:1234
+
       
-  collaboration_service:
+  user-service:
+    build: ./backend/user_service
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/user_db
+    depends_on:
+      - postgres
+
+  question-service:
+    build: ./backend/question_service
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/question_db
+    depends_on:
+      - postgres
+  matching-service:
+    build: ./backend/matching_service
+    ports:
+      - "3003:3003"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/match_db
+    depends_on:
+      - postgres
+  collaboration-service:
     build: ./backend/collaboration_service
     ports:
-      - "4444:4444"
+      - "1234:1234"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/collab_db
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: app-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database-init:/docker-entrypoint-initdb.d
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+volumes:
+  pgdata:

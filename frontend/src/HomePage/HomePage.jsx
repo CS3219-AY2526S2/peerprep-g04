@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
-import { AiChatPage } from "../AiChat/AiChatPage";
+//import { AiChatPage } from "../AiChat/AiChatPage";
 
 const states = Object.freeze({
   home: 0,

@@ -8,6 +8,20 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
+// Postgres image is damn slow...
+export async function waitForDB() {
+  while (true) {
+    try {
+      await pool.query("SELECT 1");
+      console.log("Database connected");
+      break;
+    } catch (err) {
+      console.log("Waiting for database...");
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+}
+
 export async function get_user_by_id(user_id) {
     const res = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
     return res.rows[0];

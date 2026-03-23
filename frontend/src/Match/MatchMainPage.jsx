@@ -7,6 +7,7 @@ import { LoadingPage } from './LoadingPage.jsx';
 import { MatchingPage } from './MatchingPage.jsx';
 import { MatchedPage } from './MatchedPage.jsx';
 import { states } from '../hooks/useMatchingService.jsx';
+import { closeMatchingSocket } from '../services/webSocketSingleton.js';
 
 export function MatchMainPage() {
   const [tags, setTags] = useState([]);
@@ -34,6 +35,7 @@ export function MatchMainPage() {
 
   async function onLeave() {
     leave();
+    closeMatchingSocket();
     navigate('/signed-in');
   }
   

@@ -2,6 +2,7 @@ import axios from "axios";
 import { UserContext } from "./useUserService";
 import { useContext, useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
+import { getMatchingServiceSocket } from "../services/webSocketSingleton";
 
 export const states = Object.freeze({
     invalid: 'invalid',
@@ -27,13 +28,11 @@ export function useMatchingService() {
   useEffect(() => {
     if (!user_id) return;
 
-    socketRef.current = new WebSocket(`ws://${import.meta.env.VITE_MATCHING_SERVICE_API}`);
+    // replacing with local ws, instead of mutable shared sockerRef so that correct socket is closed later
+    const ws = getMatchingServiceSocket(user_id, username);
+    socketRef.current = ws;
 
-    socketRef.current?.addEventListener('open', () => {
-      socketRef.current?.send(JSON.stringify({ type: 'register', user_id, username }));
-    });
-
-    socketRef.current?.addEventListener('message', (res) => {
+    ws.addEventListener('message', (res) => {
       const data = JSON.parse(res.data);
 
       if (data?.type === 'timeout') {
@@ -68,8 +67,14 @@ export function useMatchingService() {
       }
     });
 
-    
-    return () => socketRef.current?.close();
+    // effect was running multiple times, creating multiple sockets
+    // also cleanup was called on unmount, so the socket closed anyway when the effect ran again
+    // moved ws.close() to leave button
+    return () => {
+      ws.removeEventListener('message', () => {});
+
+      socketRef.current = null;
+    };
   }, [user_id]);
 
   function leave() {
@@ -88,7 +93,7 @@ export function useMatchingService() {
         setState(states.matching);
       }
     } catch (err) {
-      toast(err?.reponse?.data?.message ?? err?.message);
+      toast(err?.response?.data?.message ?? err?.message);
     } 
   }
 

@@ -1,5 +1,5 @@
 import { app } from "./src/app.js";
-import { create_question_from_obj, pool } from "./src/database/db.js";
+import { create_question_from_obj, waitForDB } from "./src/database/db.js";
 
 async function insert_dummy_questions() {
     const q1 = {
@@ -23,8 +23,14 @@ async function insert_dummy_questions() {
     
 }
 
-app.listen(process.env.PORT, (err) => {
+async function startServer() {
+  await waitForDB();
+
+  app.listen(process.env.PORT, (err) => {
     if (err) console.log(err);
     console.log(`listening on localhost:${process.env.PORT}`);
-    insert_dummy_questions()
-})
+    insert_dummy_questions();
+  });
+}
+
+startServer();
