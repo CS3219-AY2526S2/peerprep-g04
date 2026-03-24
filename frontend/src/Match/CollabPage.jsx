@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import * as Y from 'yjs';
 import { MonacoBinding } from "y-monaco"
 import { WebsocketProvider } from "y-websocket";
+import Markdown from 'react-markdown';
 
 
 const diffToColor = {
@@ -62,7 +63,8 @@ export function CollabPage(props) {
               {tags.map(tag => <Chip key={tag} size='small' label={tag} />)}
             </div>
           </div>
-          <div>{body}</div>
+          
+          <Markdown>{body}</Markdown>
         </div>
 
         <div className={styles.bodyRight}>
