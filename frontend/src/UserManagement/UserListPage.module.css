@@ -6,10 +6,20 @@
     margin-top: 32px;
 }
 
+.title {
+    text-align: center;
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 800;
+    font-style: italic;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
 .body {
     width: 1024px;
-    border: 1px solid black;
-    border-radius: 32px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -21,15 +31,6 @@
 .header {
     display: flex;
     justify-content: start;
-}
-
-table {
-    border-collapse: collapse;
-}
-
-th, td {
-    border-bottom: 1px solid black;
-    text-align: center;
 }
 
 @keyframes slideUp {

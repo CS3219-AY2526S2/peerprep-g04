@@ -1,32 +1,40 @@
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import styles from './AccountPage.module.css';
+import Avatar from "@mui/material/Avatar";
 import { useContext, useState } from 'react';
 import { UserContext } from '../hooks/useUserService';
+import { PrimaryButton } from '../components/PrimaryButton';
 import { ToggleableTextField } from '../components/ToggleableTextField';
-import { getCardHeaderUtilityClass } from '@mui/material/CardHeader';
-import { useLocation, useNavigate } from 'react-router';
-import { Navigate } from 'react-router';
+import { Card } from '../components/Card';
+import { useNavigate, Navigate } from 'react-router';
 
 export function AccountPage() {
   const { user, loading, updateUser, logout } = useContext(UserContext);
+
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
+
   const navigate = useNavigate();
 
-  function getSubmitFunc(type) {
-    return async (ev) => {
-      ev.preventDefault();
-      
-      let value;
-      if (type === 'username') value = username;
-      else if (type === 'email') value = email;
-      else if (type === 'password') value = password;
-      
-      await updateUser({ [type]: value });
-    }
+  const hasChanges =
+    username !== user?.username ||
+    email !== user?.email ||
+    password.length > 0;
+
+  async function handleUpdate(ev) {
+    ev.preventDefault();
+
+    const updates = {};
+    if (username !== user?.username) updates.username = username;
+    if (email !== user?.email) updates.email = email;
+    if (password) updates.password = password;
+
+    if (Object.keys(updates).length === 0) return;
+
+    await updateUser(updates);
+    setPassword('');
   }
 
   async function myLogout() {
@@ -34,69 +42,75 @@ export function AccountPage() {
     navigate('/');
   }
 
-  if (!user) {
-    return <Navigate to='/' />
-  }
+  if (!user) return <Navigate to="/" />;
 
   return (
     <div className={styles.main}>
       <div className={styles.header}>
-        <div className={styles.middle}>
-          <Typography>Account Management for {user?.username}</Typography>
-        </div>
         <div className={styles.end}>
-          <Button variant='outlined' onClick={() => navigate('/signed-in')}>Back</Button>
+          <Button variant="outlined" onClick={() => navigate('/signed-in')}>
+            Back
+          </Button>
         </div>
       </div>
+
       <div className={styles.body}>
-        <Button 
-          variant='outlined' 
-          color='error'
-          onClick={myLogout}
-        >
-          Logout
-        </Button>
-        <form onSubmit={getSubmitFunc('username')}>
-          <div>
-            <Typography>Change username</Typography>
-            <Button variant='outlined' type='submit' loading={loading}>Send</Button>
-          </div>
-          <TextField
-            style={{paddingBottom: '4px'}}
-            fullWidth
-            label='New username'
-            value={username}
-            onChange={ev => setUsername(ev.target.value)}
+        <div className={styles.wrapper}>
+          <h1 className={styles.title}>
+            Account Settings
+          </h1>
+
+          <Card badge={hasChanges ? 'Unsaved changes' : null}>
+            <div className={styles.avatarSection}>
+              <Avatar className={styles.avatar}>
+                {user?.username[0].toUpperCase()}
+              </Avatar>
+
+              <div className={styles.username}>
+                {user?.username}
+              </div>
+            </div>
+
+            <form onSubmit={handleUpdate} className={styles.formContainer}>
+              <div className={styles.formFields}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <TextField
+                  fullWidth
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <ToggleableTextField
+                  fullWidth
+                  label="New Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <PrimaryButton
+                  text="Update"
+                  type="submit"
+                  disabled={!hasChanges || loading}
+                />
+              </div>
+            </form>
+          </Card>
+
+          <PrimaryButton
+            text="Logout"
+            color="red"
+            onClick={myLogout}
           />
-        </form>
-        <form onSubmit={getSubmitFunc('email')}>
-          <div>
-            <Typography>Change email</Typography>
-            <Button variant='outlined' type='submit' loading={loading}>Send</Button>
-          </div>
-          <TextField
-            style={{paddingBottom: '4px'}}
-            fullWidth
-            label='New email'
-            value={email}
-            type='email'
-            onChange={ev => setEmail(ev.target.value)}
-          />
-        </form>
-        <form onSubmit={getSubmitFunc('password')}>
-          <div>
-            <Typography>Change password</Typography>
-            <Button variant='outlined' type='submit' loading={loading}>Send</Button>
-          </div>
-          <ToggleableTextField
-            style={{paddingBottom: '4px'}}
-            fullWidth
-            label='New password'
-            value={password}
-            onChange={ev => setPassword(ev.target.value)}
-          />
-        </form>
+        </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,127 +1,208 @@
-import Typography from "@mui/material/Typography";
-import { delete_question, get_all_questions_without_body } from "../hooks/useQuestionService";
-import { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import styles from './QsList.module.css';
+import { useState, useEffect, useContext } from "react";
+import {
+  delete_question,
+  get_all_questions_without_body,
+} from "../hooks/useQuestionService";
+import styles from "./QsList.module.css";
+
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import Menu from "@mui/material/Menu";
+import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { useNavigate, useOutletContext } from "react-router";
-import { useContext } from "react";
+
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import { useOutletContext } from "react-router";
 import { UserContext } from "../hooks/useUserService";
 
-function getDifficultyColor(difficulty) {
-  switch (difficulty) {
-    case 'easy':
-      return 'green';
-    
-    case 'medium':
-      return 'yellow';
+import { CreateQuestionDialog } from "./CreateQuestionDialog";
+import { UpdateQuestionDialog } from "./UpdateQuestionDialog";
 
-    case 'hard':
-      return 'red';
-  }
-  return null;
-}
+import { DeleteDialog } from "../components/DeleteDialog";
+import { PrimaryButton } from "../components/PrimaryButton";
+import { Table } from "../components/Table";
 
-function QsRow(props) {
-  const { accessToken } = useContext(UserContext);
-  const { question, setReload } = props;
-  const { id, title, difficulty, tags } = question;
-  const navigate = useNavigate();
-  
-  const [anchorEl, setAnchorEl] = useState(null);
+const getDifficultyColor = (d) => {
+  if (d === "easy") return "green";
+  if (d === "medium") return "orange";
+  if (d === "hard") return "red";
+  return undefined;
+};
 
-  async function myDelete() {
-    await delete_question(id, accessToken);
-    setReload(t => !t);
-  }
-  return (
-    <tr>
-      <td>
-        <Typography>{id}</Typography>
-      </td>
-      <td>
-        <Typography>{title}</Typography>
-      </td>
-      <td>
-        <Typography style={{color: getDifficultyColor(difficulty)}}>
-          {difficulty}
-        </Typography>
-      </td>
-      <td>
-        <div className={styles.tagList}>
-          {tags.map(tag => <Chip key={tag} label={tag} />)}
-        </div>
-      </td>
-      <td>
-        <IconButton onClick={ev => setAnchorEl(ev.currentTarget)}>
-          <MoreHorizIcon fontSize="small"/>
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
-        >
-          <MenuItem>
-            <Typography onClick={() => navigate(`edit-question/${id}`)}>Edit</Typography>
-          </MenuItem>
-          <MenuItem onClick={myDelete}>
-            <Typography>Delete</Typography>
-          </MenuItem>
-        </Menu>
-      </td>
-    </tr>
-  )
- 
-}
 export function QsList() {
   const [questions, setQuestions] = useState([]);
+  const [search, setSearch] = useState("");
+  const [difficultyFilter, setDifficultyFilter] = useState("all");
+
   const { reload, setReload } = useOutletContext();
-  const navigate = useNavigate();
+  const { accessToken } = useContext(UserContext);
+
+  const [openDelete, setOpenDelete] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   useEffect(() => {
-    const data = get_all_questions_without_body()
-      .then(data => {
-        data && setQuestions(data);
-      });
+    get_all_questions_without_body().then((data) => {
+      if (data) setQuestions(data);
+    });
   }, [reload]);
+
+  const confirmDelete = async () => {
+    if (!selectedQuestion) return;
+
+    setLoadingDelete(true);
+    await delete_question(selectedQuestion.id, accessToken);
+    setReload((r) => !r);
+    setLoadingDelete(false);
+    handleCloseDelete();
+  };
+
+  const filteredQuestions = questions.filter((q) => {
+    const s = search.toLowerCase();
+
+    const matchesSearch =
+      q.title.toLowerCase().includes(s) ||
+      (q.tags || []).some((tag) => tag.toLowerCase().includes(s));
+
+    const matchesDifficulty =
+      difficultyFilter === "all" || q.difficulty === difficultyFilter;
+
+    return matchesSearch && matchesDifficulty;
+  });
 
   return (
     <div className={styles.main}>
+      <h1 className={styles.title}>Questions</h1>
+
       <div className={styles.header}>
-        <Typography variant="h6">Questions</Typography>
-        <Button 
-          variant="outlined" 
-          onClick={() => navigate('create-question')}
-        >
-          Create
-        </Button>
+        <div className={styles.filters}>
+          <TextField
+            label="Search"
+            placeholder="Search by title or tag..."
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ minWidth: 240 }}
+          />
+
+          <TextField
+            label="Difficulty"
+            select
+            size="small"
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            sx={{ minWidth: 150 }}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="easy">Easy</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="hard">Hard</MenuItem>
+          </TextField>
+        </div>
+
+          <PrimaryButton
+            text="Create"
+            color="blue"
+            fullWidth={false}
+            onClick={() => setOpenCreate(true)}
+          />
       </div>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>
-              <Typography>id</Typography>
-            </th>
-            <th>
-              <Typography>title</Typography>
-            </th>
-            <th>
-              <Typography>difficulty</Typography>
-            </th>
-            <th>
-              <Typography>tags</Typography>
-            </th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {questions.map(q => <QsRow key={q.id} question={q} setReload={setReload} />)}
-        </tbody>
-      </table>
+
+      <Table emptyMessage="No questions found." style={{ width: "100%" }}>
+        <table>
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>title</th>
+              <th>difficulty</th>
+              <th>tags</th>
+              <th>&nbsp;</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredQuestions.map((q) => (
+              <tr key={q.id}>
+                <td>{q.id}</td>
+
+                <td>{q.title}</td>
+
+                <td style={{ color: getDifficultyColor(q.difficulty) }}>
+                  {q.difficulty}
+                </td>
+
+                <td>
+                  <div className={styles.tags}>
+                    {q.tags.map((tag) => (
+                      <Chip
+                        key={tag}
+                        label={tag}
+                        size="small"
+                        sx={{ fontFamily: "'DM Sans', sans-serif" }}
+                      />
+                    ))}
+                  </div>
+                </td>
+
+                <td>
+                  <div className={styles.actions}>
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setSelectedQuestion(q);
+                        setOpenUpdate(true);
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setSelectedQuestion(q);
+                        setOpenDelete(true);
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Table>
+
+      <CreateQuestionDialog
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+        accessToken={accessToken}
+        onSuccess={() => setReload(v => !v)}
+      />
+
+      <UpdateQuestionDialog
+        open={openUpdate && !!selectedQuestion}
+        onClose={() => {
+          setOpenUpdate(false);
+          setSelectedQuestion(null);
+        }}
+        accessToken={accessToken}
+        question={selectedQuestion}
+        onSuccess={() => setReload((v) => !v)}
+      />
+
+      <DeleteDialog
+        open={openDelete && !!selectedQuestion}
+        onClose={() => {
+          setOpenDelete(false);
+          setSelectedQuestion(null);
+        }}
+        onConfirm={confirmDelete}
+        loading={loadingDelete}
+      />
     </div>
-  )
+  );
 }

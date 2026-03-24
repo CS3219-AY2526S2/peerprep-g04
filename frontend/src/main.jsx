@@ -16,7 +16,6 @@ import { QsUpdatePage } from './QsUpdatePage/QsUpdatePage.jsx';
 import { MatchMainPage } from './Match/MatchMainPage.jsx';
 import { UserManagementPage } from './UserManagement/UserManagementPage.jsx';
 import { UserListPage } from './UserManagement/UserListPage.jsx';
-import { UserEditPage } from './UserManagement/UserEditPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -76,10 +75,6 @@ const router = createBrowserRouter([
               {
                 element: <UserListPage />,
                 index: true,
-              },
-              {
-                path: 'edit-user/:id',
-                element: <UserEditPage />,
               }
             ]
           }
