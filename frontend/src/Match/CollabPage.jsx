@@ -1,11 +1,13 @@
 import Button from '@mui/material/Button';
 import styles from './CollabPage.module.css';
-//import Markdown from 'react-markdown';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Chip from '@mui/material/Chip';
 import Editor from '@monaco-editor/react'
 import Typography from '@mui/material/Typography';
+import * as Y from 'yjs';
+import { MonacoBinding } from "y-monaco"
+import { WebsocketProvider } from "y-websocket";
 
 
 const diffToColor = {
@@ -16,21 +18,39 @@ const diffToColor = {
 
 
 export function CollabPage(props) {
-  const { stateData } = props;
+  const { stateData, onLeave } = props;
   const { question_id } = stateData;
   const [question, setQuestion] = useState({});
-  console.log(stateData);
   const { title = '', difficulty = [], tags = [], body = '' } = question;
+  const editorRef = useRef(null);
+
+  console.log(stateData);
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
   }, [question_id]);
 
+  function handleEditorDidMount(editor, monaco) {
+    editorRef.current = editor;
+    
+    // Initialize YJS
+    const doc = new Y.Doc(); // a collection of shared objects -> Text
+    
+    // Connect to peers (or start connection) with WebRTC
+    const provider = new WebsocketProvider('ws://localhost:1234', stateData.match_id.toString(), doc); // room1, room2
+    
+    const type = doc.getText("monaco"); // doc { "monaco": "what our IDE is showing" }
+    
+    // Bind YJS to Monaco 
+    const binding = new MonacoBinding(type, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness);
+               
+  }
+
   return (
     <div className={styles.main}>
       <div className={styles.header}>
         <Button variant='outlined' size='small'>Run</Button>
-        <Button variant='outlined' size='small'>Leave</Button>
+        <Button variant='outlined' size='small' onClick={ev => onLeave()}>Leave</Button>
       </div>
 
       <div className={styles.body}>
@@ -47,9 +67,13 @@ export function CollabPage(props) {
 
         <div className={styles.bodyRight}>
           <Editor
+            theme='vs-dark'
             defaultLanguage='javascript'
             defaultValue='function hello_word() {}'
-            options={{ automaticLayout: true }}
+            options={{
+              minimap: { enabled: false }
+            }}
+            onMount={handleEditorDidMount}
           />
         </div>
       </div>
