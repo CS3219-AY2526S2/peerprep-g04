@@ -41,7 +41,7 @@ export function QsList() {
   const [openDelete, setOpenDelete] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   useEffect(() => {
@@ -51,10 +51,10 @@ export function QsList() {
   }, [reload]);
 
   const confirmDelete = async () => {
-    if (!selectedQuestion) return;
+    if (!selectedQuestionId) return;
 
     setLoadingDelete(true);
-    await delete_question(selectedQuestion.id, accessToken);
+    await delete_question(selectedQuestionId, accessToken);
     setReload((r) => !r);
     setLoadingDelete(false);
     handleCloseDelete();
@@ -152,7 +152,7 @@ export function QsList() {
                     <IconButton
                       size="small"
                       onClick={() => {
-                        setSelectedQuestion(q);
+                        setSelectedQuestionId(q.id);
                         setOpenUpdate(true);
                       }}
                     >
@@ -162,7 +162,7 @@ export function QsList() {
                     <IconButton
                       size="small"
                       onClick={() => {
-                        setSelectedQuestion(q);
+                        setSelectedQuestionId(q.id);
                         setOpenDelete(true);
                       }}
                     >
@@ -184,21 +184,21 @@ export function QsList() {
       />
 
       <UpdateQuestionDialog
-        open={openUpdate && !!selectedQuestion}
+        open={openUpdate && !!selectedQuestionId}
         onClose={() => {
           setOpenUpdate(false);
-          setSelectedQuestion(null);
+          setSelectedQuestionId(null);
         }}
         accessToken={accessToken}
-        question={selectedQuestion}
+        questionId={selectedQuestionId}
         onSuccess={() => setReload((v) => !v)}
       />
 
       <DeleteDialog
-        open={openDelete && !!selectedQuestion}
+        open={openDelete && !!selectedQuestionId}
         onClose={() => {
           setOpenDelete(false);
-          setSelectedQuestion(null);
+          setSelectedQuestionId(null);
         }}
         onConfirm={confirmDelete}
         loading={loadingDelete}

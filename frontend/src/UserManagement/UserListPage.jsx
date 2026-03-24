@@ -24,13 +24,12 @@ import TextField from "@mui/material/TextField";
 import { Table } from "../components/Table";
 import { PrimaryButton } from '../components/PrimaryButton';
 
-import { useOutletContext, useNavigate } from "react-router";
+import { useOutletContext } from "react-router";
 
 export function UserListPage() {
   const { accessToken, setUser: setCurrUser, user: currUser } = useContext(UserContext);
   const [users, setUsers] = useState([]);
   const { reload, setReload } = useOutletContext();
-  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -147,7 +146,7 @@ export function UserListPage() {
         </Table>
 
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-          <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif" }}>Edit User</DialogTitle>
+          <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif" }}>Edit Userg</DialogTitle>
 
           <DialogContent>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem" }}>

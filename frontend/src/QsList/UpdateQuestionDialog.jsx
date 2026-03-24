@@ -18,14 +18,14 @@ import AddIcon from "@mui/icons-material/Add";
 import MDEditor from "@uiw/react-md-editor";
 
 import { PrimaryButton } from "../components/PrimaryButton";
-import { update_question } from "../hooks/useQuestionService";
+import { update_question, get_question_by_id } from "../hooks/useQuestionService";
 import { toast } from "react-toastify";
 
 export function UpdateQuestionDialog({
   open,
   onClose,
   accessToken,
-  question,
+  questionId,
   onSuccess,
 }) {
   const [title, setTitle] = useState("");
@@ -33,92 +33,79 @@ export function UpdateQuestionDialog({
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState("");
   const [body, setBody] = useState("");
+  const [original, setOriginal] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (question) {
-      setTitle(question.title || "");
-      setDifficulty(question.difficulty || "easy");
-      setTags(question.tags || []);
-      setBody(question.body || "");
-    }
-  }, [question]);
+    if (!open || !questionId) return;
+
+    get_question_by_id(questionId).then((data) => {
+      if (!data) return;
+
+      setOriginal(data);
+
+      setTitle(data.title || "");
+      setDifficulty(data.difficulty || "easy");
+      setTags(data.tags || []);
+      setBody(data.body || "");
+    });
+  }, [open, questionId]);
 
   function addTag(t) {
-    setTags([...tags, t]);
+    setTags((prev) => [...prev, t]);
     setTag("");
   }
 
   function deleteTag(t) {
-    return () => setTags(tags.filter((x) => x !== t));
+    return () => setTags((prev) => prev.filter((x) => x !== t));
   }
 
   function hasChanges() {
-    if (!question) return false;
+    if (!original) return false;
 
     return (
-      title !== question.title ||
-      difficulty !== question.difficulty ||
-      body !== question.body ||
-      JSON.stringify(tags) !== JSON.stringify(question.tags)
+      title !== original.title ||
+      difficulty !== original.difficulty ||
+      body !== original.body ||
+      JSON.stringify(tags) !== JSON.stringify(original.tags)
     );
   }
 
   async function handleUpdate() {
-    if (!hasChanges()) return;
+    if (!questionId || !hasChanges()) return;
 
     setLoading(true);
+
     const res = await update_question(
-      question.id,
+      questionId,
       { title, difficulty, tags, body },
       accessToken
     );
+
     setLoading(false);
 
     if (res) {
       onSuccess?.();
-      handleClose();
+      onClose();
     } else {
       toast("Update failed");
     }
   }
 
-  function handleClose() {
-    onClose();
-  }
-
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       fullWidth
       maxWidth={false}
-      PaperProps={{
-        sx: {
-          width: "90vw",
-          maxWidth: 900,
-          minWidth: 320,
-        },
-      }}
     >
-      <DialogTitle
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          textAlign: "center",
-        }}
-      >
+      <DialogTitle sx={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif" }}>
         Update Question
       </DialogTitle>
 
       <DialogContent>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-            marginTop: "0.5rem",
-          }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem", }}>
+          
           <TextField
             fullWidth
             label="Title"
@@ -140,7 +127,7 @@ export function UpdateQuestionDialog({
           </FormControl>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               {tags.map((t) => (
                 <Chip key={t} label={t} onDelete={deleteTag(t)} />
               ))}
@@ -168,25 +155,18 @@ export function UpdateQuestionDialog({
           </div>
 
           <div data-color-mode="light">
-            <MDEditor value={body} onChange={setBody} height={300} />
+            <MDEditor
+              value={body || ""}
+              onChange={(val) => setBody(val || "")}
+              height={300}
+            />
           </div>
         </div>
       </DialogContent>
 
-      <DialogActions style={{ padding: "1rem" }}>
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            gap: "0.75rem",
-          }}
-        >
-          <PrimaryButton
-            text="Cancel"
-            color="white"
-            fullWidth
-            onClick={handleClose}
-          />
+      <DialogActions sx={{ p: 2 }}>
+        <div style={{ display: "flex", width: "100%", gap: "0.75rem" }}>
+          <PrimaryButton text="Cancel" color="white" fullWidth onClick={onClose} />
 
           <PrimaryButton
             text={loading ? "Updating..." : "Update"}

@@ -11,8 +11,6 @@ import { AccountPage } from './AccountPage/AccountPage.jsx';
 import { SignedInPage } from './SignedInPage/SignedInPage.jsx';
 import { QsManagePage } from './QsManagePage/QsManagePage.jsx';
 import { QsList } from './QsList/QsList.jsx';
-import { QsCreatePage } from './QsCreatePage/QsCreatePage.jsx'
-import { QsUpdatePage } from './QsUpdatePage/QsUpdatePage.jsx';
 import { MatchMainPage } from './Match/MatchMainPage.jsx';
 import { UserManagementPage } from './UserManagement/UserManagementPage.jsx';
 import { UserListPage } from './UserManagement/UserListPage.jsx';
@@ -57,14 +55,6 @@ const router = createBrowserRouter([
               {
                 element: <QsList />,
                 index: true,
-              },
-              {
-                path: 'create-question',
-                element: <QsCreatePage />,
-              },
-              {
-                path: 'edit-question/:id',
-                element: <QsUpdatePage />,
               }
             ]
           },

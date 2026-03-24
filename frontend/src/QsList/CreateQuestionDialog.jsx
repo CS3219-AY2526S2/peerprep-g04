@@ -76,13 +76,6 @@ export function CreateQuestionDialog({
       onClose={handleClose}
       fullWidth
       maxWidth={false}
-      PaperProps={{
-        sx: {
-          width: "90vw",
-          maxWidth: 900,
-          minWidth: 320,
-        },
-      }}
     >
       <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif", textAlign: "center" }}>
         Create Question
