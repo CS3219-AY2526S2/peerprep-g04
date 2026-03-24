@@ -1,0 +1,44 @@
+.main {
+    min-height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: 48px 1fr;
+}
+
+.header {
+    background-color: lightgray;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px 4px 8px;
+}
+
+.body {
+    display: flex;
+    align-items: stretch;
+    padding: 8px;
+    gap: 4px;
+}
+
+.bodyLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    border: 1px solid grey;
+    border-radius: 8px;
+    width: 40vw;
+    padding: 4px;
+}
+
+.bodyLeftHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.bodyRight {
+    flex-grow: 1;
+    border: 1px solid grey;
+    padding: 4px;
+    border-radius: 8px;
+}

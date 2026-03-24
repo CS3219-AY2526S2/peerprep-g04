@@ -1,14 +1,23 @@
+import Button from '@mui/material/Button';
 import styles from './MatchedPage.module.css';
+import { CollabPage } from './CollabPage.jsx';
+import { useState } from 'react';
 
 export function MatchedPage(props) {
-  const { username, stateData } = props;
+  const { username, stateData, setShowHeader } = props;
   const { opponent_username, difficulties = [], topics = [] } = stateData;
+  const [ openCollab, setOpenCollab ] = useState(false);
   
   const diffColor = {
     easy: styles.easy,
     medium: styles.medium,
     hard: styles.hard,
   };
+
+  if (openCollab) {
+    setShowHeader(false);
+    return <CollabPage stateData={stateData} />
+  }
 
   return (
     <div className={styles.matchedPage}>
@@ -46,7 +55,7 @@ export function MatchedPage(props) {
             <span className={styles.infoLabel}>Difficulty</span>
             <div style={{display: 'flex', gap: '4px'}}>
               {difficulties.map(difficulty => 
-                <span className={`${styles.diffBadge} ${diffColor[difficulty] ?? ''}`}>
+                <span key={difficulty} className={`${styles.diffBadge} ${diffColor[difficulty] ?? ''}`}>
                   {difficulty}
                 </span>
               )}
@@ -54,6 +63,8 @@ export function MatchedPage(props) {
           </div>
         </div>
 
+        <Button fullWidth variant='outlined' onClick={ev => setOpenCollab(!openCollab)}>Code</Button>
+        
       </div>
     </div>
   );

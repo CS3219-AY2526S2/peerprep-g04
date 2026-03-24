@@ -26,8 +26,8 @@ export async function handle_join_queue(req, res) {
         const result = await try_match(user_id, topics, difficulties);
 
         if (result.matched) {
-            const match_id = await save_match(user_id, result.opponent_id, result.common_topics, result.common_difficulties);
-            notify_match(user_id, result.opponent_id, result.common_topics, result.common_difficulties, match_id, result.question);
+            const match_id = await save_match(user_id, result.opponent_id, result.common_topics, result.common_difficulties, result.question_id);
+            notify_match(user_id, result.opponent_id, result.common_topics, result.common_difficulties, match_id, result.question_id);
             return res.status(200).json({
                 message: 'match found',
                 match_id,

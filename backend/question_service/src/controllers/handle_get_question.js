@@ -45,7 +45,7 @@ export async function handle_get_question_for_match(req, res) {
         let question = await get_question_for_match(difficulties, tags);
         // if we cannot find a suitable question, we return any question.
         if (!question) {
-            question = get_any_question();
+            question = await get_any_question();
         }
         return res.status(200).json({
             message: 'question for match get successfully',
