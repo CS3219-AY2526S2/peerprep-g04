@@ -21,8 +21,6 @@ export async function handle_join_queue(req, res) {
     }
 
     try {
-        await enqueue_user(user_id, topics, difficulties);
-
         const result = await try_match(user_id, topics, difficulties);
 
         if (result.matched) {
@@ -38,6 +36,8 @@ export async function handle_join_queue(req, res) {
                 question_id: result.question_id,
             });
         }
+
+        await enqueue_user(user_id, topics, difficulties);
 
         setTimeout(async () => {
             const removed = await dequeue_user(user_id);
