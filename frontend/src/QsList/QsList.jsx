@@ -85,7 +85,7 @@ export function QsList() {
             size="small"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            sx={{ minWidth: 240 }}
+            sx={{ minWidth: 400, backgroundColor: "#fff", borderRadius: 1 }}
           />
 
           <TextField
@@ -94,7 +94,7 @@ export function QsList() {
             size="small"
             value={difficultyFilter}
             onChange={(e) => setDifficultyFilter(e.target.value)}
-            sx={{ minWidth: 150 }}
+            sx={{ minWidth: 150, backgroundColor: "#fff", borderRadius: 1 }}
           >
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="easy">Easy</MenuItem>

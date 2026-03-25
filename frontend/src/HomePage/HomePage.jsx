@@ -1,10 +1,8 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { Navigate, useNavigate } from "react-router";
 import styles from './HomePage.module.css';
 import { UserContext } from "../hooks/useUserService";
-import { AccountPage } from "../AccountPage/AccountPage";
 import Button from "@mui/material/Button";
-import { Header } from "../components/Header";
 
 const states = Object.freeze({
   home: 0,

@@ -8,6 +8,8 @@ import {
 import styles from './UserListPage.module.css';
 
 import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { EditUserDialog } from "./EditUserDialog";
@@ -24,10 +26,26 @@ export function UserListPage() {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+
   const [form, setForm] = useState({
     username: "",
     email: "",
     access: "",
+  });
+
+  const filteredUsers = users.filter((user) => {
+    const s = search.toLowerCase();
+  
+    const matchesSearch =
+      user.username.toLowerCase().includes(s) ||
+      user.email.toLowerCase().includes(s);
+  
+    const matchesRole =
+      roleFilter === "all" || user.access === roleFilter;
+  
+    return matchesSearch && matchesRole;
   });
 
   const [loading, setLoading] = useState(false);
@@ -105,6 +123,30 @@ export function UserListPage() {
           Manage Users
         </h1>
 
+        <div className={styles.filters}>
+          <TextField
+            label="Search"
+            placeholder="Search by username or email..."
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ minWidth: 400, backgroundColor: "#fff", borderRadius: 1 }}
+          />
+
+          <TextField
+            label="Role"
+            select
+            size="small"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            sx={{ minWidth: 150, backgroundColor: "#fff", borderRadius: 1 }}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="admin">Admin</MenuItem>
+            <MenuItem value="user">User</MenuItem>
+          </TextField>
+        </div>
+
         <Table emptyMessage="No users found." style={{ width: "100%" }}>
           <table>
             <thead>
@@ -118,7 +160,7 @@ export function UserListPage() {
             </thead>
 
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.id}</td>
                   <td>{user.username}</td>

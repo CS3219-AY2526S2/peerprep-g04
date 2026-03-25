@@ -2,7 +2,6 @@ import { SignUpForm } from "./SignUpForm";
 import styles from './SignInOrSignUp.module.css';
 import { useState } from "react";
 import { SignInForm } from "./SignInForm";
-import Typography from "@mui/material/Typography";
 
 export function SignInOrUp() {
   const [whichForm, setWhichForm] = useState(1);

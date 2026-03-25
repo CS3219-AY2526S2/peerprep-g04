@@ -31,6 +31,13 @@
     justify-content: start;
 }
 
+.filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(20px);
