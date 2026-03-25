@@ -13,7 +13,9 @@ export function SignInOrUp() {
 
   return (
     <div className={styles.main}>
-      <Typography variant="h5" color="primary">Welcome to PeerPrep</Typography>
+      <h1 className={styles.title}>
+        Welcome to PeerPrep
+      </h1>
       {whichForm ? <SignInForm toggleForm={toggleForm}/> : <SignUpForm toggleForm={toggleForm} />}
     </div>
   )

@@ -1,12 +1,12 @@
 import TextField from "@mui/material/TextField";
 import { ToggleableTextField } from "../components/ToggleableTextField";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import { useContext, useState } from "react";
 import styles from './SignInForm.module.css';
 import { UserContext } from "../hooks/useUserService";
 import { Link as RouterLink, useNavigate } from 'react-router';
+import { Card } from "../components/Card";
+import { PrimaryButton } from "../components/PrimaryButton";
 
 export function SignInForm(props) {
   const { toggleForm } = props; 
@@ -16,14 +16,6 @@ export function SignInForm(props) {
 
   const { login, loading } = useContext(UserContext);
 
-  function change_email(e) {
-    setEmail(e.target.value);
-  }
-
-  function change_password(e) {
-    setPassword(e.target.value);
-  }
-
   async function submit(e) {
     e.preventDefault();
     const res = await login(email, password);
@@ -31,42 +23,51 @@ export function SignInForm(props) {
   }
 
   return (
-    <form onSubmit={submit}>
-      <Typography>Sign In</Typography>
-      <TextField
-        className={styles.inputField}
-        label='Email'
-        value={email}
-        type='email'
-        onChange={change_email}
-      />
-      <ToggleableTextField 
-        className={styles.inputField}
-        label='Password'
-        value={password}
-        onChange={change_password}
-      />
-      <Button type='submit' loading={loading}>Login</Button>
-      <Typography variant='caption'>
-        No account?&nbsp;
+    <Card title="Sign In" style={{ maxWidth: "500px", width: "100%" }}>
+      <form onSubmit={submit} className={styles.form}>
+        <TextField
+          className={styles.inputField}
+          label="Email"
+          value={email}
+          type="email"
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+        />
+
+        <ToggleableTextField 
+          className={styles.inputField}
+          label="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          fullWidth
+        />
+
+        <PrimaryButton
+          text={loading ? "Logging in..." : "Login"}
+          type="submit"
+          disabled={loading}
+        />
+
+      <p className={styles.text}>
+        No account?{" "}
         <Link
-          className={styles.changeFormLink}
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             toggleForm();
           }}
+          className={styles.link}
         >
           Create
         </Link>
-      </Typography>
-      <Typography variant='caption'>
-        Forget password?&nbsp;
-        <RouterLink
-          to='/forget-password'
-        >
+      </p>
+
+      <p className={styles.text}>
+        Forget password?{" "}
+        <RouterLink to="/forget-password" className={styles.link}>
           Reset
         </RouterLink>
-      </Typography>
-    </form>
-  )
+      </p>
+      </form>
+    </Card>
+  );
 }
