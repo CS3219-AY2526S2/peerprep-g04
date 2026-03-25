@@ -1,9 +1,7 @@
-.main {
-    grid-area: 2 / 1 / -1 / 1;
+.main {    
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 32px;
 }
 
 .title {
@@ -35,10 +33,10 @@
 
 @keyframes slideUp {
     from {
-        transform: translateY(999px);
+        transform: translateY(20px);
     }
 
     to {
         transform: translateY(0px);
-    } 
+    }
 }

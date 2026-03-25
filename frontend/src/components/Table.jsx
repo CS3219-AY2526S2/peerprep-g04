@@ -5,7 +5,7 @@ export function Table({
   style = {},
   className = "",
   emptyMessage = "No data available",
-  minWidth = "600px",
+  minWidth = "100%",
 }) {
   const baseStyle = {
     background: "white",

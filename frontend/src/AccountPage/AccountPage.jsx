@@ -46,14 +46,6 @@ export function AccountPage() {
 
   return (
     <div className={styles.main}>
-      <div className={styles.header}>
-        <div className={styles.end}>
-          <Button variant="outlined" onClick={() => navigate('/signed-in')}>
-            Back
-          </Button>
-        </div>
-      </div>
-
       <div className={styles.body}>
         <div className={styles.wrapper}>
           <h1 className={styles.title}>

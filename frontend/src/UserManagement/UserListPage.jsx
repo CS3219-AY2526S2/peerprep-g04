@@ -10,19 +10,9 @@ import styles from './UserListPage.module.css';
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from "@mui/material/TextField";
+import { EditUserDialog } from "./EditUserDialog";
 
 import { Table } from "../components/Table";
-import { PrimaryButton } from '../components/PrimaryButton';
 
 import { useOutletContext } from "react-router";
 
@@ -145,66 +135,15 @@ export function UserListPage() {
           </table>
         </Table>
 
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-          <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif" }}>Edit Userg</DialogTitle>
-
-          <DialogContent>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem" }}>
-              
-              <TextField
-                fullWidth
-                label="Username"
-                name="username"
-                value={form.username}
-                onChange={handleChange}
-              />
-
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-              />
-
-              <FormControl fullWidth>
-                <InputLabel id="access-label">Access</InputLabel>
-                <Select
-                  labelId="access-label"
-                  name="access"
-                  value={form.access}
-                  label="Access"
-                  onChange={handleChange}
-                >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="user">User</MenuItem>
-                </Select>
-              </FormControl>
-
-            </div>
-          </DialogContent>
-
-          <DialogActions style={{ padding: "1rem" }}>
-            <div style={{ display: "flex", width: "100%", gap: "0.75rem" }}>
-              
-              <PrimaryButton
-                text="Cancel"
-                color="white"
-                fullWidth={true}
-                onClick={handleClose}
-              />
-
-              <PrimaryButton
-                text={loading ? "Updating..." : "Update"}
-                color="blue"
-                fullWidth={true}
-                onClick={handleSave}
-                disabled={loading || !hasChanges()}
-              />
-
-            </div>
-          </DialogActions>
-        </Dialog>
+        <EditUserDialog
+          open={open}
+          onClose={handleClose}
+          form={form}
+          onChange={handleChange}
+          onSave={handleSave}
+          loading={loading}
+          hasChanges={hasChanges}
+        />
 
       </div>
     </div>
