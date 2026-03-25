@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 import styles from './CollabPage.module.css';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Chip from '@mui/material/Chip';
 import Editor from '@monaco-editor/react'
@@ -9,6 +9,7 @@ import * as Y from 'yjs';
 import { MonacoBinding } from "y-monaco"
 import { WebsocketProvider } from "y-websocket";
 import Markdown from 'react-markdown';
+import { UserContext } from '../hooks/useUserService.jsx'
 
 
 const diffToColor = {
@@ -20,12 +21,11 @@ const diffToColor = {
 
 export function CollabPage(props) {
   const { stateData, onLeave } = props;
-  const { question_id } = stateData;
+  const { question_id, match_id } = stateData;
   const [question, setQuestion] = useState({});
   const { title = '', difficulty = [], tags = [], body = '' } = question;
   const editorRef = useRef(null);
-
-  console.log(stateData);
+  const { accessToken } = useContext(UserContext);
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
@@ -33,18 +33,17 @@ export function CollabPage(props) {
 
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
+    const doc = new Y.Doc();
     
-    // Initialize YJS
-    const doc = new Y.Doc(); // a collection of shared objects -> Text
+    const provider = new WebsocketProvider(
+      `ws://localhost:3003?token=${accessToken}`, stateData.match_id.toString(), doc
+    );
     
-    // Connect to peers (or start connection) with WebRTC
-    const provider = new WebsocketProvider('ws://localhost:1234', stateData.match_id.toString(), doc); // room1, room2
-    
-    const type = doc.getText("monaco"); // doc { "monaco": "what our IDE is showing" }
-    
-    // Bind YJS to Monaco 
-    const binding = new MonacoBinding(type, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness);
-               
+    const type = doc.getText("monaco");
+  
+    const binding = new MonacoBinding(
+      type, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness
+    );           
   }
 
   return (
