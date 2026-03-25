@@ -2,7 +2,7 @@ import { ACCESS } from "../access.js";
 import { get_all_users, get_user_by_id } from "../database/db.js";
 
 export async function handle_get_all_users(req, res) {
-    if (!req.access || req.access !== ACCESS.admin) {
+    if (!req.access || (req.access !== ACCESS.admin && req.access !== ACCESS.owner)) {
         return res.status(403).json({ message: 'user is not admin, not allowed to view users data' });
     }
     
@@ -15,7 +15,7 @@ export async function handle_get_all_users(req, res) {
 }
 
 export async function handle_get_user_by_id(req, res) {
-    if (!req.access || req.access !== ACCESS.admin) {
+    if (!req.access || (req.access !== ACCESS.admin && req.access !== ACCESS.owner)) {
         return res.status(403).json({ message: 'user is not admin, not allowed to view users data' });
     }
 

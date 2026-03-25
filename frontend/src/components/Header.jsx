@@ -14,7 +14,7 @@ export function Header({ onChange }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isAdmin = user?.access === "admin";
+  const isAdminOrOwner = user?.access !== "user";
 
   const getTabFromPath = () => {
     const path = location.pathname;
@@ -90,7 +90,7 @@ export function Header({ onChange }) {
         <Tab label="Home" value={0} sx={styles.tab} />
         <Tab label="Match" value={1} sx={styles.tab} />
 
-        {isAdmin && (
+        {isAdminOrOwner && (
           <Tab
             label="Question Management"
             value={2}
@@ -98,7 +98,7 @@ export function Header({ onChange }) {
           />
         )}
 
-        {isAdmin && (
+        {isAdminOrOwner && (
           <Tab
             label="User Management"
             value={3}

@@ -185,6 +185,8 @@ export function UserListPage() {
           onSave={handleSave}
           loading={loading}
           hasChanges={hasChanges}
+          currUser={currUser}
+          selectedUser={selectedUser}
         />
 
       </div>

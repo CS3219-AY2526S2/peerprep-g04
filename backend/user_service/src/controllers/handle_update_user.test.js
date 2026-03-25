@@ -2,6 +2,7 @@ import { app } from "../app.js";
 import { pool } from "../database/db.js";
 import { beforeEach, afterAll, test, expect } from "vitest";
 import request from 'supertest';
+import { access } from "node:fs";
 
 beforeEach(async () => {
     await pool.query(`
@@ -137,3 +138,100 @@ test('update user non admin user try to update other use', async () => {
     
     expect(res2.status).toBe(403);
 })
+
+test('owner can update other user', async () => {
+    const owner = await request(app)
+      .post('/create-user')
+      .send({
+        username: 'owner',
+        email: 'owner@gmail.com',
+        password: 'abc',
+      });
+  
+    const user = await request(app)
+      .post('/create-user')
+      .send({
+        username: 'user1',
+        email: 'user1@gmail.com',
+        password: 'abc',
+      });
+  
+    await pool.query(`
+      UPDATE users SET access = 'owner' WHERE id = ${owner.body.user_id}
+    `);
+  
+    const res = await request(app)
+      .patch(`/update-user/${user.body.user_id}`)
+      .set('authorization', `Bearer ${owner.body.access_token}`)
+      .send({
+        email: 'updated@gmail.com'
+      });
+  
+    expect(res.status).toBe(200);
+  });
+
+  test('owner can update admin', async () => {
+    const owner = await request(app)
+      .post('/create-user')
+      .send({
+        username: 'owner',
+        email: 'owner@gmail.com',
+        password: 'abc',
+      });
+  
+    const admin = await request(app)
+      .post('/create-user')
+      .send({
+        username: 'admin',
+        email: 'admin@gmail.com',
+        password: 'abc',
+      });
+  
+    await pool.query(`
+      UPDATE users SET access = 'owner' WHERE id = ${owner.body.user_id}
+    `);
+  
+    await pool.query(`
+      UPDATE users SET access = 'admin' WHERE id = ${admin.body.user_id}
+    `);
+  
+    const res = await request(app)
+      .patch(`/update-user/${admin.body.user_id}`)
+      .set('authorization', `Bearer ${owner.body.access_token}`)
+      .send({
+        email: 'admin_updated@gmail.com'
+      });
+  
+    expect(res.status).toBe(200);
+  });
+
+  test('admin cannot demote another admin', async () => {
+    const admin1 = await request(app)
+      .post('/create-user')
+      .send({
+        username: 'admin1',
+        email: 'admin1@gmail.com',
+        password: 'abc',
+      });
+  
+    const admin2 = await request(app)
+      .post('/create-user')
+      .send({
+        username: 'admin2',
+        email: 'admin2@gmail.com',
+        password: 'abc',
+      });
+  
+    await pool.query(`
+      UPDATE users SET access = 'admin' WHERE id IN (${admin1.body.user_id}, ${admin2.body.user_id})
+    `);
+  
+    const res = await request(app)
+      .patch(`/update-user/${admin2.body.user_id}`)
+      .set('authorization', `Bearer ${admin1.body.access_token}`)
+      .send({
+        access: 'user'
+      });
+  
+    expect(res.status).toBe(403);
+  });

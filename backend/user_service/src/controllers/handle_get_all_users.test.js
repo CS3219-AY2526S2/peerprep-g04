@@ -105,3 +105,69 @@ test('non admin cannot get user by id', async () => {
     expect(res.status).toBe(403);
 })
 
+test('owner can get user by id', async () => {
+    const owner = {
+      username: 'owner',
+      email: 'owner@gmail.com',
+      password_hash: 'xyz',
+      access: ACCESS.owner,
+    };
+  
+    const user = {
+      username: 'user1',
+      email: 'user1@gmail.com',
+      password_hash: '123',
+      access: ACCESS.user,
+    };
+  
+    const arr = await Promise.all([
+      create_user(...Object.values(owner)),
+      create_user(...Object.values(user)),
+    ]);
+  
+    const token = jwt.sign(
+      { user_id: arr[0].id, access: ACCESS.owner },
+      process.env.JWT_SECRET_KEY
+    );
+  
+    const res = await request(app)
+      .get(`/get-user-by-id/${arr[1].id}`)
+      .set('authorization', `Bearer ${token}`);
+  
+    expect(res.status).toBe(200);
+    expect(res.body.user).toMatchObject(user);
+  });
+
+  test('owner can access all users', async () => {
+    const owner = {
+      username: 'owner',
+      email: 'owner@gmail.com',
+      password_hash: 'xyz',
+      access: ACCESS.owner,
+    };
+  
+    const user = {
+      username: 'user1',
+      email: 'user1@gmail.com',
+      password_hash: '123',
+      access: ACCESS.user,
+    };
+  
+    const arr = await Promise.all([
+      create_user(...Object.values(owner)),
+      create_user(...Object.values(user)),
+    ]);
+  
+    const token = jwt.sign(
+      { user_id: arr[0].id, access: ACCESS.owner },
+      process.env.JWT_SECRET_KEY
+    );
+  
+    const res = await request(app)
+      .get('/get-all-users')
+      .set('authorization', `Bearer ${token}`);
+  
+    expect(res.status).toBe(200);
+    expect(res.body.users).toHaveLength(2);
+    expect(res.body.users.some(user => user.username === 'user1')).toBe(true);
+  });

@@ -19,7 +19,23 @@ export function EditUserDialog({
   onSave,
   loading,
   hasChanges,
+  currUser,
+  selectedUser,
 }) {
+  const isOwnerUser = selectedUser?.access === "owner";
+
+  const canEditUserRole = (currUser, targetUser) => {
+    if (!currUser || !targetUser) return false;
+  
+    if (currUser.access === "owner") return true;
+  
+    if (currUser.access === "admin") {
+      return targetUser.access !== "admin";
+    }
+  
+    return false;
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -50,20 +66,30 @@ export function EditUserDialog({
             value={form.email}
             onChange={onChange}
           />
-
-          <FormControl fullWidth>
-            <InputLabel id="access-label">Access</InputLabel>
-            <Select
-              labelId="access-label"
-              name="access"
-              value={form.access}
+  
+          {isOwnerUser ? (
+            <TextField
+              fullWidth
               label="Access"
-              onChange={onChange}
-            >
-              <MenuItem value="admin">Admin</MenuItem>
-              <MenuItem value="user">User</MenuItem>
-            </Select>
-          </FormControl>
+              value="owner"
+              disabled
+            />
+          ) : (
+            <FormControl fullWidth>
+              <InputLabel id="access-label">Access</InputLabel>
+              <Select
+                labelId="access-label"
+                name="access"
+                value={form.access}
+                label="Access"
+                onChange={onChange}
+                disabled={!canEditUserRole(currUser, selectedUser)}
+              >
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="user">User</MenuItem>
+              </Select>
+            </FormControl>
+          )}
         </div>
       </DialogContent>
 
@@ -81,7 +107,7 @@ export function EditUserDialog({
             color="blue"
             fullWidth={true}
             onClick={onSave}
-            disabled={loading || !hasChanges()}
+            disabled={loading || !hasChanges}
           />
         </div>
       </DialogActions>

@@ -22,7 +22,7 @@ export function QsManagePage() {
 
   return (
     <div className={styles.main}>
-      {user?.access !== 'admin' ? <NotAuthorizedPage /> : <Outlet context={{reload, setReload}} />}
+      {user?.access === 'user' ? <NotAuthorizedPage /> : <Outlet context={{reload, setReload}} />}
     </div>
   )
 }

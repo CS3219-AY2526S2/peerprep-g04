@@ -10,7 +10,7 @@ export function UserManagementPage() {
   
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      {user?.access !== 'admin' ? <NotAllowedPage /> : <Outlet context={{ reload, setReload }}/>}
+      {user?.access == 'user' ? <NotAllowedPage /> : <Outlet context={{ reload, setReload }}/>}
     </div>
   )
 }
