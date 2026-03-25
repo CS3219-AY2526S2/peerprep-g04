@@ -113,7 +113,6 @@ export default function CollaborativeEditor({ sessionId, wsRef }) {
         });
       }
       
-      // 初始化 Pyodide 并重定向标准输出
       pyodideRef.current = await window.loadPyodide({
         stdout: (text) => { currentOutput += text + '\n'; },
         stderr: (text) => { currentOutput += 'Error: ' + text + '\n'; }
