@@ -10,7 +10,16 @@ import { MonacoBinding } from "y-monaco"
 import { WebsocketProvider } from "y-websocket";
 import Markdown from 'react-markdown';
 import { UserContext } from '../hooks/useUserService.jsx'
-
+import IconButton from '@mui/material/IconButton';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Input from '@mui/material/Input';
+import MenuItem from '@mui/material/MenuItem';
+import { languages, useCodeExecution } from '../hooks/useCodeExecution.jsx';
 
 const diffToColor = {
   easy: { backgroundColor: '#16a34a', color: 'green' },
@@ -19,6 +28,26 @@ const diffToColor = {
 };
 
 
+function Output(props) {
+  const { open, setOpen } = props;
+  
+  return (
+    <div className={styles.terminal}>
+      <div className={styles.terminalHeader}>
+        <Typography sx={{fontSize: '16px'}}>Output</Typography>
+        <IconButton onClick={ev => setOpen(!open)} sx={{height: '24px', width: '24px'}}>
+          {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} 
+        </IconButton>
+      </div>
+      {open && 
+        <div className={styles.terminalBody}>
+          hello world   
+        </div>
+      }
+    </div>
+  )
+}
+
 export function CollabPage(props) {
   const { stateData, onLeave } = props;
   const { question_id, match_id } = stateData;
@@ -26,6 +55,9 @@ export function CollabPage(props) {
   const { title = '', difficulty = [], tags = [], body = '' } = question;
   const editorRef = useRef(null);
   const { accessToken } = useContext(UserContext);
+  const [open, setOpen] = useState(false);
+
+  const { lang, setLang } = useCodeExecution(); 
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
@@ -49,8 +81,24 @@ export function CollabPage(props) {
   return (
     <div className={styles.main}>
       <div className={styles.header}>
-        <Button variant='outlined' size='small'>Run</Button>
-        <Button variant='outlined' size='small' onClick={ev => onLeave()}>Leave</Button>
+        <FormControl size='small' sx={{width: '120px'}}>
+          <InputLabel id="language-select-label">Code</InputLabel>
+          <Select 
+            labelId="language-select-label"
+            label="Code" // <--- This is the missing piece!
+            value={lang} 
+            onChange={ev => setLang(ev.target.value)}
+          >
+            <MenuItem value={languages.javascript}>Javascript</MenuItem>
+            <MenuItem value={languages.python}>Python</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button variant='outlined' size='medium'>Run</Button>
+        
+        <Button variant='outlined' size='medium' onClick={ev => onLeave()}>
+          Leave
+        </Button>
       </div>
 
       <div className={styles.body}>
@@ -58,7 +106,7 @@ export function CollabPage(props) {
           <div className={styles.bodyLeftHeader}>
             <Typography variant='h4'>{title}</Typography>
             <Chip size='small' variant='outlined' label={difficulty} />
-            <div>
+            <div style={{display: 'flex', gap: '4px'}}>
               {tags.map(tag => <Chip key={tag} size='small' label={tag} />)}
             </div>
           </div>
@@ -77,6 +125,8 @@ export function CollabPage(props) {
             onMount={handleEditorDidMount}
           />
         </div>
+
+        <Output open={open} setOpen={setOpen} />
       </div>
     </div>
   )

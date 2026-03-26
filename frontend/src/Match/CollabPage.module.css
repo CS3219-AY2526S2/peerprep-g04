@@ -1,27 +1,32 @@
 .main {
-    min-height: 100vh;
+    height: 100vh;
     width: 100vw;
     display: grid;
-    grid-template-rows: 48px 1fr;
+    grid-template-rows: 56px 1fr;
 }
 
 .header {
     background-color: lightgray;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 4px 8px 4px 8px;
+    justify-content: space-between;
 }
 
 .body {
-    display: flex;
-    align-items: stretch;
-    padding: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    grid-template-rows: minmax(0, 1fr) auto; 
     gap: 4px;
+    padding: 8px;
+    
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .bodyLeft {
-    display: flex;
+    grid-area: 1 / 1 / -1 / 2;
     flex-direction: column;
     align-items: stretch;
     border: 1px solid grey;
@@ -37,8 +42,35 @@
 }
 
 .bodyRight {
-    flex-grow: 1;
+    grid-area: 1 / 2 / 2 / -1;
     border: 1px solid grey;
     padding: 4px;
     border-radius: 8px;
+    background-color: black;
+    overflow-y: scroll;
+}
+
+.terminal {
+    grid-area: 2 / 2 / -1 / -1;
+    border: 1px solid grey;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 4px;
+    gap: 4px;
+}
+
+.terminalHeader {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terminalBody {
+    border: 1px solid grey;
+    border-radius: 8px;
+    min-height: 160px;
+    white-space: normal;
 }
