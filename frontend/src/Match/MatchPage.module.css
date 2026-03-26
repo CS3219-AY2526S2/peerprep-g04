@@ -1,11 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 .matchPage {
-  min-height: 100vh;
   background: #f8faff;
   font-family: 'DM Sans', sans-serif;
-  display: flex;
-  align-items: center;
+  display: flex; 
   justify-content: center;
   padding: 2rem;
   position: relative;
@@ -25,7 +23,6 @@
   position: fixed;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
   top: -150px;
   right: -100px;
   pointer-events: none;
@@ -37,7 +34,6 @@
   position: fixed;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
   bottom: -100px;
   left: -50px;
   pointer-events: none;
@@ -180,64 +176,6 @@
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-
-.tag {
-  background: #f8faff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.8rem;
-  font-family: 'DM Sans', sans-serif;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  font-weight: 500;
-}
-
-.tag:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #1e293b;
-  transform: translateY(-1px);
-}
-
-.tagSelected {
-  background: #eff6ff;
-  border-color: #2563eb;
-  color: #1d4ed8;
-  font-weight: 600;
-}
-
-.matchBtn {
-  width: 100%;
-  padding: 1rem;
-  border-radius: 14px;
-  border: 1.5px solid #e2e8f0;
-  background: #f1f5f9;
-  color: #94a3b8;
-  font-family: 'Syne', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: not-allowed;
-  transition: all 0.3s ease;
-  animation: slideUp 0.5s ease 0.35s both;
-  letter-spacing: 0.04em;
-}
-
-.matchBtnActive {
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  border-color: transparent;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(29, 78, 216, 0.3);
-}
-
-.matchBtnActive:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(29, 78, 216, 0.4);
-}
-
-.matchBtnActive:active { transform: translateY(0); }
 
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-16px); }

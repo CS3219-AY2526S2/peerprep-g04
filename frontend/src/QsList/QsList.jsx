@@ -5,7 +5,6 @@ import {
 } from "../hooks/useQuestionService";
 import styles from "./QsList.module.css";
 
-import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
@@ -22,6 +21,7 @@ import { UpdateQuestionDialog } from "./UpdateQuestionDialog";
 import { DeleteDialog } from "../components/DeleteDialog";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Table } from "../components/Table";
+import { Tag } from "../components/Tag";
 
 const getDifficultyColor = (d) => {
   if (d === "easy") return "green";
@@ -137,12 +137,7 @@ export function QsList() {
                 <td>
                   <div className={styles.tags}>
                     {q.tags.map((tag) => (
-                      <Chip
-                        key={tag}
-                        label={tag}
-                        size="small"
-                        sx={{ fontFamily: "'DM Sans', sans-serif" }}
-                      />
+                      <Tag key={tag} text={tag} />
                     ))}
                   </div>
                 </td>

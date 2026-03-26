@@ -1,9 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../hooks/useUserService.jsx";
-import {
-  get_all_users,
-  external_update_user
-} from "../hooks/useUserService.jsx";
+import { get_all_users } from "../hooks/useUserService.jsx";
 
 import styles from './UserListPage.module.css';
 
@@ -13,56 +10,44 @@ import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { EditUserDialog } from "./EditUserDialog";
-
 import { Table } from "../components/Table";
 
 import { useOutletContext } from "react-router";
 
 export function UserListPage() {
-  const { accessToken, setUser: setCurrUser, user: currUser } = useContext(UserContext);
-  const [users, setUsers] = useState([]);
+  const { accessToken } = useContext(UserContext);
   const { reload, setReload } = useOutletContext();
 
-  const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    access: "",
-  });
-
-  const filteredUsers = users.filter((user) => {
-    const s = search.toLowerCase();
-  
-    const matchesSearch =
-      user.username.toLowerCase().includes(s) ||
-      user.email.toLowerCase().includes(s);
-  
-    const matchesRole =
-      roleFilter === "all" || user.access === roleFilter;
-  
-    return matchesSearch && matchesRole;
-  });
-
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    get_all_users(accessToken).then(users => {
+    get_all_users(accessToken).then((users) => {
       if (users) setUsers(users);
     });
   }, [accessToken, reload]);
 
+  const filteredUsers = users
+  .filter((user) => {
+    const s = search.toLowerCase();
+
+    const matchesSearch =
+      user.username.toLowerCase().includes(s) ||
+      user.email.toLowerCase().includes(s);
+
+    const matchesRole =
+      roleFilter === "all" || user.access === roleFilter;
+
+    return matchesSearch && matchesRole;
+  })
+  .sort((a, b) => a.id - b.id); 
+
   const handleOpen = (user) => {
     setSelectedUser(user);
-    setForm({
-      username: user.username,
-      email: user.email,
-      access: user.access,
-    });
     setOpen(true);
   };
 
@@ -71,57 +56,14 @@ export function UserListPage() {
     setSelectedUser(null);
   };
 
-  const handleChange = (e) => {
-    setForm(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleSave = async () => {
-    if (!selectedUser) return;
-
-    setLoading(true);
-
-    const res = await external_update_user(
-      selectedUser.id,
-      form,
-      accessToken
-    );
-
-    if (res) {
-      if (currUser?.user_id === selectedUser.id) {
-        setCurrUser({
-          ...form,
-          user_id: selectedUser.id,
-        });
-      }
-
-      setReload(r => !r);
-
-      handleClose();
-    }
-
-    setLoading(false);
-  };
-
-  const hasChanges = () => {
-    if (!selectedUser) return false;
-  
-    return (
-      form.username !== selectedUser.username ||
-      form.email !== selectedUser.email ||
-      form.access !== selectedUser.access
-    );
+  const handleSuccess = () => {
+    setReload((r) => !r);
   };
 
   return (
     <div className={styles.main}>
       <div className={styles.body}>
-        
-        <h1 className={styles.title}>
-          Manage Users
-        </h1>
+        <h1 className={styles.title}>Manage Users</h1>
 
         <div className={styles.filters}>
           <TextField
@@ -161,17 +103,19 @@ export function UserListPage() {
 
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{user.access}</td>
-                  <td>
-                    <IconButton onClick={() => handleOpen(user)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </td>
-                </tr>
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>{user.access}</td>
+                    <td>
+                      {user.access !== "owner" && (
+                        <IconButton onClick={() => handleOpen(user)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </td>
+                  </tr>
               ))}
             </tbody>
           </table>
@@ -180,15 +124,9 @@ export function UserListPage() {
         <EditUserDialog
           open={open}
           onClose={handleClose}
-          form={form}
-          onChange={handleChange}
-          onSave={handleSave}
-          loading={loading}
-          hasChanges={hasChanges}
-          currUser={currUser}
           selectedUser={selectedUser}
+          onSuccess={handleSuccess}
         />
-
       </div>
     </div>
   );

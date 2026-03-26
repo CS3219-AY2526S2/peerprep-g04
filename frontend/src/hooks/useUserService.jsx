@@ -71,7 +71,7 @@ export function useUserService() {
       setUser(getUser(res.data));
       return true;
     } catch (err) {
-      toast('checkFoAccessTokenAndLogin ' + err.message);
+      toast('checkForAccessTokenAndLogin ' + err.message);
       return false;
     }
   }

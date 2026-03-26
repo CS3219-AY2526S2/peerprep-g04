@@ -1,3 +1,5 @@
+import { useState, useEffect, useContext } from "react";
+
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -11,29 +13,90 @@ import TextField from "@mui/material/TextField";
 
 import { PrimaryButton } from "../components/PrimaryButton";
 
+import { UserContext } from "../hooks/useUserService.jsx";
+import { external_update_user } from "../hooks/useUserService.jsx";
+
 export function EditUserDialog({
   open,
   onClose,
-  form,
-  onChange,
-  onSave,
-  loading,
-  hasChanges,
-  currUser,
   selectedUser,
+  onSuccess,
 }) {
+  const { accessToken, user: currUser, setUser: setCurrUser } = useContext(UserContext);
+
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    access: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
   const isOwnerUser = selectedUser?.access === "owner";
 
-  const canEditUserRole = (currUser, targetUser) => {
-    if (!currUser || !targetUser) return false;
-  
-    if (currUser.access === "owner") return true;
-  
-    if (currUser.access === "admin") {
-      return targetUser.access !== "admin";
+  useEffect(() => {
+    if (selectedUser) {
+      setForm({
+        username: selectedUser.username,
+        email: selectedUser.email,
+        access: selectedUser.access,
+      });
     }
-  
+  }, [selectedUser]);
+
+  const canEditUserRole = () => {
+    if (!currUser || !selectedUser) return false;
+
+    if (currUser.access === "owner") return true;
+
+    if (currUser.access === "admin") {
+      return selectedUser.access !== "admin";
+    }
+
     return false;
+  };
+
+  const hasChanges = () => {
+    if (!selectedUser) return false;
+
+    return (
+      form.username !== selectedUser.username ||
+      form.email !== selectedUser.email ||
+      form.access !== selectedUser.access
+    );
+  };
+
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!selectedUser) return;
+
+    setLoading(true);
+
+    const res = await external_update_user(
+      selectedUser.id,
+      form,
+      accessToken
+    );
+
+    if (res) {
+      if (currUser?.user_id === selectedUser.id) {
+        setCurrUser({
+          ...form,
+          user_id: selectedUser.id,
+        });
+      }
+
+      onSuccess?.();
+      onClose();
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -56,7 +119,8 @@ export function EditUserDialog({
             label="Username"
             name="username"
             value={form.username}
-            onChange={onChange}
+            onChange={handleChange}
+            disabled={isOwnerUser}
           />
 
           <TextField
@@ -64,14 +128,15 @@ export function EditUserDialog({
             label="Email"
             name="email"
             value={form.email}
-            onChange={onChange}
+            onChange={handleChange}
+            disabled={isOwnerUser}
           />
-  
+
           {isOwnerUser ? (
             <TextField
               fullWidth
               label="Access"
-              value="owner"
+              value={selectedUser.access}
               disabled
             />
           ) : (
@@ -82,8 +147,8 @@ export function EditUserDialog({
                 name="access"
                 value={form.access}
                 label="Access"
-                onChange={onChange}
-                disabled={!canEditUserRole(currUser, selectedUser)}
+                onChange={handleChange}
+                disabled={!canEditUserRole()}
               >
                 <MenuItem value="admin">Admin</MenuItem>
                 <MenuItem value="user">User</MenuItem>
@@ -98,16 +163,16 @@ export function EditUserDialog({
           <PrimaryButton
             text="Cancel"
             color="white"
-            fullWidth={true}
+            fullWidth
             onClick={onClose}
           />
 
           <PrimaryButton
             text={loading ? "Updating..." : "Update"}
             color="blue"
-            fullWidth={true}
-            onClick={onSave}
-            disabled={loading || !hasChanges}
+            fullWidth
+            onClick={handleSave}
+            disabled={loading || !hasChanges()}
           />
         </div>
       </DialogActions>

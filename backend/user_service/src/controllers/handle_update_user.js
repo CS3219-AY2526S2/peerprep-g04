@@ -38,8 +38,11 @@ export async function handle_update_user(req, res) {
         return res.status(403).json({ message: 'user is not admin, cannot update other users'});
     }
 
-    const isRoleChange = access !== user_to_update.access;
+    if (user_to_update.access === ACCESS.owner && req.user.access !== ACCESS.owner) {
+        return res.status(403).json({ message: 'only owner can update owner'});
+    }
 
+    // Admin cannot demote other admins
     if (
         req.user.access === ACCESS.admin &&
         user_to_update.access === ACCESS.admin &&
