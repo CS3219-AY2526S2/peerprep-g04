@@ -15,8 +15,7 @@ export function MatchedPage(props) {
   };
 
   if (openCollab) {
-    setShowHeader(false);
-    return <CollabPage stateData={stateData} onLeave={onLeave} />
+    return <CollabPage stateData={stateData} onLeave={onLeave} setShowHeader={setShowHeader} />
   }
 
   return (

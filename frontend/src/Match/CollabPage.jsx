@@ -11,13 +11,11 @@ import { WebsocketProvider } from "y-websocket";
 import Markdown from 'react-markdown';
 import { UserContext } from '../hooks/useUserService.jsx'
 import IconButton from '@mui/material/IconButton';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
-import Input from '@mui/material/Input';
 import MenuItem from '@mui/material/MenuItem';
 import { languages, useCodeExecution } from '../hooks/useCodeExecution.jsx';
 
@@ -49,32 +47,36 @@ function Output(props) {
 }
 
 export function CollabPage(props) {
-  const { stateData, onLeave } = props;
+  const { stateData, onLeave, setShowHeader } = props;
   const { question_id, match_id } = stateData;
   const [question, setQuestion] = useState({});
   const { title = '', difficulty = [], tags = [], body = '' } = question;
-  const editorRef = useRef(null);
   const { accessToken } = useContext(UserContext);
   const [open, setOpen] = useState(false);
-
   const { lang, setLang } = useCodeExecution(); 
+  const editorRef = useRef();
+
+  useEffect(() => {
+    setShowHeader(false);
+  }, []);
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
   }, [question_id]);
 
   function handleEditorDidMount(editor, monaco) {
+    console.log('editor mounts');
     editorRef.current = editor;
-    const doc = new Y.Doc();
+    const yDoc = new Y.Doc();
     
     const provider = new WebsocketProvider(
-      `ws://localhost:3003?token=${accessToken}`, stateData.match_id.toString(), doc
+      `ws://localhost:3003?token=${accessToken}`, match_id.toString(), yDoc
     );
     
-    const type = doc.getText("monaco");
+    const yText = yDoc.getText("monaco");
   
     const binding = new MonacoBinding(
-      type, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness
+      yText, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness
     );           
   }
 
@@ -85,7 +87,7 @@ export function CollabPage(props) {
           <InputLabel id="language-select-label">Code</InputLabel>
           <Select 
             labelId="language-select-label"
-            label="Code" // <--- This is the missing piece!
+            label="Code"
             value={lang} 
             onChange={ev => setLang(ev.target.value)}
           >
@@ -117,8 +119,7 @@ export function CollabPage(props) {
         <div className={styles.bodyRight}>
           <Editor
             theme='vs-dark'
-            defaultLanguage='javascript'
-            defaultValue='function hello_word() {}'
+            language={lang}
             options={{
               minimap: { enabled: false }
             }}
