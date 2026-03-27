@@ -24,7 +24,7 @@ export function useCodeExecution() {
   const [lang, setLang] = useState(languages.javascript);
 
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [outputErr, setOutputErr] = useState(false);
   const [output, setOutput] = useState('');
   

@@ -1,4 +1,5 @@
-
+### How to run READ this ###
+1. `node --env-file=.env src/server.js`
 # y-websocket-server :tophat:
 > Simple backend for [y-websocket](https://github.com/yjs/y-websocket)
 
