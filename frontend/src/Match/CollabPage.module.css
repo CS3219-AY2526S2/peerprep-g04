@@ -79,3 +79,26 @@
     background-color: lightgrey;
     padding: 4px;
 }
+
+.terminalSpinner {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background-color: lightgrey;
+    border-radius: 8px;
+}
+
+.spinner {
+    height: 64px;
+    width: 64px;
+    padding: 0;
+    border-radius: 50%;
+    border-top: 1px solid black;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

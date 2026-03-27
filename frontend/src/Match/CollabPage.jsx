@@ -25,8 +25,33 @@ const diffToColor = {
   hard: { backgroundColor: '#dc2626', color: 'red' }
 };
 
+function Loading() {
+  return (
+    <div className={styles.terminalSpinner}>
+      <div className={styles.spinner}></div>
+    </div>
+  )
+}
 function Output(props) {
-  const { open, setOpen, output, outputErr } = props;
+  const { loading, open, setOpen, output, outputErr } = props;
+
+  function whatPage() {
+    if (loading) {
+      return (
+        <div className={styles.terminalSpinner}>
+          <div className={styles.spinner}></div>
+        </div>
+      )
+    } 
+    
+    else {
+      return (
+        <div className={styles.terminalBody}>
+          <code>{output}</code>
+        </div>
+      )
+    }
+  }
   
   return (
     <div className={styles.terminal}>
@@ -36,11 +61,7 @@ function Output(props) {
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} 
         </IconButton>
       </div>
-      {open && 
-        <div className={styles.terminalBody}>
-         <code>{output}</code>
-        </div>
-      }
+      {open && whatPage()}
     </div>
   )
 }
@@ -55,6 +76,7 @@ export function CollabPage(props) {
   const { 
     lang, 
     setLang,
+    loading,
     open,
     setOpen, 
     output,
@@ -99,12 +121,19 @@ export function CollabPage(props) {
             value={lang} 
             onChange={ev => setLang(ev.target.value)}
           >
-            <MenuItem value={languages.javascript}>Javascript</MenuItem>
-            <MenuItem value={languages.python}>Python</MenuItem>
+            {
+              Object.values(languages).map(
+                lang => 
+                  <MenuItem key={lang} value={lang}>
+                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                  </MenuItem>
+              )
+            }
           </Select>
         </FormControl>
 
         <Button 
+          loading={loading}
           variant='outlined' 
           size='medium' 
           onClick={ev => runCode(editorRef.current?.getValue())}
@@ -112,7 +141,7 @@ export function CollabPage(props) {
             Run
         </Button>
         
-        <Button variant='outlined' size='medium' onClick={ev => onLeave()}>
+        <Button color='warning' variant='outlined' size='medium' onClick={ev => onLeave()}>
           Leave
         </Button>
       </div>
@@ -141,7 +170,7 @@ export function CollabPage(props) {
           />
         </div>
 
-        <Output open={open} setOpen={setOpen} output={output} outputErr={outputErr} />
+        <Output loading={loading} open={open} setOpen={setOpen} output={output} outputErr={outputErr} />
       </div>
     </div>
   )

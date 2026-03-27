@@ -1,47 +1,55 @@
 import { useState } from "react";
+import axios from 'axios';
+import { toast } from "react-toastify";
 
 export const languages = Object.freeze({
   javascript: 'javascript',
   python: 'python',
 });
 
+export const lang_to_id = Object.freeze({
+  javascript: 102,
+  python: 113,
+});
+
+// this is free api, idk, just use.
+const judge0_api = axios.create({
+  baseURL: 'https://ce.judge0.com',
+  headers: {
+    'Content-type': 'application/json',
+  }
+});
+
 export function useCodeExecution() {
   const [lang, setLang] = useState(languages.javascript);
 
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [outputErr, setOutputErr] = useState(false);
   const [output, setOutput] = useState('');
   
-  function runJavascript(code) {
-    const logs = [];
-    const originalLog = console.log;
-    console.log = (...args) => {
-      const message = args
-        .map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : String(arg)))
-        .join(' ');
-      
-      logs.push(message);
-    };
-
+  async function runCode(code) {
+    setLoading(true);
+    setOpen(true);
     try {
-      eval(code); 
-      setOutputErr(false);
-      setOutput(logs.join('\n')); 
-    } catch (err) {
-      setOutputErr(true);
-      setOutput(err.message);
-    } finally {
-      setOpen(true);
-      console.log = originalLog;
-    }
-  }
+      const res = await judge0_api.post('/submissions?wait=true', {
+        language_id: lang_to_id[lang],
+        source_code: code,
+        cpu_time_limit: 1.0,
+        memory_limit: 1048576,
+      });
 
-  function runCode(code) {
-    switch (lang) {
-      case languages.javascript:
-        runJavascript(code);
-        break;
+      if (res.data.stderr) {
+        setOutputErr(true);
+        setOutput(res.data.stderr);
+      } else {
+        setOutputErr(true);
+        setOutput(res.data.stdout);
+      }
+    } catch (err) {
+      toast(err?.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
     }
   } 
 
