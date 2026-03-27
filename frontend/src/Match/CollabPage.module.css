@@ -74,6 +74,8 @@
     border: 1px solid grey;
     border-radius: 8px;
     min-height: 160px;
-    white-space: normal;
+    white-space: pre-wrap;
     overflow: scroll;
+    background-color: lightgrey;
+    padding: 4px;
 }

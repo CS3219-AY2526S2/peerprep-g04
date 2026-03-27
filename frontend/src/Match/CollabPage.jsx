@@ -25,21 +25,20 @@ const diffToColor = {
   hard: { backgroundColor: '#dc2626', color: 'red' }
 };
 
-
 function Output(props) {
-  const { open, setOpen } = props;
+  const { open, setOpen, output, outputErr } = props;
   
   return (
     <div className={styles.terminal}>
       <div className={styles.terminalHeader}>
-        <Typography sx={{fontSize: '16px'}}>Output</Typography>
+        <Typography sx={{fontSize: '16px'}}>Terminal</Typography>
         <IconButton onClick={ev => setOpen(!open)} sx={{height: '24px', width: '24px'}}>
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} 
         </IconButton>
       </div>
       {open && 
         <div className={styles.terminalBody}>
-          hello world   
+         <code>{output}</code>
         </div>
       }
     </div>
@@ -52,10 +51,19 @@ export function CollabPage(props) {
   const [question, setQuestion] = useState({});
   const { title = '', difficulty = [], tags = [], body = '' } = question;
   const { accessToken } = useContext(UserContext);
-  const [open, setOpen] = useState(false);
-  const { lang, setLang } = useCodeExecution(); 
+
+  const { 
+    lang, 
+    setLang,
+    open,
+    setOpen, 
+    output,
+    outputErr,
+    runCode,
+  } = useCodeExecution(); 
   const editorRef = useRef();
 
+  // remove the old header
   useEffect(() => {
     setShowHeader(false);
   }, []);
@@ -96,7 +104,13 @@ export function CollabPage(props) {
           </Select>
         </FormControl>
 
-        <Button variant='outlined' size='medium'>Run</Button>
+        <Button 
+          variant='outlined' 
+          size='medium' 
+          onClick={ev => runCode(editorRef.current?.getValue())}
+        >
+            Run
+        </Button>
         
         <Button variant='outlined' size='medium' onClick={ev => onLeave()}>
           Leave
@@ -127,7 +141,7 @@ export function CollabPage(props) {
           />
         </div>
 
-        <Output open={open} setOpen={setOpen} />
+        <Output open={open} setOpen={setOpen} output={output} outputErr={outputErr} />
       </div>
     </div>
   )
