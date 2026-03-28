@@ -66,7 +66,7 @@ export async function enqueue_user(user_id, topics, difficulties) {
     const userStateKey = user_state_key(user_id);
 
     await redis.zAdd(QUEUE_KEY, { score, value });
-    await redis.set(userKey, value, { EX: QUEUE_TIMEOUT_SECONDS });
+    await redis.set(userKey, value);
     await redis.set(userStateKey, states.matching);
 
     rwlock.unlock();

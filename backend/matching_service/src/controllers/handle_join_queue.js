@@ -38,14 +38,7 @@ export async function handle_join_queue(req, res) {
         }
 
         await enqueue_user(user_id, topics, difficulties);
-
-        setTimeout(async () => {
-            const removed = await dequeue_user(user_id);
-            if (removed) {
-                notify_timeout(user_id);
-            }
-        }, QUEUE_TIMEOUT_MS);
-
+        
         return res.status(200).json({ message: 'user added to queue', topics, difficulties });
     } catch (err) {
         return res.status(500).json({ message: err.message });

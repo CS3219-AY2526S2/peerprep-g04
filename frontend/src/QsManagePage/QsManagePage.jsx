@@ -12,7 +12,7 @@ export function NotAuthorizedPage() {
     <div className={styles.warningMain}>
       <div className={styles.warningCard}>
         <Warning height='60%' width='60%' />
-        <div>You are not authorized to access this page</div>
+        <Typography>You are not authorized to access this page</Typography>
       </div>
     </div>
   )
