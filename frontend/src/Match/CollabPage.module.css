@@ -1,0 +1,104 @@
+.main {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: 56px 1fr;
+}
+
+.header {
+    background-color: lightgray;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px 4px 8px;
+    justify-content: space-between;
+}
+
+.body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto; 
+    gap: 4px;
+    padding: 8px;
+    
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.bodyLeft {
+    grid-area: 1 / 1 / -1 / 2;
+    flex-direction: column;
+    align-items: stretch;
+    border: 1px solid grey;
+    border-radius: 8px;
+    width: 40vw;
+    padding: 4px;
+    resize: horizontal;
+    overflow: auto;
+}
+
+.bodyLeftHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.bodyRight {
+    grid-area: 1 / 2 / 2 / -1;
+    border: 1px solid grey;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: black;
+    overflow-y: scroll;
+}
+
+.terminal {
+    grid-area: 2 / 2 / -1 / -1;
+    border: 1px solid grey;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 4px;
+    gap: 4px;
+}
+
+.terminalHeader {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terminalBody {
+    border: 1px solid grey;
+    border-radius: 8px;
+    min-height: 160px;
+    white-space: pre-wrap;
+    overflow: scroll;
+    background-color: lightgrey;
+    padding: 4px;
+}
+
+.terminalSpinner {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background-color: lightgrey;
+    border-radius: 8px;
+}
+
+.spinner {
+    height: 64px;
+    width: 64px;
+    padding: 0;
+    border-radius: 50%;
+    border-top: 1px solid black;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -84,6 +84,7 @@ export function useMatchingService() {
       if (message === 'match found') {
         setState(states.matched);
         setStateData(res.data);
+        console.log(res.data);
       } else if (message === 'user added to queue') {
         setState(states.matching);
       }

@@ -9,9 +9,9 @@
     grid-area:  1 / 1 / 2 / -1;
     background-color: lightblue;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 12px;
+    gap: 12px;
 }
 
 .body {
@@ -19,4 +19,12 @@
     flex-direction: column;
     align-items: center;
     padding-top: 16px;
+}
+
+.navBtn {
+    cursor: pointer;
+}
+
+.navBtn:hover {
+    color: blue;
 }
