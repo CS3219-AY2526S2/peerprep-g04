@@ -37,11 +37,6 @@ export function AccountPage() {
     setPassword('');
   }
 
-  async function myLogout() {
-    await logout();
-    navigate('/');
-  }
-
   if (!user) return <Navigate to="/" />;
 
   return (
@@ -103,12 +98,7 @@ export function AccountPage() {
               </div>
             </form>
           </Card>
-
-          <PrimaryButton
-            text="Logout"
-            color="red"
-            onClick={myLogout}
-          />
+          
         </div>
       </div>
     </div>
