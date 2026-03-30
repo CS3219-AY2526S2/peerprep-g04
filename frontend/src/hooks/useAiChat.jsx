@@ -4,9 +4,6 @@ import { toast } from "react-toastify";
 
 export const sides = Object.freeze({ ai: 'ai', user: 'user' });
 
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_AI_API_KEY });
-
-
 export function useAiChat() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -16,16 +13,17 @@ export function useAiChat() {
     setLoading(true);
       setMessages(messages => [...messages, { side: sides.user, text: message }]);
       setMessage('');
-      const contextString = 
+      const contextString =
         `
         Given the current responses between you, the ai and the user, generate a response.
         Do not include any formatting, just give the response.
-        The stringified JSON of messages is provided below. 
+        The stringified JSON of messages is provided below.
         It can be that the current context is empty, if so the json string is empty.
         ${JSON.stringify([...messages, { side: sides.user, text: message }])}
         `;
 
       try {
+        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_AI_API_KEY });
         const response = await ai.models.generateContent({
           model: "gemini-3-flash-preview",
           contents: contextString,

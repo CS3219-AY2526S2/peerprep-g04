@@ -1,0 +1,102 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_USER_SERVICE_API: localhost:3000
+        VITE_QUESTION_SERVICE_API: localhost:3001
+        VITE_MATCHING_SERVICE_API: localhost:3003
+        VITE_COLLABORATION_SERVICE_API: localhost:1234
+        VITE_GOOGLE_AI_API_KEY: ${VITE_GOOGLE_AI_API_KEY}
+    ports:
+      - "5173:5173"
+
+  user-service:
+    build: ./backend/user_service
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: peerprep_user_service
+      JWT_SECRET_KEY: secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  question-service:
+    build: ./backend/question_service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: peerprep_question_service
+      JWT_SECRET_KEY: secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  matching-service:
+    build: ./backend/matching_service
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: peerprep_matching_service
+      JWT_SECRET_KEY: secret
+      REDIS_URL: redis://redis:6379
+      QUESTION_SERVICE_URL: http://question-service:3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  collaboration-service:
+    build: ./backend/collaboration_service
+    ports:
+      - "1234:1234"
+    environment:
+      PORT: 1234
+      JWT_SECRET_KEY: secret
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:15
+    container_name: app-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
