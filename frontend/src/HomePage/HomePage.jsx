@@ -4,17 +4,17 @@ import styles from './HomePage.module.css';
 import { UserContext } from "../hooks/useUserService";
 import Button from "@mui/material/Button";
 
-const states = Object.freeze({
-  home: 0,
-  match: 1,
-})
-
 export function HomePage() {
-  const { user } = useContext(UserContext)
+  const { user, logout } = useContext(UserContext)
   const navigate = useNavigate();
 
   if (!user) {
     return <Navigate to='/' />
+  }
+
+   async function myLogout() {
+    await logout();
+    navigate('/');
   }
 
   return (

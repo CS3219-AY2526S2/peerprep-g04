@@ -79,3 +79,33 @@ test('add and get match', async () => {
 
     const result = await save_match(match.user1_id, match.user2_id, match.topics, match.difficulties, match.question_id);
 });
+
+test('1 user in queue, 2 matching users try to match', async () => {
+    const user1 = {
+        user_id: 1,
+        topics: ['array'],
+        difficulties: ['easy'],
+    }
+
+    const user2 = {
+        user_id: 2,
+        topics: ['array', 'dp'],
+        difficulties: ['easy', 'hard'],
+    }
+
+    const user3 = {
+        user_id: 3,
+        topics: ['array', 'dp'],
+        difficulties: ['easy', 'medium'],
+    }
+
+    await enqueue_user(...Object.values(user1));
+
+    const res = await Promise.all([
+        try_match(...Object.values(user2)), try_match(...Object.values(user3))
+    ]);
+
+    expect(res.some(r => r.matched)).toBeTruthy();
+    expect(res.some(r => !r.matched)).toBeTruthy();
+    expect(res.find(r => r.matched).common_difficulties).toEqual(['easy']);
+})

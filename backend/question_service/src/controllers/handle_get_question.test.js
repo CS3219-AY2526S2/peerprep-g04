@@ -90,7 +90,7 @@ test('get question for match successful', async () => {
     const id1 = await create_question_from_obj(q1);
     const id2 = await create_question_from_obj(q2);
 
-    const res = await request(app).get('/get-question-for-match').send(req);
+    const res = await request(app).post('/get-question-for-match').send(req);
     expect(res.status).toBe(200);
     expect(res.body.id).toBe(id2);
     expect(res.body).toMatchObject(q2);
@@ -118,7 +118,7 @@ test('get question for match no question found', async () => {
     const id1 = await create_question_from_obj(q1);
     const id2 = await create_question_from_obj(q2);
 
-    const res = await request(app).get('/get-question-for-match').send(req);
-    expect(res.status).toBe(404);
+    const res = await request(app).post('/get-question-for-match').send(req);
+    expect(res.status).toBe(200);
 
 });

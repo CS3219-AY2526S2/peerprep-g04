@@ -74,6 +74,7 @@ export function init_websocket_server(server) {
     return wss;
 }
 
+// timeout remove, so this function is not needed.
 export function notify_timeout(user_id) {
     const ws = clients.get(user_id);
     if (ws && ws.readyState === 1) {

@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "async-rwlock": "^1.1.1",
+    "axios": "^1.13.6",
     "cors": "^2.8.6",
     "dotenv-cli": "^11.0.0",
     "express": "^5.2.1",

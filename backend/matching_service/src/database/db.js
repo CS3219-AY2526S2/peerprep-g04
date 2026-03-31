@@ -1,5 +1,7 @@
 import { createClient } from "redis";
 import { Pool } from "pg";
+import axios from 'axios';
+import { RWLock } from "async-rwlock";
 
 export const pool = new Pool({
     user: process.env.DB_USER,
@@ -21,6 +23,16 @@ const QUEUE_KEY = "matching_queue";
 
 export const states = Object.freeze({matching: 'matching', matched:  'matched'});
 
+const rwlock = new RWLock();
+
+const question_api = axios.create({
+  baseURL: process.env.QUESTION_SERVICE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+
 function user_queue_key(user_id) {
     return `user_queue:${user_id}`;
 }
@@ -34,31 +46,49 @@ function get_intersection(arr1, arr2) {
     return arr2.filter(x => set1.has(x));
 }
 
-// mocked function, to integrate with question service.
 async function get_question_id(topics, difficulties) {
-    return 888;
+    try {
+        const res = await question_api.post('/get-question-for-match', { difficulties, tags: topics });
+        const question = res.data;
+        return question.id;
+    } catch (err) {
+        //console.log('get question from question service failed');
+        return -1; // don't know what to return
+    }
 }
 
 export async function enqueue_user(user_id, topics, difficulties) {
+    await rwlock.writeLock();
+
     const userKey = user_queue_key(user_id);
     const score = Date.now();
     const value = JSON.stringify({ user_id, topics, difficulties });
     const userStateKey = user_state_key(user_id);
 
     await redis.zAdd(QUEUE_KEY, { score, value });
-    await redis.set(userKey, value, { EX: QUEUE_TIMEOUT_SECONDS });
+    await redis.set(userKey, value);
     await redis.set(userStateKey, states.matching);
+
+    rwlock.unlock();
 }
 // only modify state if the user is matching.
 export async function dequeue_user(user_id) {
+    await rwlock.writeLock();
+
     const userKey = user_queue_key(user_id);
     const userStateKey = user_state_key(user_id);
     
     const raw = await redis.get(userKey);
-    if (!raw) return false;
+    if (!raw) {
+        rwlock.unlock();
+        return false;
+    }
 
     const state = await redis.get(userStateKey);
-    if (state !== states.matching) return false;
+    if (state !== states.matching) {
+        rwlock.unlock();
+        return false;
+    }
 
     const entries = await redis.zRange(QUEUE_KEY, 0, -1);
     for (const entry of entries) {
@@ -71,16 +101,24 @@ export async function dequeue_user(user_id) {
 
     await redis.del(userKey);
     await redis.del(userStateKey);
+
+    rwlock.unlock();
     return true;
 }
 
 export async function is_user_in_queue(user_id) {
+    await rwlock.readLock();
+    
     const raw = await redis.get(user_queue_key(user_id));
+
+    rwlock.unlock();
     return raw !== null;
 }
 
 // returns { matched: true, opponent_id, common_topics, common_difficulties, room_id } or { matched: false }
 export async function try_match(user_id, topics, difficulties) {
+    await rwlock.writeLock();
+
     const entries = await redis.zRange(QUEUE_KEY, 0, -1);
 
     for (const entry of entries) {
@@ -92,16 +130,19 @@ export async function try_match(user_id, topics, difficulties) {
 
         if (common_topics.length > 0 && common_difficulties.length > 0) {
             const my_entry = entries.find(e => JSON.parse(e).user_id === user_id);
+            
             await redis.zRem(QUEUE_KEY, entry);
             if (my_entry) await redis.zRem(QUEUE_KEY, my_entry);
+
             await redis.del(user_queue_key(user_id));
             await redis.del(user_queue_key(data.user_id));
             
             await redis.set(user_state_key(user_id), states.matched);
             await redis.set(user_state_key(data.user_id), states.matched);
             
-            const question_id = await get_question_id()
+            const question_id = await get_question_id(common_topics, common_difficulties);
 
+            rwlock.unlock();
             return {
                 matched: true,
                 opponent_id: data.user_id,
@@ -112,38 +153,44 @@ export async function try_match(user_id, topics, difficulties) {
         }
     }
 
+    rwlock.unlock();
     return { matched: false };
 }
 
 export async function get_user_state(user_id) {
-    return await redis.get(user_state_key(user_id));
+    await rwlock.readLock();
+
+    const state = await redis.get(user_state_key(user_id));
+
+    rwlock.unlock();
+    return state;
 }
 
 // if user is queuing, remove the user from the queue and also his state.
 // if user is matched, remove the state.
 export async function leave(user_id) {
+    await rwlock.writeLock();
+
     const userStateKey = user_state_key(user_id);
-    // doesn't matter if user is inside queue or is matched or not either of these 2.
-    await dequeue_user(user_id);
+    const userKey = user_queue_key(user_id);
+    
+    const state = redis.get(userStateKey);
+    if (state === states.matching) {
+        const entries = await redis.zRange(QUEUE_KEY, 0, -1);
+        for (const entry of entries) {
+                if (data.user_id === user_id) {
+                await redis.zRem(QUEUE_KEY, entry);
+                break;
+            }
+        }
+    }
+
     await redis.del(userStateKey);
-}
+    await redis.del(userKey);
 
-/*export async function save_match(user1_id, user2_id, topic, difficulty, question_id = null) {
-    const result = await pool.query(
-        `INSERT INTO matches (user1_id, user2_id, topic, difficulty, question_id)
-         VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [user1_id, user2_id, topic, difficulty, question_id]
-    );
-    return result.rows[0].id;
+    rwlock.unlock();
 }
-
-export async function get_match_by_user_id(user_id) {
-    const result = await pool.query(
-        `SELECT * FROM matches WHERE user1_id = $1 OR user2_id = $1 ORDER BY created_at DESC LIMIT 1`,
-        [user_id]
-    );
-    return result.rows[0];
-}*/
+    
 
 export async function save_match(user1_id, user2_id, topics, difficulties, question_id) {
     const res = await pool.query(

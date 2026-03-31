@@ -11,7 +11,6 @@ import { states } from '../hooks/useMatchingService.jsx';
 import { PrimaryButton } from "../components/PrimaryButton";
 
 export function MatchMainPage() {
-  const [tags, setTags] = useState([]);
   const {
     username,
     state,
@@ -20,6 +19,12 @@ export function MatchMainPage() {
     request_match
   } = useMatchingService();
   const navigate = useNavigate();
+  const [showHeader, setShowHeader] = useState(true);
+
+  async function onLeave() {
+    leave();
+    navigate('/signed-in');
+  }
 
   function whatPage(state) {
     switch (state) {
@@ -27,18 +32,19 @@ export function MatchMainPage() {
         return <MatchingPage />
 
       case states.matched:
-        return <MatchedPage username={username} state={state} stateData={stateData} />
+        return <MatchedPage 
+                username={username} 
+                state={state} 
+                stateData={stateData} 
+                setShowHeader={setShowHeader} 
+                onLeave={onLeave}
+               />
 
       default:
         return <MatchPage username={username} request_match={request_match} />
     }
   }
 
-  async function onLeave() {
-    leave();
-    navigate('/signed-in');
-  }
-  
   return (
     <div className={styles.main}>
       <div className={styles.header}>

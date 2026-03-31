@@ -89,6 +89,25 @@ export async function get_question_for_match(difficulties, tags) {
     return result.rows[0];
 }
 
+export async function get_any_question() {
+    const result = await pool.query(
+        `
+        SELECT 
+            q.id,
+            q.title,
+            q.difficulty,
+            q.body,
+            ARRAY_AGG(qt.tag) AS tags
+        FROM questions q
+        JOIN question_tag qt ON qt.question_id = q.id
+        GROUP BY q.id
+        ORDER BY RANDOM()
+        LIMIT 1;
+        `
+    );
+    return result.rows[0];
+}
+
 export async function get_all_tags() {
     const res = await pool.query(
         `

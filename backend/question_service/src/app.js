@@ -14,7 +14,10 @@ app.use(express.json());
 
 app.get('/get-question-by-id/:questionId', handle_get_question_by_id);
 app.get('/get-all-questions-without-body', handle_get_all_questions_without_body);
-app.get('/get-question-for-match', handle_get_question_for_match);
+
+// have to use a post, as the question criteria is in json. GET requests cannot have json
+app.post('/get-question-for-match', handle_get_question_for_match);
+
 app.get('/get-all-tags', handle_get_all_tags);
 app.post('/create-question', verify_token_middleware, handle_create_question);
 app.delete('/delete-question/:questionId', verify_token_middleware, handle_delete_question);
