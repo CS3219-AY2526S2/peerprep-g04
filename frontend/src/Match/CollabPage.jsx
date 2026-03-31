@@ -1,23 +1,19 @@
-import Button from '@mui/material/Button';
 import styles from './CollabPage.module.css';
 import { useEffect, useState, useRef, useContext } from 'react';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Chip from '@mui/material/Chip';
-import Editor from '@monaco-editor/react'
+import Editor from '@monaco-editor/react';
 import Typography from '@mui/material/Typography';
 import * as Y from 'yjs';
-import { MonacoBinding } from "y-monaco"
+import { MonacoBinding } from "y-monaco";
 import { WebsocketProvider } from "y-websocket";
 import Markdown from 'react-markdown';
-import { UserContext } from '../hooks/useUserService.jsx'
+import { UserContext } from '../hooks/useUserService.jsx';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { languages, useCodeExecution } from '../hooks/useCodeExecution.jsx';
+import { useCodeExecution } from '../hooks/useCodeExecution.jsx';
+import { MatchHeader } from '../components/MatchHeader.jsx';
 
 const diffToColor = {
   easy: { backgroundColor: '#16a34a', color: 'green' },
@@ -32,36 +28,23 @@ function Loading() {
     </div>
   )
 }
-function Output(props) {
-  const { loading, open, setOpen, output, outputErr } = props;
 
-  function whatPage() {
-    if (loading) {
-      return (
-        <div className={styles.terminalSpinner}>
-          <div className={styles.spinner}></div>
-        </div>
-      )
-    } 
-    
-    else {
-      return (
-        <div className={styles.terminalBody}>
-          <code>{output}</code>
-        </div>
-      )
-    }
-  }
-  
+function Output(props) {
+  const { loading, open, setOpen, output } = props;
+
   return (
     <div className={styles.terminal}>
       <div className={styles.terminalHeader}>
         <Typography sx={{fontSize: '16px'}}>Terminal</Typography>
-        <IconButton onClick={ev => setOpen(!open)} sx={{height: '24px', width: '24px'}}>
+        <IconButton onClick={() => setOpen(!open)} sx={{height: '24px', width: '24px'}}>
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} 
         </IconButton>
       </div>
-      {open && whatPage()}
+      {open && (
+        <div className={styles.terminalBody}>
+          {loading ? <div className={styles.spinner}></div> : <code>{output}</code>}
+        </div>
+      )}
     </div>
   )
 }
@@ -89,8 +72,7 @@ export function CollabPage(props) {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
   }, [question_id]);
 
-  function handleEditorDidMount(editor, monaco) {
-    console.log('editor mounts');
+  function handleEditorDidMount(editor) {
     editorRef.current = editor;
     const yDoc = new Y.Doc();
     
@@ -100,46 +82,21 @@ export function CollabPage(props) {
     
     const yText = yDoc.getText("monaco");
   
-    const binding = new MonacoBinding(
+    new MonacoBinding(
       yText, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness
     );           
   }
 
   return (
     <div className={styles.main}>
-      <div className={styles.header}>
-        <FormControl size='small' sx={{width: '120px'}}>
-          <InputLabel id="language-select-label">Code</InputLabel>
-          <Select 
-            labelId="language-select-label"
-            label="Code"
-            value={lang} 
-            onChange={ev => setLang(ev.target.value)}
-          >
-            {
-              Object.values(languages).map(
-                lang => 
-                  <MenuItem key={lang} value={lang}>
-                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                  </MenuItem>
-              )
-            }
-          </Select>
-        </FormControl>
-
-        <Button 
-          loading={loading}
-          variant='outlined' 
-          size='medium' 
-          onClick={ev => runCode(editorRef.current?.getValue())}
-        >
-            Run
-        </Button>
-        
-        <Button color='warning' variant='outlined' size='medium' onClick={ev => onLeave()}>
-          Leave
-        </Button>
-      </div>
+      <MatchHeader
+        lang={lang}
+        setLang={setLang}
+        onRun={() => runCode(editorRef.current?.getValue())}
+        onLeave={onLeave}
+        loading={loading}
+        showRun={true}
+      />
 
       <div className={styles.body}>
         <div className={styles.bodyLeft}>
@@ -158,9 +115,7 @@ export function CollabPage(props) {
           <Editor
             theme='vs-dark'
             language={lang}
-            options={{
-              minimap: { enabled: false }
-            }}
+            options={{ minimap: { enabled: false } }}
             onMount={handleEditorDidMount}
           />
         </div>

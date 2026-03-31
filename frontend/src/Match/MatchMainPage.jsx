@@ -8,17 +8,10 @@ import { MatchingPage } from './MatchingPage.jsx';
 import { MatchedPage } from './MatchedPage.jsx';
 import { states } from '../hooks/useMatchingService.jsx';
 
-import { PrimaryButton } from "../components/PrimaryButton";
 import { HeaderContext } from "../contexts/HeaderContext";
 
 export function MatchMainPage() {
-  const {
-    username,
-    state,
-    stateData,
-    leave,
-    request_match
-  } = useMatchingService();
+  const { username, state, stateData, leave, request_match } = useMatchingService();
   const navigate = useNavigate();
   const { setShowHeader } = useContext(HeaderContext);
 
@@ -28,43 +21,36 @@ export function MatchMainPage() {
     } else {
       setShowHeader(true);
     }
-
     return () => setShowHeader(true);
   }, [state, setShowHeader]);
 
-  async function onLeave() {
+  function onLeave() {
     leave();
     setShowHeader(true);
     navigate('/signed-in');
   }
 
-  function whatPage(state) {
+  function renderPage() {
     switch (state) {
       case states.matching:
-        return <MatchingPage />
+        return <MatchingPage onLeave={onLeave} />;
       case states.matched:
-        return <MatchedPage 
-                username={username} 
-                state={state} 
-                stateData={stateData} 
-                onLeave={onLeave}
-               />
+        return (
+          <MatchedPage
+            username={username}
+            state={state}
+            stateData={stateData}
+            onLeave={onLeave}
+          />
+        );
       default:
-        return <MatchPage username={username} request_match={request_match} />
+        return <MatchPage username={username} request_match={request_match} />;
     }
   }
 
   return (
     <div className={styles.main}>
-      <div className={styles.header}>
-        <PrimaryButton
-          text="Leave"
-          onClick={onLeave}
-          color="white"
-          fullWidth={false}
-        />
-      </div>
-      {!username ? <LoadingPage /> : whatPage(state)}
+      {!username ? <LoadingPage /> : renderPage()}
     </div>
-  )
+  );
 }

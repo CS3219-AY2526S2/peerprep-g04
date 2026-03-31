@@ -94,6 +94,7 @@ export function MatchPage(props) {
               const selected = selectedTags.includes(t);
               return (
                 <Tag
+                  key={t}
                   text={t}
                   selected={selected}
                   onClick={() => selected ? delTag(t) : addTag(t)}
