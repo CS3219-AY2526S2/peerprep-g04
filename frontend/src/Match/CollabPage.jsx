@@ -67,7 +67,7 @@ function Output(props) {
 }
 
 export function CollabPage(props) {
-  const { stateData, onLeave, setShowHeader } = props;
+  const { stateData, onLeave } = props;
   const { question_id, match_id } = stateData;
   const [question, setQuestion] = useState({});
   const { title = '', difficulty = [], tags = [], body = '' } = question;
@@ -84,11 +84,6 @@ export function CollabPage(props) {
     runCode,
   } = useCodeExecution(); 
   const editorRef = useRef();
-
-  // remove the old header
-  useEffect(() => {
-    setShowHeader(false);
-  }, []);
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));

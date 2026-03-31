@@ -4,7 +4,7 @@ import { CollabPage } from './CollabPage.jsx';
 import { useState } from 'react';
 
 export function MatchedPage(props) {
-  const { username, stateData, setShowHeader, onLeave } = props;
+  const { username, stateData, onLeave } = props;
   const { opponent_username, difficulties = [], topics = [] } = stateData;
   const [ openCollab, setOpenCollab ] = useState(false);
   
@@ -15,7 +15,7 @@ export function MatchedPage(props) {
   };
 
   if (openCollab) {
-    return <CollabPage stateData={stateData} onLeave={onLeave} setShowHeader={setShowHeader} />
+    return <CollabPage stateData={stateData} onLeave={onLeave} />
   }
 
   return (

@@ -1,5 +1,5 @@
 import styles from './MatchMainPage.module.css';
-import { useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { useMatchingService } from '../hooks/useMatchingService.jsx';
 import { MatchPage } from './MatchPage.jsx';
 import { useNavigate } from 'react-router';
@@ -9,6 +9,7 @@ import { MatchedPage } from './MatchedPage.jsx';
 import { states } from '../hooks/useMatchingService.jsx';
 
 import { PrimaryButton } from "../components/PrimaryButton";
+import { HeaderContext } from "../contexts/HeaderContext";
 
 export function MatchMainPage() {
   const {
@@ -19,10 +20,21 @@ export function MatchMainPage() {
     request_match
   } = useMatchingService();
   const navigate = useNavigate();
-  const [showHeader, setShowHeader] = useState(true);
+  const { setShowHeader } = useContext(HeaderContext);
+
+  useEffect(() => {
+    if (state === states.matching || state === states.matched) {
+      setShowHeader(false);
+    } else {
+      setShowHeader(true);
+    }
+
+    return () => setShowHeader(true);
+  }, [state, setShowHeader]);
 
   async function onLeave() {
     leave();
+    setShowHeader(true);
     navigate('/signed-in');
   }
 
@@ -30,16 +42,13 @@ export function MatchMainPage() {
     switch (state) {
       case states.matching:
         return <MatchingPage />
-
       case states.matched:
         return <MatchedPage 
                 username={username} 
                 state={state} 
                 stateData={stateData} 
-                setShowHeader={setShowHeader} 
                 onLeave={onLeave}
                />
-
       default:
         return <MatchPage username={username} request_match={request_match} />
     }

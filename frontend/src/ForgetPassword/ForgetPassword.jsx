@@ -1,7 +1,8 @@
 import TextField from "@mui/material/TextField";
 import styles from './ForgetPassword.module.css';
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../hooks/useUserService";
+import { HeaderContext } from "../contexts/HeaderContext";
 import { Card } from "../components/Card";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { useNavigate } from "react-router";
@@ -9,7 +10,13 @@ import { useNavigate } from "react-router";
 export function ForgetPassword() {
   const [input, setInput] = useState('');
   const { loading, forgetPassword } = useContext(UserContext);
+  const { setShowHeader } = useContext(HeaderContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setShowHeader(false);
+    return () => setShowHeader(true);
+  }, [setShowHeader]);
 
   async function submit(ev) {
     ev.preventDefault();

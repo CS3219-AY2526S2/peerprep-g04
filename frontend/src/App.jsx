@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { UserContext, useUserService } from './hooks/useUserService.jsx';
 import { ToastContainer } from 'react-toastify';
 import { Header } from './components/Header';
+import { HeaderContext } from './contexts/HeaderContext';
 
 function App() {
   const userService = useUserService();
@@ -13,6 +14,7 @@ function App() {
   const location = useLocation();
 
   const [tab, setTab] = useState(0);
+  const [showHeader, setShowHeader] = useState(true);
 
   useEffect(() => {
     checkForAccessTokenAndLogin().then((res) => {
@@ -24,23 +26,13 @@ function App() {
 
   useEffect(() => {
     const path = location.pathname;
-  
+
     if (path.includes('match')) setTab(1);
     else if (path.includes('question-management')) setTab(2);
     else if (path.includes('user-management')) setTab(3);
     else if (path === '/signed-in') setTab(0);
     else setTab(null);
   }, [location.pathname]);
-
-  const hideHeaderRoutes = [
-    '/',
-    '/reset-password',
-    '/forget-password',
-  ];
-  
-  const hideHeader = hideHeaderRoutes.some((route) =>
-    location.pathname === route
-  );
 
   function handleTabChange(e, val) {
     setTab(val);
@@ -65,17 +57,19 @@ function App() {
 
   return (
     <UserContext value={userService}>
-      <div className="app-container">
-        {!hideHeader && user && (
-          <Header value={tab} onChange={handleTabChange} />
-        )}
+      <HeaderContext.Provider value={{ showHeader, setShowHeader }}>
+        <div className="app-container">
+          {showHeader && user && (
+            <Header value={tab} onChange={handleTabChange} />
+          )}
 
-        <main className="app-content">
-          <Outlet />
-        </main>
+          <main className="app-content">
+            <Outlet />
+          </main>
 
-        <ToastContainer autoClose={1000} />
-      </div>
+          <ToastContainer autoClose={1000} />
+        </div>
+      </HeaderContext.Provider>
     </UserContext>
   );
 }
