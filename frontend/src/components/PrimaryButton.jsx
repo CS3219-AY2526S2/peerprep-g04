@@ -20,7 +20,6 @@ export function PrimaryButton({
       fontSize: '0.9rem',
       fontWeight: 700,
       letterSpacing: '0.04em',
-      cursor: 'not-allowed',
       transition: 'all 0.3s ease',
       cursor: disabled ? 'not-allowed' : 'pointer',
     };
