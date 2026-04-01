@@ -1,60 +1,53 @@
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../hooks/useUserService.jsx";
-import {
-  get_all_users,
-  external_update_user
-} from "../hooks/useUserService.jsx";
+import { get_all_users } from "../hooks/useUserService.jsx";
 
 import styles from './UserListPage.module.css';
 
 import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from "@mui/material/TextField";
-
+import { EditUserDialog } from "./EditUserDialog";
 import { Table } from "../components/Table";
-import { PrimaryButton } from '../components/PrimaryButton';
 
 import { useOutletContext } from "react-router";
 
 export function UserListPage() {
-  const { accessToken, setUser: setCurrUser, user: currUser } = useContext(UserContext);
-  const [users, setUsers] = useState([]);
+  const { accessToken } = useContext(UserContext);
   const { reload, setReload } = useOutletContext();
 
-  const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    access: "",
-  });
-
-  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
 
   useEffect(() => {
-    get_all_users(accessToken).then(users => {
+    get_all_users(accessToken).then((users) => {
       if (users) setUsers(users);
     });
   }, [accessToken, reload]);
 
+  const filteredUsers = users
+  .filter((user) => {
+    const s = search.toLowerCase();
+
+    const matchesSearch =
+      user.username.toLowerCase().includes(s) ||
+      user.email.toLowerCase().includes(s);
+
+    const matchesRole =
+      roleFilter === "all" || user.access === roleFilter;
+
+    return matchesSearch && matchesRole;
+  })
+  .sort((a, b) => a.id - b.id); 
+
   const handleOpen = (user) => {
     setSelectedUser(user);
-    setForm({
-      username: user.username,
-      email: user.email,
-      access: user.access,
-    });
     setOpen(true);
   };
 
@@ -63,57 +56,38 @@ export function UserListPage() {
     setSelectedUser(null);
   };
 
-  const handleChange = (e) => {
-    setForm(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleSave = async () => {
-    if (!selectedUser) return;
-
-    setLoading(true);
-
-    const res = await external_update_user(
-      selectedUser.id,
-      form,
-      accessToken
-    );
-
-    if (res) {
-      if (currUser?.user_id === selectedUser.id) {
-        setCurrUser({
-          ...form,
-          user_id: selectedUser.id,
-        });
-      }
-
-      setReload(r => !r);
-
-      handleClose();
-    }
-
-    setLoading(false);
-  };
-
-  const hasChanges = () => {
-    if (!selectedUser) return false;
-  
-    return (
-      form.username !== selectedUser.username ||
-      form.email !== selectedUser.email ||
-      form.access !== selectedUser.access
-    );
+  const handleSuccess = () => {
+    setReload((r) => !r);
   };
 
   return (
     <div className={styles.main}>
       <div className={styles.body}>
-        
-        <h1 className={styles.title}>
-          Manage Users
-        </h1>
+        <h1 className={styles.title}>Manage Users</h1>
+
+        <div className={styles.filters}>
+          <TextField
+            label="Search"
+            placeholder="Search by username or email..."
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ minWidth: 400, backgroundColor: "#fff", borderRadius: 1 }}
+          />
+
+          <TextField
+            label="Role"
+            select
+            size="small"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            sx={{ minWidth: 150, backgroundColor: "#fff", borderRadius: 1 }}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="admin">Admin</MenuItem>
+            <MenuItem value="user">User</MenuItem>
+          </TextField>
+        </div>
 
         <Table emptyMessage="No users found." style={{ width: "100%" }}>
           <table>
@@ -128,84 +102,31 @@ export function UserListPage() {
             </thead>
 
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{user.access}</td>
-                  <td>
-                    <IconButton onClick={() => handleOpen(user)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </td>
-                </tr>
+              {filteredUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>{user.access}</td>
+                    <td>
+                      {user.access !== "owner" && (
+                        <IconButton onClick={() => handleOpen(user)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </td>
+                  </tr>
               ))}
             </tbody>
           </table>
         </Table>
 
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-          <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif" }}>Edit Userg</DialogTitle>
-
-          <DialogContent>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem" }}>
-              
-              <TextField
-                fullWidth
-                label="Username"
-                name="username"
-                value={form.username}
-                onChange={handleChange}
-              />
-
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-              />
-
-              <FormControl fullWidth>
-                <InputLabel id="access-label">Access</InputLabel>
-                <Select
-                  labelId="access-label"
-                  name="access"
-                  value={form.access}
-                  label="Access"
-                  onChange={handleChange}
-                >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="user">User</MenuItem>
-                </Select>
-              </FormControl>
-
-            </div>
-          </DialogContent>
-
-          <DialogActions style={{ padding: "1rem" }}>
-            <div style={{ display: "flex", width: "100%", gap: "0.75rem" }}>
-              
-              <PrimaryButton
-                text="Cancel"
-                color="white"
-                fullWidth={true}
-                onClick={handleClose}
-              />
-
-              <PrimaryButton
-                text={loading ? "Updating..." : "Update"}
-                color="blue"
-                fullWidth={true}
-                onClick={handleSave}
-                disabled={loading || !hasChanges()}
-              />
-
-            </div>
-          </DialogActions>
-        </Dialog>
-
+        <EditUserDialog
+          open={open}
+          onClose={handleClose}
+          selectedUser={selectedUser}
+          onSuccess={handleSuccess}
+        />
       </div>
     </div>
   );

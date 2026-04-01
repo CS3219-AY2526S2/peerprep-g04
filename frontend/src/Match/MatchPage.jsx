@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import styles from './MatchPage.module.css';
 import { get_all_question_tags } from "../hooks/useQuestionService.jsx";
 
+import { PrimaryButton } from "../components/PrimaryButton";
+import { Tag } from "../components/Tag";
+
 const difficulties = ['easy', 'medium', 'hard'];
 
 const difficultyConfig = {
@@ -90,27 +93,25 @@ export function MatchPage(props) {
             {tags.map(t => {
               const selected = selectedTags.includes(t);
               return (
-                <button
+                <Tag
                   key={t}
-                  className={`${styles.tag} ${selected ? styles.tagSelected : ''}`}
+                  text={t}
+                  selected={selected}
                   onClick={() => selected ? delTag(t) : addTag(t)}
-                >
-                  {t}
-                </button>
+                />
               );
             })}
           </div>
         </div>
 
         {/* Match button */}
-        {canMatch && (
-          <button
-            className={`${styles.matchBtn} ${styles.matchBtnActive}`}
-            onClick={() => request_match(selectedDiff, selectedTags)}
-          >
-            <span className={styles.matchBtnText}>🚀 Find My Match</span>
-          </button>
-        )}
+        <PrimaryButton
+          text="🚀 Find My Match"
+          color="blue"
+          onClick={() => request_match(selectedDiff, selectedTags)}
+          fullWidth={true}
+          disabled={!canMatch}
+        />
       </div>
     </div>
   );

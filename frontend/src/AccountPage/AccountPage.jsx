@@ -1,5 +1,4 @@
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import styles from './AccountPage.module.css';
 import Avatar from "@mui/material/Avatar";
 import { useContext, useState } from 'react';
@@ -41,14 +40,6 @@ export function AccountPage() {
 
   return (
     <div className={styles.main}>
-      <div className={styles.header}>
-        <div className={styles.end}>
-          <Button variant="outlined" onClick={() => navigate('/signed-in')}>
-            Back
-          </Button>
-        </div>
-      </div>
-
       <div className={styles.body}>
         <div className={styles.wrapper}>
           <h1 className={styles.title}>

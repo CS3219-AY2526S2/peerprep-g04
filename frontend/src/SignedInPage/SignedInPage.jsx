@@ -3,7 +3,7 @@ import { AiChatPage } from "../AiChat/AiChatPage.jsx";
 
 export function SignedInPage() {
   return (
-    <div style={{width: '100vw', position: 'relative'}}>
+    <div style={{width: '100vw', position: 'relative', background: "#f8faff"}}>
       <Outlet />
       <AiChatPage />
     </div>

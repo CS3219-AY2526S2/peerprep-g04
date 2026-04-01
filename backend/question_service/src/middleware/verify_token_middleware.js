@@ -17,7 +17,7 @@ export function verify_token_middleware(req, res, next) {
     const { user_id, access } = payload;
     if (!user_id) {
         return res.status(400).json({ message: 'user id is missing' });
-    } else if (access !== 'admin') {
+    } else if (access !== 'admin' && access !== 'owner') {
         return res.status(400).json({ message: 'this operation is not permitted as user is not an admin' });
     }
 
