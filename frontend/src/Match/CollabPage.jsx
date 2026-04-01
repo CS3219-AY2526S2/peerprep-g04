@@ -77,7 +77,7 @@ export function CollabPage(props) {
     const yDoc = new Y.Doc();
     
     const provider = new WebsocketProvider(
-      `ws://localhost:3003?token=${accessToken}`, match_id.toString(), yDoc
+      `ws://localhost:1234?token=${accessToken}`, match_id.toString(), yDoc
     );
     
     const yText = yDoc.getText("monaco");
