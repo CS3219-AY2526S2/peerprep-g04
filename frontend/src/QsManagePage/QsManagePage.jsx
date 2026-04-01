@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Warning from '../assets/warning.svg?react';
 import { useContext } from 'react';
 import { UserContext } from '../hooks/useUserService';
+import Typography from '@mui/material/Typography';
 
 export function NotAuthorizedPage() {
   return (

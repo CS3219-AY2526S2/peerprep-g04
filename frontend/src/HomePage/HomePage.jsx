@@ -3,16 +3,13 @@ import { Navigate, useNavigate } from "react-router";
 import styles from './HomePage.module.css';
 import { UserContext } from "../hooks/useUserService";
 import Button from "@mui/material/Button";
+import { useEffect } from "react";
 
 export function HomePage() {
   const { user, logout } = useContext(UserContext)
   const navigate = useNavigate();
 
-  if (!user) {
-    return <Navigate to='/' />
-  }
-
-   async function myLogout() {
+  async function myLogout() {
     await logout();
     navigate('/');
   }

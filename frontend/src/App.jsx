@@ -17,12 +17,13 @@ function App() {
   const [showHeader, setShowHeader] = useState(true);
 
   useEffect(() => {
-    checkForAccessTokenAndLogin().then((res) => {
-      if (res && location.pathname === '/') {
-        navigate('/signed-in');
-      }
-    });
-  }, [checkForAccessTokenAndLogin, location.pathname, navigate]);
+    checkForAccessTokenAndLogin()
+      .then(res => res && navigate(location.pathname === '/' ? '/signed-in' : location.pathname));
+  }, []);
+
+  useEffect(() => {
+    if (!user) navigate('/');
+  }, [user]);
 
   useEffect(() => {
     const path = location.pathname;
