@@ -7,6 +7,7 @@ import Tab from "@mui/material/Tab";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Box from "@mui/material/Box";
 
 export function Header({ onChange }) {
   const { user, logout } = useContext(UserContext);
@@ -33,7 +34,7 @@ export function Header({ onChange }) {
     header: {
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "space-between", // Pushes logo left and the nav-group right
       padding: "0.5rem 1.5rem",
       borderBottom: "1px solid #e2e8f0",
       background: "white",
@@ -43,21 +44,28 @@ export function Header({ onChange }) {
       fontStyle: "italic",
       fontSize: "1.4rem",
       fontWeight: 800,
-    
       background: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       backgroundClip: "text",
-    
       letterSpacing: "-0.02em",
+      margin: 0, // Reset default h1 margins
+    },
+    navGroup: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1.5rem", // Space between tabs and avatar
     },
     tab: {
       fontFamily: "'DM Sans', sans-serif",
       textTransform: "none",
       fontWeight: 500,
+      minWidth: "auto",
+      px: 2,
     },
     avatar: {
       cursor: "pointer",
+      background: "linear-gradient(135deg, #1d4ed8, #3b82f6)",
     },
   };
 
@@ -86,52 +94,59 @@ export function Header({ onChange }) {
     <div style={styles.header}>
       <h1 style={styles.logo}>PeerPrep</h1>
 
-      <Tabs value={tab} onChange={handleTabChange}>
-        <Tab label="Home" value={0} sx={styles.tab} />
-        <Tab label="Match" value={1} sx={styles.tab} />
+      <div style={styles.navGroup}>
+        <Tabs value={tab} onChange={handleTabChange} sx={{ minHeight: 'unset' }}>
+          <Tab label="Home" value={0} sx={styles.tab} />
+          <Tab label="Match" value={1} sx={styles.tab} />
 
-        {isAdminOrOwner && (
-          <Tab
-            label="Question Management"
-            value={2}
-            sx={styles.tab}
-          />
-        )}
+          {isAdminOrOwner && (
+            <Tab
+              label="Question Management"
+              value={2}
+              sx={styles.tab}
+            />
+          )}
 
-        {isAdminOrOwner && (
-          <Tab
-            label="User Management"
-            value={3}
-            sx={styles.tab}
-          />
-        )}
-      </Tabs>
+          {isAdminOrOwner && (
+            <Tab
+              label="User Management"
+              value={3}
+              sx={styles.tab}
+            />
+          )}
+        </Tabs>
 
-      <Avatar
-        style={styles.avatar}
-        onClick={(e) => setAnchorElem(e.currentTarget)}
-      >
-        {user?.username?.[0]?.toUpperCase()}
-      </Avatar>
+        <Box>
+          <Avatar
+            style={styles.avatar}
+            onClick={(e) => setAnchorElem(e.currentTarget)}
+          >
+            {user?.username?.[0]?.toUpperCase()}
+          </Avatar>
 
-      <Menu
-        anchorEl={anchorElem}
-        open={Boolean(anchorElem)}
-        onClose={() => setAnchorElem(null)}
-      >
-        <MenuItem onClick={() => navigate("/signed-in/account")}>
-          Account
-        </MenuItem>
+          <Menu
+            anchorEl={anchorElem}
+            open={Boolean(anchorElem)}
+            onClose={() => setAnchorElem(null)}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={() => { setAnchorElem(null); navigate("/signed-in/account"); }}>
+              Account
+            </MenuItem>
 
-        <MenuItem
-          onClick={async () => {
-            await logout();
-            navigate("/");
-          }}
-        >
-          Logout
-        </MenuItem>
-      </Menu>
+            <MenuItem
+              onClick={async () => {
+                setAnchorElem(null);
+                await logout();
+                navigate("/");
+              }}
+            >
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
+      </div>
     </div>
   );
 }

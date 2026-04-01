@@ -44,6 +44,7 @@
     width: 80px !important;
     height: 80px !important;
     font-size: 2rem !important;
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
 }
 
 .username {
