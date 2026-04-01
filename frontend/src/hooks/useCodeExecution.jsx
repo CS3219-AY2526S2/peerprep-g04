@@ -43,7 +43,7 @@ export function useCodeExecution() {
         setOutputErr(true);
         setOutput(res.data.stderr);
       } else {
-        setOutputErr(true);
+        setOutputErr(false);
         setOutput(res.data.stdout);
       }
     } catch (err) {

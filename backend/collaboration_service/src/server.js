@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { WebSocketServer } from 'ws'
 import http from 'http'
 import * as number from 'lib0/number'
@@ -8,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 const wss = new WebSocketServer({ noServer: true })
 const host = process.env.HOST || '0.0.0.0'
-const port = number.parseInt(process.env.PORT || '3004')
+const port = number.parseInt(process.env.PORT || '3003')
 
 const server = http.createServer((_request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/plain' })

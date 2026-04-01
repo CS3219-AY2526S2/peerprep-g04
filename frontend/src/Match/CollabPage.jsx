@@ -21,16 +21,26 @@ const diffToColor = {
   hard: { backgroundColor: '#dc2626', color: 'red' }
 };
 
-function Loading() {
-  return (
-    <div className={styles.terminalSpinner}>
-      <div className={styles.spinner}></div>
-    </div>
-  )
-}
-
 function Output(props) {
   const { loading, open, setOpen, output } = props;
+
+  function whatPage() {
+    if (loading) {
+      return (
+        <div className={styles.terminalSpinner}>
+          <div className={styles.spinner}></div>
+        </div>
+      )
+    } 
+    
+    else {
+      return (
+        <div className={styles.terminalBody}>
+          <code>{output}</code>
+        </div>
+      )
+    }
+  }
 
   return (
     <div className={styles.terminal}>
@@ -40,11 +50,7 @@ function Output(props) {
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />} 
         </IconButton>
       </div>
-      {open && (
-        <div className={styles.terminalBody}>
-          {loading ? <div className={styles.spinner}></div> : <code>{output}</code>}
-        </div>
-      )}
+      {open && whatPage()}
     </div>
   )
 }
@@ -77,7 +83,7 @@ export function CollabPage(props) {
     const yDoc = new Y.Doc();
     
     const provider = new WebsocketProvider(
-      `ws://localhost:1234?token=${accessToken}`, match_id.toString(), yDoc
+      `ws://${import.meta.env.VITE_COLLAB_SERVICE_API}?token=${accessToken}`, match_id.toString(), yDoc
     );
     
     const yText = yDoc.getText("monaco");
@@ -86,7 +92,7 @@ export function CollabPage(props) {
       yText, editorRef.current.getModel(), new Set([editorRef.current]), provider.awareness
     );           
   }
-
+``
   return (
     <div className={styles.main}>
       <MatchHeader
