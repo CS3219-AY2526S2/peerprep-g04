@@ -67,7 +67,7 @@ export function useUserService() {
       const res = await user_api.get('/verify-token', {
         headers: {authorization: `Bearer ${accessToken}`},
       });
-      setAccessToken(accessToken);
+      setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
       return true;
     } catch (err) {

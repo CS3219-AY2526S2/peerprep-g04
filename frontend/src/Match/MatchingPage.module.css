@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 .matchingPage {
-  min-height: 100vh;
+  height: 80vh;
   background: #f8faff;
   font-family: 'DM Sans', sans-serif;
   display: flex;
