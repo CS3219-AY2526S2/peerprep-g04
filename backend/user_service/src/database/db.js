@@ -67,7 +67,7 @@ export async function get_submissions_by_question(question_id, user_id) {
     const res = await pool.query(`
         SELECT * FROM submission_attempts
         WHERE question_id = $1 AND user_id = $2
-        ORDER BY submitted_at ASC
+        ORDER BY submitted_at DESC
     `, [question_id, user_id]);
     return res.rows;
 }

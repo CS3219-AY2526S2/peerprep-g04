@@ -1,5 +1,6 @@
 import styles from './CollabPage.module.css';
 import { useEffect, useState, useRef, useContext } from 'react';
+import { toast } from 'react-toastify';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Editor from '@monaco-editor/react';
 import Typography from '@mui/material/Typography';
@@ -144,7 +145,10 @@ export function CollabPage(props) {
 
   const handleSubmit = async () => {
     const currentCode = editorRef.current?.getValue();
-    if (!currentCode) return;
+    if (!currentCode) {
+      toast("Code editor is empty!", { type: "error" });
+      return;
+    }
 
     const submissionData = {
       user_id: user.user_id,
@@ -157,11 +161,29 @@ export function CollabPage(props) {
     const newSubmission = await createSubmission(submissionData);
     
     if (newSubmission) {
-      const history = await get_question_attempts(question_id);
-      setSubmissions(history || []);
+      setSubmissions(prev => [newSubmission, ...prev]);
       setTab("Submissions");
     }
   };
+
+  function formatDateTime(dateString) {
+    const d = new Date(dateString);
+    
+    const datePart = d.toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    });
+    
+    const timePart = d.toLocaleTimeString('en-GB', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit', 
+      hour12: false 
+    });
+  
+    return `${datePart}, ${timePart}`;
+  }
 
   return (
     <div className={styles.main}>
@@ -234,7 +256,7 @@ export function CollabPage(props) {
                     <tbody>
                       {submissions.map((s, idx) => (
                         <tr key={idx}>
-                          <td>{new Date(s.submitted_at).toLocaleDateString()}</td>
+                          <td>{formatDateTime(s.submitted_at)}</td>
                           <td>{formatLanguage[s.lang] || s.lang}</td>
                           <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#d97706' }}>
                             {s.status}
