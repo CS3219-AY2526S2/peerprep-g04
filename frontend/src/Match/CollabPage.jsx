@@ -16,6 +16,7 @@ import { MatchHeader } from '../components/MatchHeader.jsx';
 import { Card } from '../components/Card.jsx';
 import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
+import { Table } from '../components/Table.jsx';
 
 const diffColors = {
   easy: {
@@ -42,6 +43,11 @@ const diffColors = {
     text: "#991b1b",
     textHover: "#7f1d1d",
   },
+};
+
+const formatLanguage = {
+  "javascript": "JavaScript",
+  "python": "Python",
 };
 
 function Output(props) {
@@ -82,9 +88,10 @@ export function CollabPage(props) {
 
   const [question, setQuestion] = useState({});
   const [tab, setTab] = useState("Description");
+  const [submissions, setSubmissions] = useState([]);
 
   const { title = '', difficulty = '', tags = [], body = '' } = question;
-  const { accessToken } = useContext(UserContext);
+  const { user, accessToken, get_question_attempts, createSubmission } = useContext(UserContext);
 
   const {
     lang,
@@ -98,9 +105,11 @@ export function CollabPage(props) {
   } = useCodeExecution();
 
   const editorRef = useRef();
+  const yTextRef = useRef();
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
+    get_question_attempts(question_id).then(history => setSubmissions(history || []));
   }, [question_id]);
 
   function handleEditorDidMount(editor) {
@@ -115,6 +124,7 @@ export function CollabPage(props) {
     );
 
     const yText = yDoc.getText("monaco");
+    yTextRef.current = yText;
 
     new MonacoBinding(
       yText,
@@ -124,12 +134,42 @@ export function CollabPage(props) {
     );
   }
 
+  const loadSubmission = (code) => {
+    if (!yTextRef.current) return;
+    
+    const currentLength = yTextRef.current.length;
+    yTextRef.current.delete(0, currentLength);
+    yTextRef.current.insert(0, code);
+  };
+
+  const handleSubmit = async () => {
+    const currentCode = editorRef.current?.getValue();
+    if (!currentCode) return;
+
+    const submissionData = {
+      user_id: user.user_id,
+      question_id: question_id,
+      lang: lang,
+      code: currentCode,
+      status: 'Accepted' // hardcoded
+    };
+
+    const newSubmission = await createSubmission(submissionData);
+    
+    if (newSubmission) {
+      const history = await get_question_attempts(question_id);
+      setSubmissions(history || []);
+      setTab("Submissions");
+    }
+  };
+
   return (
     <div className={styles.main}>
       <MatchHeader
         lang={lang}
         setLang={setLang}
         onRun={() => runCode(editorRef.current?.getValue())}
+        onSubmit={handleSubmit}
         onLeave={onLeave}
         loading={loading}
         showRun={true}
@@ -178,9 +218,40 @@ export function CollabPage(props) {
               )}
 
               {tab === "Submissions" && (
-                <Typography variant="body2">
-                  No submissions yet.
-                </Typography>
+                <Table 
+                   style={{ border: 'none', boxShadow: 'none', padding: 0 }} 
+                   emptyMessage="No previous attempts for this question."
+                >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Language</th>
+                        <th>Status</th>
+                        <th>&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {submissions.map((s, idx) => (
+                        <tr key={idx}>
+                          <td>{new Date(s.submitted_at).toLocaleDateString()}</td>
+                          <td>{formatLanguage[s.lang] || s.lang}</td>
+                          <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#d97706' }}>
+                            {s.status}
+                          </td>
+                          <td>
+                            <button 
+                              className={styles.loadBtn}
+                              onClick={() => loadSubmission(s.code)}
+                            >
+                              Load
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Table>
               )}
             </div>
           </Card>

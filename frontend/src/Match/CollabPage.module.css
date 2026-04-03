@@ -95,10 +95,6 @@
     animation: spin 1s linear infinite;
 }
 
-.easy   { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-.medium { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-.hard   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-
 /* LEFT CARD LAYOUT */
 .cardContainer {
     height: 100%;
@@ -120,9 +116,28 @@
     color: #1e293b;
 }
 
+.loadBtn {
+    cursor: pointer;
+    border: 1px solid #2563eb;
+    background: transparent;
+    color: #2563eb;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.loadBtn:hover {
+    background-color: #2563eb;
+    color: white;
+}
+
 .tabContent {
-    overflow: auto;
     flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none; 
 }
 
 .markdownWrapper p {
@@ -145,7 +160,6 @@
 }
 
 /* RIGHT CARD LAYOUT */
-/* EDITOR WRAPPER */
 .editorContainer {
     height: 100%;
     border-radius: 12px;
