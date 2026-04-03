@@ -73,7 +73,7 @@ function Output(props) {
   return (
     <div className={styles.terminal}>
       <div className={styles.terminalHeader}>
-        <Typography sx={{ fontSize: '16px' }}>Terminal</Typography>
+        <span>Terminal</span>
         <IconButton onClick={() => setOpen(!open)} sx={{ height: '24px', width: '24px' }}>
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
         </IconButton>
