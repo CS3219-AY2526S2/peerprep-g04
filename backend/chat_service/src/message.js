@@ -44,7 +44,7 @@ export function initialConnect(roomId, socket) {
         roomIdToRoomInfo.set(roomId, new RoomInfo());
     }
     const msgs = roomIdToRoomInfo.get(roomId).getAllMessages();
-    socket.emit('initial connect', msgs);
+    socket.emit('join room', msgs);
 }
 
 export function newMessage(username, message, io) {
@@ -64,4 +64,9 @@ export function leave(username, socket) {
     if (!roomInfo) return;
     roomInfo.removeUser();
     if (roomInfo.isEmpty()) roomIdToRoomInfo.delete(roomId);
+}
+
+export function resetServer() {
+    usernameToRoomId.clear();
+    roomIdToRoomInfo.clear();
 }
