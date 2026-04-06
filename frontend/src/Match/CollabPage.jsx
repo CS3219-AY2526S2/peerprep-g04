@@ -19,6 +19,38 @@ import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
 import { Table } from '../components/Table.jsx';
 
+const diffColors = {
+  easy: {
+    bg: "#dcfce7",
+    bgHover: "#bbf7d0",
+    border: "#86efac",
+    borderHover: "#4ade80",
+    text: "#166534",
+    textHover: "#14532d",
+  },
+  medium: {
+    bg: "#fef3c7",
+    bgHover: "#fde68a",
+    border: "#fcd34d",
+    borderHover: "#f59e0b",
+    text: "#92400e",
+    textHover: "#78350f",
+  },
+  hard: {
+    bg: "#fee2e2",
+    bgHover: "#fecaca",
+    border: "#fca5a5",
+    borderHover: "#ef4444",
+    text: "#991b1b",
+    textHover: "#7f1d1d",
+  },
+};
+
+const formatLanguage = {
+  "javascript": "JavaScript",
+  "python": "Python",
+};
+
 function Output(props) {
   const { loading, open, setOpen, output } = props;
 
