@@ -102,3 +102,16 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+:global(.yRemoteSelection) {
+    background-color: rgba(250, 200, 0, 0.2);
+}
+
+:global(.yRemoteSelectionHead) {
+    position: absolute;
+    border-left: 2px solid orange;
+    border-top: 2px solid orange;
+    border-bottom: 2px solid orange;
+    height: 100%;
+    box-sizing: border-box;
+}

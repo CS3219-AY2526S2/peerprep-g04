@@ -40,6 +40,11 @@
     gap: 8px;
 }
 
+.ai, .user {
+    max-width: 75%;
+    word-wrap: break-word;
+}
+
 .ai {
     padding: 4px;
     align-self: start;

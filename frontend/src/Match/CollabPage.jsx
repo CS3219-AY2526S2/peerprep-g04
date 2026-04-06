@@ -15,12 +15,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useCodeExecution } from '../hooks/useCodeExecution.jsx';
 import { MatchHeader } from '../components/MatchHeader.jsx';
 
-const diffToColor = {
-  easy: { backgroundColor: '#16a34a', color: 'green' },
-  medium: { backgroundColor: '#d97706', color: 'orange' },
-  hard: { backgroundColor: '#dc2626', color: 'red' }
-};
-
 function Output(props) {
   const { loading, open, setOpen, output } = props;
 
@@ -61,6 +55,7 @@ export function CollabPage(props) {
   const [question, setQuestion] = useState({});
   const { title = '', difficulty = [], tags = [], body = '' } = question;
   const { accessToken } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   const { 
     lang, 
@@ -85,6 +80,10 @@ export function CollabPage(props) {
     const provider = new WebsocketProvider(
       `ws://${import.meta.env.VITE_COLLAB_SERVICE_API}?token=${accessToken}`, match_id.toString(), yDoc
     );
+
+    provider.awareness.setLocalStateField('user', {
+      name: user?.username || 'Anonymous',
+    });
     
     const yText = yDoc.getText("monaco");
   
