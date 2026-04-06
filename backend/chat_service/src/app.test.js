@@ -72,4 +72,27 @@ test('2 connections to different room', async () => {
     await vi.waitFor(() => {
         expect(cb).toHaveBeenCalledTimes(1);
     }, waiting);
-})
+});
+
+test('2 connections to same room more messages', async () => {
+    const cb = vi.fn();
+    const cb2 = vi.fn();
+    
+    client1.on('new message', cb);
+    client1.on('join room', cb2);
+    client2.on('new message', cb);
+    client2.on('join room', cb2);
+
+    client1.emit('join room', 'tim', 1);
+    client2.emit('join room', 'jim', 2);
+
+    for (let i = 0; i < 10; i++) {
+        client1.emit('new message', 'tim', 'hello world');
+        client2.emit('new message', 'jim', 'hello world');
+    }
+
+    await vi.waitFor(() => {
+        expect(cb2).toHaveBeenCalledTimes(2);
+        expect(cb).toHaveBeenCalledTimes(20);
+    }, waiting);
+});
