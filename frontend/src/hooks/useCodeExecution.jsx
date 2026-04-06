@@ -35,8 +35,6 @@ export function useCodeExecution() {
       const res = await judge0_api.post('/submissions?wait=true', {
         language_id: lang_to_id[lang],
         source_code: code,
-        cpu_time_limit: 1.0,
-        memory_limit: 1048576,
       });
 
       if (res.data.stderr) {
