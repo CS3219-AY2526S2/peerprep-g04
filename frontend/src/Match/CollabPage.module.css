@@ -29,27 +29,17 @@
     grid-area: 1 / 1 / -1 / 2;
     flex-direction: column;
     align-items: stretch;
-    border: 1px solid grey;
-    border-radius: 8px;
     width: 40vw;
-    padding: 4px;
     resize: horizontal;
-    overflow: auto;
-}
-
-.bodyLeftHeader {
+    overflow: hidden;
+    height: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center; 
 }
 
 .bodyRight {
-    grid-area: 1 / 2 / 2 / -1;
-    border: 1px solid grey;
-    padding: 4px;
-    border-radius: 8px;
-    background-color: black;
-    overflow-y: scroll;
+    grid-area: 1 / 2 / 2 / -1;    
+    overflow: hidden;
+    min-width: 200px;
 }
 
 .terminal {
@@ -61,23 +51,30 @@
     align-items: stretch;
     padding: 4px;
     gap: 4px;
+    background: white;
 }
 
 .terminalHeader {
     display: flex;
-    align-items: start;
     justify-content: space-between;
     align-items: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding-left: 6px;
 }
 
 .terminalBody {
-    border: 1px solid grey;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     min-height: 160px;
     white-space: pre-wrap;
-    overflow: scroll;
-    background-color: lightgrey;
-    padding: 4px;
+    overflow: auto;
+    background-color: #f8fafc;
+    padding: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #1e293b;
 }
 
 .terminalSpinner {
@@ -86,7 +83,7 @@
     justify-content: center;
     align-items: center;
     padding: 16px;
-    background-color: lightgrey;
+    background-color: #f8fafc;
     border-radius: 8px;
 }
 
@@ -97,6 +94,81 @@
     border-radius: 50%;
     border-top: 1px solid black;
     animation: spin 1s linear infinite;
+}
+
+/* LEFT CARD LAYOUT */
+.cardContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tagRow {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.markdownWrapper {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1e293b;
+    overflow-y: auto;
+}
+
+.loadBtn {
+    cursor: pointer;
+    border: 1px solid #2563eb;
+    background: transparent;
+    color: #2563eb;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.loadBtn:hover {
+    background-color: #2563eb;
+    color: white;
+}
+
+.tabContent {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-bottom: 24px;
+}
+
+.markdownWrapper p {
+    margin: 4px 0;
+}
+  
+.markdownWrapper h1 {
+    margin: 8px 0;
+    font-size: 1.3rem;
+}
+  
+.markdownWrapper h2 {
+    margin: 6px 0;
+    font-size: 1.1rem;
+}
+  
+.markdownWrapper ul {
+    margin: 6px 0;
+    padding-left: 18px;
+}
+
+/* RIGHT CARD LAYOUT */
+.editorContainer {
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background: #0f172a;
 }
 
 @keyframes spin {

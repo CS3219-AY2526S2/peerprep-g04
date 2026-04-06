@@ -1,19 +1,26 @@
 import React from "react";
 
-export function Tag({ text, selected = false, onClick }) {
+export function Tag({ text, selected = false, onClick, color }) {
   const [isHover, setIsHover] = React.useState(false);
+
+  const palette = color || {
+    bg: "#f8faff",
+    bgHover: "#f1f5f9",
+    border: "#e2e8f0",
+    borderHover: "#cbd5e1",
+    text: "#64748b",
+    textHover: "#1e293b",
+  };
 
   const style = {
     background: selected
-      ? isHover
-        ? "#dbeafe"
-        : "#eff6ff"
+      ? palette.bgHover
       : isHover
-      ? "#f1f5f9"
-      : "#f8faff",
+      ? palette.bgHover
+      : palette.bg,
 
     border: `1.5px solid ${
-      selected ? "#2563eb" : isHover ? "#cbd5e1" : "#e2e8f0"
+      selected ? palette.border : isHover ? palette.borderHover : palette.border
     }`,
 
     borderRadius: "8px",
@@ -21,7 +28,11 @@ export function Tag({ text, selected = false, onClick }) {
     fontSize: "0.75rem",
     fontFamily: "'DM Sans', sans-serif",
 
-    color: selected ? "#1d4ed8" : isHover ? "#1e293b" : "#64748b",
+    color: selected
+      ? palette.text
+      : isHover
+      ? palette.textHover
+      : palette.text,
 
     fontWeight: selected ? 600 : 500,
     cursor: onClick ? "pointer" : "default",

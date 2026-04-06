@@ -10,12 +10,12 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 
-import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 
 import MDEditor from "@uiw/react-md-editor";
 
+import { Tag } from "../components/Tag";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { create_question } from "../hooks/useQuestionService";
 import { toast } from "react-toastify";
@@ -113,7 +113,7 @@ export function CreateQuestionDialog({
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
               {tags.map((t) => (
-                <Chip key={t} label={t} onDelete={deleteTag(t)} />
+                <Tag key={t} text={t} />
               ))}
             </div>
 

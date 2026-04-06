@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Card({ title, badge, children, style = {}, className = "" }) {
+export function Card({ title, badge, children, style = {}, className = "", titleStyle = {} }) {
   const baseStyle = {
     background: "white",
     border: "1px solid #e2e8f0",
@@ -20,7 +20,7 @@ export function Card({ title, badge, children, style = {}, className = "" }) {
     marginBottom: "1.1rem",
   };
 
-  const titleStyle = {
+  const defaultTitleStyle = {
     fontSize: "0.8rem",
     fontWeight: 500,
     fontFamily: "'DM Sans', sans-serif",
@@ -30,6 +30,8 @@ export function Card({ title, badge, children, style = {}, className = "" }) {
     textTransform: "uppercase",
     letterSpacing: "0.12em",
   };
+
+  const mergedTitleStyle = { ...defaultTitleStyle, ...titleStyle };
 
   const badgeStyle = {
     background: "#eff6ff",
@@ -44,7 +46,7 @@ export function Card({ title, badge, children, style = {}, className = "" }) {
   return (
     <div style={mergedStyle} className={className}>
       <div style={headerStyle}>
-        <h2 style={titleStyle}>{title}</h2>
+        <h2 style={mergedTitleStyle}>{title}</h2>
         {badge && <span style={badgeStyle}>{badge}</span>}
       </div>
       {children}
