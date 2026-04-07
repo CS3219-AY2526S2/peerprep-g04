@@ -178,7 +178,8 @@ export async function leave(user_id) {
     if (state === states.matching) {
         const entries = await redis.zRange(QUEUE_KEY, 0, -1);
         for (const entry of entries) {
-                if (data.user_id === user_id) {
+            const data = JSON.parse(entry)
+            if (data.user_id === user_id) {
                 await redis.zRem(QUEUE_KEY, entry);
                 break;
             }
