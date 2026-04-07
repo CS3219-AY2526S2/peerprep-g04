@@ -1,12 +1,13 @@
-import { dequeue_user, get_match_by_user_id } from "../database/db.js";
+import { dequeue_user, get_match_by_user_id, get_user_state, states } from "../database/db.js";
 import { notify_opponent_left } from "../websocket.js";
 
 export async function handle_leave_queue(req, res) {
     const user_id = req.user_id;
 
     try {
-        // notify opponent if user was matched
-        const match = await get_match_by_user_id(user_id);
+        // notify opponent only if user is currently matched 
+        const current_state = await get_user_state(user_id);
+        const match = current_state === states.matched ? await get_match_by_user_id(user_id) : null;
         if (match) {
             const opponent_id = match.user1_id === user_id ? match.user2_id : match.user1_id;
             notify_opponent_left(opponent_id, user_id);
