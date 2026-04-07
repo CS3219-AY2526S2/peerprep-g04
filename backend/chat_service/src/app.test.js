@@ -96,3 +96,28 @@ test('2 connections to same room more messages', async () => {
         expect(cb).toHaveBeenCalledTimes(20);
     }, waiting);
 });
+
+test('change room', async () => {
+    const cb = vi.fn();
+    const cb2 = vi.fn();
+    
+    client1.on('new message', cb);
+    client1.on('join room', cb2);
+    client2.on('new message', cb);
+    client2.on('join room', cb2);
+
+    client1.emit('join room', 'tim', 1);
+    client2.emit('join room', 'jim', 1);
+    client1.emit('join room', 'tim', 2);
+
+    // must wait for client 1 to actually switch rooms.
+    await vi.waitFor(() => {
+        expect(cb2).toHaveBeenCalledTimes(3);
+    })
+
+    client2.emit('new message', 'jim', 'hello world');
+
+    await vi.waitFor(() => {
+        expect(cb).toHaveBeenCalledTimes(1);
+    }, waiting);
+})

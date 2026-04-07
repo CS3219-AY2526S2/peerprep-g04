@@ -1,19 +1,19 @@
 class RoomInfo {
     constructor() {
         this.messages = [];
-        this.numPeople = 0;
+        this.peoples = new Set();
     }
 
     isEmpty() {
-        return this.numPeople == 0;
+        return this.peoples.size == 0;
     }
 
-    addUser() {
-        this.numPeople++;
+    addUser(username) {
+        this.peoples.add(username);
     }
 
-    removeUser() {
-        this.numPeople--;
+    removeUser(username) {
+        this.peoples.delete(username);
     }
 
     addMessage(username, message) {
@@ -31,18 +31,19 @@ const roomIdToRoomInfo = new Map();
 export function joinRoom(username, roomId, socket) {
     const prevRoom = usernameToRoomId.get(username) ;
     if (prevRoom) { 
-        socket.leave(roomId);
-        roomIdToRoomInfo(prevRoom)?.removeUser();   
+        socket.leave(prevRoom);
+        roomIdToRoomInfo.get(prevRoom)?.removeUser(username);   
     }
     usernameToRoomId.set(username, roomId);
     socket.join(roomId);
-    initialConnect(roomId, socket);
+    initialConnect(username, roomId, socket);
 }
 
-export function initialConnect(roomId, socket) {
+export function initialConnect(username, roomId, socket) {
     if (!roomIdToRoomInfo.has(roomId)) {
         roomIdToRoomInfo.set(roomId, new RoomInfo());
     }
+    roomIdToRoomInfo.get(roomId).addUser(username);
     const msgs = roomIdToRoomInfo.get(roomId).getAllMessages();
     socket.emit('join room', msgs);
 }
@@ -60,9 +61,9 @@ export function leave(username, socket) {
     if (!roomId) return;
     socket.leave(roomId);
     usernameToRoomId.delete(username);
-    const roomInfo = roomIdToRoomInfo(roomId);
+    const roomInfo = roomIdToRoomInfo.get(roomId);
     if (!roomInfo) return;
-    roomInfo.removeUser();
+    roomInfo.removeUser(username);
     if (roomInfo.isEmpty()) roomIdToRoomInfo.delete(roomId);
 }
 
