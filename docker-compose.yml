@@ -8,6 +8,8 @@ services:
         VITE_MATCHING_SERVICE_API: localhost:3003
         VITE_COLLABORATION_SERVICE_API: localhost:1234
         VITE_GOOGLE_AI_API_KEY: AIzaSyBmNWRflDyS9QzoeWuaB5kKlH_mptWVBeg
+        VITE_CHAT_SERVICE_API: localhost:3004
+
     ports:
       - "5173:5173"
 

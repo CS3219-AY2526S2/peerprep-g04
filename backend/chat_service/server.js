@@ -1,7 +1,5 @@
 import { server } from "./src/app.js";
 
-const PORT = process.env.PORT;
-
-server.listen(PORT, () => {
-    console.log(`chat service listening on port ${PORT}`);
+server.listen(process.env.PORT, () => {
+    console.log(`chat service listening on port ${process.env.PORT}`);
 });
