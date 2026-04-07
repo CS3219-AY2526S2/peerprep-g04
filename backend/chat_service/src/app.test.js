@@ -22,6 +22,7 @@ afterEach(() => {
     client2.removeAllListeners();
     resetServer();
     io.close();
+    server.close();
 });
 
 const waiting = {

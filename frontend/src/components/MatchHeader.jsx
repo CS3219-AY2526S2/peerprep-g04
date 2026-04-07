@@ -6,7 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import { languages } from '../hooks/useCodeExecution.jsx';
 import { PrimaryButton } from '../components/PrimaryButton.jsx';
 
-export function MatchHeader({ lang, setLang, onRun, onSubmit, onLeave, loading, showRun = false }) {
+export function MatchHeader({ 
+  lang, setLang, onRun, onSubmit, onLeave, loading, showRun = false, showChat = false, onOpenChat,
+}) {
   const styles = {
     header: {
       display: 'flex',
@@ -64,6 +66,13 @@ export function MatchHeader({ lang, setLang, onRun, onSubmit, onLeave, loading, 
       ) : <div style={styles.left} /> }
 
       <div style={styles.center}>
+        {showChat && 
+          <PrimaryButton 
+            text='Chat' 
+            fullWidth={false}
+            onClick={onOpenChat}
+          />
+        }
         {showRun && (
           <>
             <PrimaryButton
