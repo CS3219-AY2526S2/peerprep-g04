@@ -8,17 +8,28 @@ export const languages = Object.freeze({
 });
 
 export const lang_to_id = Object.freeze({
-  javascript: 102,
-  python: 113,
+  javascript: 93, // Node.js 18.15.0
+  python: 92,     // Python 3.11.2
 });
 
-// this is free api, idk, just use.
 const judge0_api = axios.create({
   baseURL: 'https://ce.judge0.com',
   headers: {
     'Content-type': 'application/json',
   }
 });
+
+// base64 encoding to prevent 422
+function encodeBase64(str) {
+  if (!str) return null;
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+
+function decodeBase64(str) {
+  if (!str) return "";
+  return decodeURIComponent(escape(atob(str)));
+}
 
 export function useCodeExecution() {
   const [lang, setLang] = useState(languages.javascript);
@@ -27,27 +38,68 @@ export function useCodeExecution() {
   const [loading, setLoading] = useState(false);
   const [outputErr, setOutputErr] = useState(false);
   const [output, setOutput] = useState('');
+  const [testStatus, setTestStatus] = useState(null); 
   
-  async function runCode(code) {
+  async function runCode(code, stdin = null, expectedOutput = null) {
+    if (!code || !code.trim()) {
+      toast("Please write some code first!", { type: "warning" });
+      return;
+    }
+
     setLoading(true);
     setOpen(true);
-    try {
-      const res = await judge0_api.post('/submissions?wait=true', {
-        language_id: lang_to_id[lang],
-        source_code: code,
-        cpu_time_limit: 1.0,
-        memory_limit: 1048576,
-      });
+    setTestStatus(null);
+    setOutput("Running...");
+    setOutputErr(false);
 
-      if (res.data.stderr) {
+    try {
+      const payload = {
+        language_id: lang_to_id[lang],
+        source_code: encodeBase64(code),
+      };
+
+      if (stdin) {
+        payload.stdin = encodeBase64(stdin);
+      }
+
+      const res = await judge0_api.post('/submissions?wait=true&base64_encoded=true', payload);
+
+      const stderr = decodeBase64(res.data.stderr);
+      const compile_output = decodeBase64(res.data.compile_output);
+      const stdout = decodeBase64(res.data.stdout);
+
+      if (stderr || compile_output) {
         setOutputErr(true);
-        setOutput(res.data.stderr);
+        setOutput(stderr || compile_output);
+        if (expectedOutput) setTestStatus('Error');
       } else {
-        setOutputErr(true);
-        setOutput(res.data.stdout);
+        setOutputErr(false);
+        setOutput(stdout || '');
+
+        if (expectedOutput) {
+          try {
+            const actualJson = JSON.parse(stdout.trim());
+            const expectedJson = JSON.parse(expectedOutput.trim());
+            
+            if (JSON.stringify(actualJson) === JSON.stringify(expectedJson)) {
+              setTestStatus('Passed');
+            } else {
+              setTestStatus('Failed');
+            }
+          } catch (e) {
+            if (stdout.trim() === expectedOutput.trim()) {
+              setTestStatus('Passed');
+            } else {
+              setTestStatus('Failed');
+            }
+          }
+        }
       }
     } catch (err) {
-      toast(err?.response?.data?.message || err.message);
+      console.error("Judge0 API Error:", err?.response?.data || err.message);
+      toast(err?.response?.data?.error || err.message, { type: "error" });
+      if (expectedOutput) setTestStatus('Error');
+      setOutput("Execution failed.");
     } finally {
       setLoading(false);
     }
@@ -61,6 +113,7 @@ export function useCodeExecution() {
     loading,
     output,
     outputErr,
+    testStatus,
     runCode,
   }
 }
