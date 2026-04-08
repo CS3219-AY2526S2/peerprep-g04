@@ -119,7 +119,7 @@ export function CollabPage(props) {
     const yDoc = new Y.Doc();
 
     const provider = new WebsocketProvider(
-      `ws://${import.meta.env.VITE_COLLAB_SERVICE_API}?token=${accessToken}`,
+      `ws://${import.meta.env.VITE_COLLABORATION_SERVICE_API}?token=${accessToken}`,
       match_id.toString(),
       yDoc
     );
