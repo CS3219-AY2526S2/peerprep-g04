@@ -3,7 +3,6 @@ import { useEffect, useState, useRef, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Editor from '@monaco-editor/react';
-import Typography from '@mui/material/Typography';
 import * as Y from 'yjs';
 import { MonacoBinding } from "y-monaco";
 import { WebsocketProvider } from "y-websocket";
@@ -18,6 +17,8 @@ import { Card } from '../components/Card.jsx';
 import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
 import { Table } from '../components/Table.jsx';
+import { socket } from '../hooks/useChatService.jsx';
+import { ChatPage } from './ChatPage.jsx';
 
 const diffColors = {
   easy: {
@@ -86,14 +87,16 @@ function Output(props) {
 export function CollabPage(props) {
   const { stateData, onLeave } = props;
   const { question_id, match_id } = stateData;
-
+  
   const [question, setQuestion] = useState({});
   const [tab, setTab] = useState("Description");
   const [submissions, setSubmissions] = useState([]);
-
+  const [messages, setMessages] = useState([]);
+  const [openChat, setOpenChat] = useState(false);
+  
   const { title = '', difficulty = '', tags = [], body = '' } = question;
   const { user, accessToken, get_question_attempts, createSubmission } = useContext(UserContext);
-
+  
   const {
     lang,
     setLang,
@@ -107,16 +110,64 @@ export function CollabPage(props) {
 
   const editorRef = useRef();
   const yTextRef = useRef();
+  const chatEndRef = useRef();
+  
+  // Chat service
+  function sendMessage(match_id, message) {
+    if (!message.trim()) return;
+    
+    socket.emit("send_message", {
+      roomId: match_id,
+      message,
+      sender: user.user_id,
+    });
+  }
+  // Connect
+  useEffect(() => {
+    if (!user || !match_id) return;
+    console.log("CHAT API:", import.meta.env.VITE_CHAT_SERVICE_API);
 
+    socket.connect();
+
+    socket.emit("join_room", { roomId: match_id });
+    
+    return () => {
+      socket.disconnect();
+    };
+  }, [user, match_id]);
+
+  // Fetch qns
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
     get_question_attempts(question_id).then(history => setSubmissions(history || []));
-  }, [question_id]);
+    
+  }, [question_id, get_question_attempts]);
+
+
+  // Listen
+  useEffect(() => {
+    const handler = (data) => {
+      setMessages((prev) => [...prev, data]);
+    };
+
+    socket.on("receive_message", handler);
+
+    return () => {
+      socket.off("receive_message", handler);
+    };
+  }, []);
+
+  // Chat scroll
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
 
     const yDoc = new Y.Doc();
+
+    console.log("COLLABORATION API:", import.meta.env.VITE_COLLABORATION_SERVICE_API);
 
     const provider = new WebsocketProvider(
       `ws://${import.meta.env.VITE_COLLABORATION_SERVICE_API}?token=${accessToken}`,
@@ -199,10 +250,10 @@ export function CollabPage(props) {
         onLeave={onLeave}
         loading={loading}
         showRun={true}
+        onOpenChat={() => setOpenChat((prev) => !prev)}
       />
 
       <div className={styles.body}>
-
         {/* LEFT SIDE */}
         <div className={styles.bodyLeft}>
           <Card
@@ -244,9 +295,9 @@ export function CollabPage(props) {
               )}
 
               {tab === "Submissions" && (
-                <Table 
-                   style={{ border: 'none', boxShadow: 'none', padding: 0 }} 
-                   emptyMessage="No previous attempts for this question."
+                <Table
+                  style={{ border: "none", boxShadow: "none", padding: 0 }}
+                  emptyMessage="No previous attempts for this question."
                 >
                   <table>
                     <thead>
@@ -262,11 +313,16 @@ export function CollabPage(props) {
                         <tr key={idx}>
                           <td>{formatDateTime(s.submitted_at)}</td>
                           <td>{formatLanguage[s.lang] || s.lang}</td>
-                          <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#d97706' }}>
+                          <td
+                            style={{
+                              color:
+                                s.status === "Accepted" ? "#16a34a" : "#d97706",
+                            }}
+                          >
                             {s.status}
                           </td>
                           <td>
-                            <button 
+                            <button
                               className={styles.loadBtn}
                               onClick={() => loadSubmission(s.code)}
                             >
@@ -289,11 +345,12 @@ export function CollabPage(props) {
             <Editor
               theme="vs-dark"
               language={lang}
-              options={{ minimap: { enabled: false }, padding: { top: 12 }, }}
+              options={{ minimap: { enabled: false }, padding: { top: 12 } }}
               onMount={handleEditorDidMount}
             />
           </div>
         </div>
+
 
         {/* TERMINAL */}
         <Output
@@ -304,6 +361,14 @@ export function CollabPage(props) {
           outputErr={outputErr}
         />
       </div>
+      {/* CHAT */}
+      <ChatPage 
+        user={user}
+        open={openChat}
+        messages={messages}
+        sendMessage={(message) => sendMessage(match_id, message)}
+      />
+      <div ref={chatEndRef} />
     </div>
   );
 }
