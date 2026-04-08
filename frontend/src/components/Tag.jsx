@@ -10,11 +10,12 @@ export function Tag({ text, selected = false, onClick, color }) {
     borderHover: "#cbd5e1",
     text: "#64748b",
     textHover: "#1e293b",
+    selectedBg: 'lightblue',
   };
 
   const style = {
     background: selected
-      ? palette.bgHover
+      ? palette.selectedBg
       : isHover
       ? palette.bgHover
       : palette.bg,
