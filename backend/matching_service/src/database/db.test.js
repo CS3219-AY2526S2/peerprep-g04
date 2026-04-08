@@ -125,4 +125,4 @@ test('enter queue and leave', async () => {
     const not_in_queue = await is_user_in_queue(user1.user_id);
     expect(not_in_queue).toBe(false);
 
-})
+});

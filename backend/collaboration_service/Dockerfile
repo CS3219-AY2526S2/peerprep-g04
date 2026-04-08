@@ -9,7 +9,7 @@ RUN npm ci --omit=dev
 COPY . .
 
 RUN addgroup -g 1001 -S nodeapp && adduser -S nodeapp -u 1001 -G nodeapp
-RUN chown -R nodeapp:nodeapp /app
+RUN chown nodeapp:nodeapp /app
 USER nodeapp
 
 EXPOSE 1234

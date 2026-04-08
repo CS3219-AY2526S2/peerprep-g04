@@ -1,4 +1,4 @@
-import { enqueue_user, dequeue_user, try_match, save_match } from "../database/db.js";
+import { enqueue_user, dequeue_user, try_match, save_match, get_user_state, states } from "../database/db.js";
 import { notify_timeout, notify_match, user_id_to_username } from "../websocket.js";
 
 const VALID_DIFFICULTIES = ["easy", "medium", "hard"];
@@ -18,6 +18,16 @@ export async function handle_join_queue(req, res) {
 
     if (!difficulties.every(d => VALID_DIFFICULTIES.includes(d))) {
         return res.status(400).json({ message: `difficulties must be one of: ${VALID_DIFFICULTIES.join(", ")}` });
+    }
+
+    const current_state = await get_user_state(user_id);
+
+    if (current_state === states.matched) {
+        return res.status(409).json({ message: 'user already matched' });
+    }
+
+    if (current_state === states.matching) {
+        return res.status(409).json({ message: 'user already in queue' });
     }
 
     try {

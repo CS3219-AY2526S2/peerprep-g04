@@ -59,3 +59,30 @@ test('join queue fails with invalid difficulty', async () => {
 
     expect(res.status).toBe(400);
 });
+
+test('join queue fails with 409 if user is already in queue', async () => {
+    await request(app)
+        .post('/join-queue')
+        .set('Authorization', `Bearer ${valid_token}`)
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
+
+    const res = await request(app)
+        .post('/join-queue')
+        .set('Authorization', `Bearer ${valid_token}`)
+        .send({ topics: ['graphs'], difficulties: ['medium'] });
+
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe('user already in queue');
+});
+
+test('join queue fails with 409 if user is already matched', async () => {
+    await redis.set(`user_state:${test_user_id}`, 'matched');
+
+    const res = await request(app)
+        .post('/join-queue')
+        .set('Authorization', `Bearer ${valid_token}`)
+        .send({ topics: ['arrays'], difficulties: ['easy'] });
+
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe('user already matched');
+});
