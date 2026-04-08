@@ -84,7 +84,7 @@ services:
       PORT: 3004
 
   postgres:
-    image: postgres:15
+    image: postgres:18
     container_name: app-postgres
     restart: always
     environment:
@@ -93,7 +93,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
       - ./database-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -102,7 +102,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:7
+    image: redis:8
     ports:
       - "6379:6379"
 

@@ -36,7 +36,8 @@ export function ChatPage(props) {
           />
           <Button 
             variant='outlined'
-            onClick={(ev) => {setMessage(''); sendMessage(message)}}
+            disabled={message === ''}
+            onClick={(ev) => {setMessage(''); sendMessage(message);}}
           >
             Send
           </Button>
