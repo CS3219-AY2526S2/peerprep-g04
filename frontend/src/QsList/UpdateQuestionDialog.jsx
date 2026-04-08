@@ -14,6 +14,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
+import Typography from "@mui/material/Typography";
 
 import MDEditor from "@uiw/react-md-editor";
 
@@ -33,6 +34,10 @@ export function UpdateQuestionDialog({
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState("");
   const [body, setBody] = useState("");
+  
+  const [testCaseInput, setTestCaseInput] = useState("");
+  const [testCaseOutput, setTestCaseOutput] = useState("");
+
   const [original, setOriginal] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +53,9 @@ export function UpdateQuestionDialog({
       setDifficulty(data.difficulty || "easy");
       setTags(data.tags || []);
       setBody(data.body || "");
+      
+      setTestCaseInput(data.test_case_input || data.test_case?.input || "");
+      setTestCaseOutput(data.test_case_output || data.test_case?.expected_output || "");
     });
   }, [open, questionId]);
 
@@ -63,22 +71,44 @@ export function UpdateQuestionDialog({
   function hasChanges() {
     if (!original) return false;
 
+    const origInput = original.test_case_input || original.test_case?.input || "";
+    const origOutput = original.test_case_output || original.test_case?.expected_output || "";
+
     return (
       title !== original.title ||
       difficulty !== original.difficulty ||
       body !== original.body ||
-      JSON.stringify(tags) !== JSON.stringify(original.tags)
+      JSON.stringify(tags) !== JSON.stringify(original.tags) ||
+      testCaseInput !== origInput ||
+      testCaseOutput !== origOutput
     );
   }
 
   async function handleUpdate() {
     if (!questionId || !hasChanges()) return;
 
+    // 校验 Test Case
+    if (!testCaseInput.trim() || !testCaseOutput.trim()) {
+      toast("Test Case Input and Output cannot be empty", { type: "error" });
+      return;
+    }
+
     setLoading(true);
+
+    const payload = { 
+      title, 
+      difficulty, 
+      tags, 
+      body,
+      test_case: {
+        input: testCaseInput,
+        expected_output: testCaseOutput
+      }
+    };
 
     const res = await update_question(
       questionId,
-      { title, difficulty, tags, body },
+      payload,
       accessToken
     );
 
@@ -88,7 +118,7 @@ export function UpdateQuestionDialog({
       onSuccess?.();
       onClose();
     } else {
-      toast("Update failed");
+      toast("Update failed", { type: "error" });
     }
   }
 
@@ -97,7 +127,7 @@ export function UpdateQuestionDialog({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth={false}
+      maxWidth="md"
     >
       <DialogTitle sx={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif" }}>
         Update Question
@@ -161,6 +191,34 @@ export function UpdateQuestionDialog({
               height={300}
             />
           </div>
+
+          {/* --- Test Case --- */}
+          <div style={{ marginTop: "0.5rem", padding: "1rem", border: "1px solid #e0e0e0", borderRadius: "8px" }}>
+            <Typography variant="subtitle1" style={{ fontWeight: "bold", marginBottom: "1rem" }}>
+              Test Case (JSON Text)
+            </Typography>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <TextField
+                label="Input (JSON or Raw Text)"
+                multiline
+                minRows={3}
+                fullWidth
+                value={testCaseInput}
+                onChange={(e) => setTestCaseInput(e.target.value)}
+              />
+              <TextField
+                label="Expected Output (JSON or Raw Text)"
+                multiline
+                minRows={3}
+                fullWidth
+                value={testCaseOutput}
+                onChange={(e) => setTestCaseOutput(e.target.value)}
+              />
+            </div>
+          </div>
+          {/* --- Test Case --- */}
+
         </div>
       </DialogContent>
 

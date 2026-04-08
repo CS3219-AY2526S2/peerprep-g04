@@ -8,7 +8,8 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
-// returns { title, difficulty, tags, body } or undefined if no question is found
+// returns { title, difficulty, tags, body, test_case_input, test_case_output } or undefined if no question is found
+
 export async function get_question_by_id(id) {
     const result = await pool.query(
         `
@@ -17,9 +18,12 @@ export async function get_question_by_id(id) {
             q.title, 
             q.difficulty, 
             q.body,
-            COALESCE(ARRAY_AGG(qt.tag) FILTER (WHERE qt.tag IS NOT NULL), '{}') as tags
+            COALESCE(ARRAY_AGG(DISTINCT qt.tag) FILTER (WHERE qt.tag IS NOT NULL), '{}') as tags,
+            MAX(tc.input) as test_case_input,
+            MAX(tc.expected_output) as test_case_output
         FROM questions q
         LEFT JOIN question_tag qt on q.id = qt.question_id
+        LEFT JOIN test_cases tc on q.id = tc.question_id
         WHERE q.id = $1
         GROUP BY q.id
         `
@@ -27,6 +31,8 @@ export async function get_question_by_id(id) {
 
     return result.rows[0];
 }
+
+
 
 export async function get_question_by_title(title) {
     const result = await pool.query(
@@ -119,11 +125,11 @@ export async function get_all_tags() {
 }
 
 export async function create_question_from_obj(obj) {
-    return await create_question(obj.title, obj.difficulty, obj.tags, obj.body);
+    return await create_question(obj.title, obj.difficulty, obj.tags, obj.body, obj.test_case);
 }
 
 // returns the id of the newly inserted question
-export async function create_question(title, difficulty, tags, body) {
+export async function create_question(title, difficulty, tags, body, test_case) {
     const result = await pool.query(
         `INSERT INTO questions (title, difficulty, body) VALUES ($1, $2, $3) RETURNING id`
         ,[title, difficulty, body]);
@@ -136,15 +142,17 @@ export async function create_question(title, difficulty, tags, body) {
         SELECT $1, unnest($2::TEXT[])
         ` 
         , [id, tags]);
+        
+    if (test_case && test_case.input && test_case.expected_output) {
+        await pool.query(
+            `INSERT INTO test_cases (question_id, input, expected_output) VALUES ($1, $2, $3)`,
+            [id, test_case.input, test_case.expected_output]
+        );
+    }
 
     return id;
 }
 
-export async function delete_question(id) {
-    await pool.query(`DELETE FROM questions WHERE id = $1`, [id]);
-}
-
-// obj must have { title, difficulty, tags, body }
 export async function update_question(id, obj) {
     const client = await pool.connect();
    
@@ -170,5 +178,18 @@ export async function update_question(id, obj) {
         [obj.title, obj.difficulty, obj.body, id]
     );
 
+    if (obj.test_case) {
+        await client.query(`DELETE FROM test_cases WHERE question_id = $1`, [id]);
+        await client.query(
+            `INSERT INTO test_cases (question_id, input, expected_output) VALUES ($1, $2, $3)`,
+            [id, obj.test_case.input, obj.test_case.expected_output]
+        );
+    }
+
     await client.query("COMMIT");   
+    client.release(); 
+}
+
+export async function delete_question(id) {
+    await pool.query(`DELETE FROM questions WHERE id = $1`, [id]);
 }

@@ -13,6 +13,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
+import Typography from "@mui/material/Typography";
 
 import MDEditor from "@uiw/react-md-editor";
 
@@ -31,6 +32,11 @@ export function CreateQuestionDialog({
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState("");
   const [body, setBody] = useState("");
+  
+
+  const [testCaseInput, setTestCaseInput] = useState("");
+  const [testCaseOutput, setTestCaseOutput] = useState("");
+  
   const [loading, setLoading] = useState(false);
 
   function addTag(t) {
@@ -43,16 +49,31 @@ export function CreateQuestionDialog({
   }
 
   async function handleCreate() {
+
     if (!(title && difficulty && tags.length && body)) {
       toast("Some fields are still empty", { type: "error" });
       return;
     }
 
+    if (!testCaseInput.trim() || !testCaseOutput.trim()) {
+      toast("Please fill in both Test Case Input and Expected Output", { type: "error" });
+      return;
+    }
+
     setLoading(true);
-    const res = await create_question(
-      { title, difficulty, tags, body },
-      accessToken
-    );
+
+    const payload = {
+      title,
+      difficulty,
+      tags,
+      body,
+      test_case: {
+        input: testCaseInput,
+        expected_output: testCaseOutput,
+      }
+    };
+
+    const res = await create_question(payload, accessToken);
     setLoading(false);
 
     if (res) {
@@ -67,6 +88,8 @@ export function CreateQuestionDialog({
     setTags([]);
     setTag("");
     setBody("");
+    setTestCaseInput("");
+    setTestCaseOutput("");
     onClose();
   }
 
@@ -75,7 +98,7 @@ export function CreateQuestionDialog({
       open={open}
       onClose={handleClose}
       fullWidth
-      maxWidth={false}
+      maxWidth="md"
     >
       <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif", textAlign: "center" }}>
         Create Question
@@ -131,8 +154,7 @@ export function CreateQuestionDialog({
                   }
                 }}
               />
-
-              <IconButton onClick={() => tag && addTag(tag)} >
+              <IconButton onClick={() => tag && addTag(tag)}>
                 <AddIcon fontSize="small" />
               </IconButton>
             </div>
@@ -145,6 +167,36 @@ export function CreateQuestionDialog({
               height={300}
             />
           </div>
+
+          {/* --- Test Case --- */}
+          <div style={{ marginTop: "0.5rem", padding: "1rem", border: "1px solid #e0e0e0", borderRadius: "8px" }}>
+            <Typography variant="subtitle1" style={{ fontWeight: "bold", marginBottom: "1rem" }}>
+              Test Case (JSON Text)
+            </Typography>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <TextField
+                label="Input (JSON or Raw Text)"
+                placeholder='e.g., {"nums": [2,7,11,15], "target": 9}'
+                multiline
+                minRows={3}
+                fullWidth
+                value={testCaseInput}
+                onChange={(e) => setTestCaseInput(e.target.value)}
+              />
+              <TextField
+                label="Expected Output (JSON or Raw Text)"
+                placeholder='e.g., [0, 1]'
+                multiline
+                minRows={3}
+                fullWidth
+                value={testCaseOutput}
+                onChange={(e) => setTestCaseOutput(e.target.value)}
+              />
+            </div>
+          </div>
+          {/* --- Test Case --- */}
+
         </div>
       </DialogContent>
 
