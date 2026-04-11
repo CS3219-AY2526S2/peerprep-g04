@@ -172,6 +172,7 @@
     background: #0f172a;
 }
 
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

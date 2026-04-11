@@ -3,23 +3,18 @@ import { useEffect, useState, useRef, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Editor from '@monaco-editor/react';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import * as Y from 'yjs';
 import { MonacoBinding } from "y-monaco";
 import { WebsocketProvider } from "y-websocket";
 import Markdown from 'react-markdown';
 import { UserContext } from '../hooks/useUserService.jsx';
-import IconButton from '@mui/material/IconButton';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useCodeExecution } from '../hooks/useCodeExecution.jsx';
 import { MatchHeader } from '../components/MatchHeader.jsx';
 import { Card } from '../components/Card.jsx';
 import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
 import { Table } from '../components/Table.jsx';
+import { OutputPanel } from '../components/OutputPanel';
 import { ChatPage } from './ChatPage.jsx';
 import { useChatService } from '../hooks/useChatService.jsx';
 
@@ -45,37 +40,6 @@ function formatDateTime(dateString) {
   });
 
   return `${datePart}, ${timePart}`;
-}
-
-function Output(props) {
-  const { loading, open, setOpen, output, outputErr, testStatus } = props;
-
-  return (
-    <div className={styles.terminal}>
-      <div className={styles.terminalHeader}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span>Terminal</span>
-          <Tag
-            key={testStatus}
-            text={testStatus}
-            color={testStatus === 'Passed' ? 'green' : 'red'}
-          />
-        </div>
-        <IconButton onClick={() => setOpen(!open)} sx={{ height: '24px', width: '24px' }}>
-          {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-        </IconButton>
-      </div>
-      {open && (
-        <div className={styles.terminalBody}>
-          {loading ? (
-            <div className={styles.spinner}></div>
-          ) : (
-            <code style={{ color: outputErr ? '#ef4444' : 'inherit' }}>{output}</code>
-          )}
-        </div>
-      )}
-    </div>
-  );
 }
 
 export function CollabPage(props) {
@@ -182,7 +146,14 @@ export function CollabPage(props) {
       <MatchHeader
         lang={lang}
         setLang={setLang}
-        onRun={() => runCode(editorRef.current?.getValue())}
+        onRun={() => {
+          const code = editorRef.current?.getValue();
+          if (testCaseInput && testCaseOutput) {
+            runCode(code, testCaseInput, testCaseOutput);
+          } else {
+            runCode(code);
+          }
+        }}
         onSubmit={handleSubmit}
         onLeave={myLeave}
         loading={loading}
@@ -220,7 +191,7 @@ export function CollabPage(props) {
             </div>
           
             <Tabs
-              tabs={["Description", "Submissions", "Test Case"]}
+              tabs={["Description", "Submissions"]}
               active={tab}
               onChange={setTab}
             />
@@ -268,45 +239,6 @@ export function CollabPage(props) {
                   </table>
                 </Table>
               )}
-
-              {tab === "Test Case" && testCaseInput && (
-                <div style={{
-                  marginTop: '1rem',
-                  padding: '1rem',
-                  borderTop: '1px solid #e0e0e0',
-                  backgroundColor: '#fafafa',
-                  borderRadius: '8px'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <Typography variant='h6' sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>Test Case</Typography>
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
-                      size="small" 
-                      startIcon={<PlayArrowIcon />}
-                      disabled={loading}
-                      // pass in input and output
-                      onClick={() => runCode(editorRef.current?.getValue(), testCaseInput, testCaseOutput)}
-                    >
-                      {loading ? 'Running...' : 'Run Test'}
-                    </Button>
-                  </div>
-
-                  <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                    <strong>Input (stdin):</strong>
-                    <pre style={{ margin: '4px 0', padding: '8px', backgroundColor: '#eee', borderRadius: '4px', overflowX: 'auto' }}>
-                      {testCaseInput}
-                    </pre>
-                  </div>
-
-                  <div style={{ fontSize: '0.9rem' }}>
-                    <strong>Expected Output:</strong>
-                    <pre style={{ margin: '4px 0', padding: '8px', backgroundColor: '#eee', borderRadius: '4px', overflowX: 'auto' }}>
-                      {testCaseOutput}
-                    </pre>
-                  </div>
-                </div>
-              )}
             </div>
           </Card>
         </div>
@@ -323,13 +255,15 @@ export function CollabPage(props) {
           </div>
         </div>
 
-        <Output 
+        <OutputPanel 
           loading={loading} 
           open={open} 
           setOpen={setOpen} 
           output={output} 
           outputErr={outputErr} 
           testStatus={testStatus} 
+          testCaseInput={testCaseInput}
+          testCaseOutput={testCaseOutput} 
         />
       </div>
       <ChatPage 

@@ -19,12 +19,10 @@ const judge0_api = axios.create({
   }
 });
 
-// base64 encoding to prevent 422
 function encodeBase64(str) {
-  if (!str) return null;
+  if (str === null || str === undefined) return null;
   return btoa(unescape(encodeURIComponent(str)));
 }
-
 
 function decodeBase64(str) {
   if (!str) return "";
@@ -45,6 +43,9 @@ export function useCodeExecution() {
       toast("Please write some code first!", { type: "warning" });
       return;
     }
+
+    // Determine if we are evaluating a test or just running raw code
+    const hasTestCase = expectedOutput !== null && expectedOutput !== undefined && expectedOutput.trim() !== "";
 
     setLoading(true);
     setOpen(true);
@@ -71,15 +72,19 @@ export function useCodeExecution() {
       if (stderr || compile_output) {
         setOutputErr(true);
         setOutput(stderr || compile_output);
-        if (expectedOutput) setTestStatus('Error');
+        if (hasTestCase) setTestStatus('Error');
       } else {
         setOutputErr(false);
-        setOutput(stdout || '');
+        const actualOutput = stdout || '';
+        setOutput(actualOutput);
 
-        if (expectedOutput) {
+        if (hasTestCase) {
+          const actualClean = actualOutput.trim();
+          const expectedClean = expectedOutput.trim();
+
           try {
-            const actualJson = JSON.parse(stdout.trim());
-            const expectedJson = JSON.parse(expectedOutput.trim());
+            const actualJson = JSON.parse(actualClean);
+            const expectedJson = JSON.parse(expectedClean);
             
             if (JSON.stringify(actualJson) === JSON.stringify(expectedJson)) {
               setTestStatus('Passed');
@@ -87,7 +92,7 @@ export function useCodeExecution() {
               setTestStatus('Failed');
             }
           } catch (e) {
-            if (stdout.trim() === expectedOutput.trim()) {
+            if (actualClean === expectedClean) {
               setTestStatus('Passed');
             } else {
               setTestStatus('Failed');
@@ -98,8 +103,9 @@ export function useCodeExecution() {
     } catch (err) {
       console.error("Judge0 API Error:", err?.response?.data || err.message);
       toast(err?.response?.data?.error || err.message, { type: "error" });
-      if (expectedOutput) setTestStatus('Error');
       setOutput("Execution failed.");
+      setOutputErr(true);
+      if (hasTestCase) setTestStatus('Error');
     } finally {
       setLoading(false);
     }
@@ -115,5 +121,5 @@ export function useCodeExecution() {
     outputErr,
     testStatus,
     runCode,
-  }
+  };
 }

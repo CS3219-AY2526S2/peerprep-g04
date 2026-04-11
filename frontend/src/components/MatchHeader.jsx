@@ -1,6 +1,7 @@
 import React from 'react';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { languages } from '../hooks/useCodeExecution.jsx';
@@ -39,6 +40,11 @@ export function MatchHeader({
     button: {
       minWidth: '80px',
     },
+    runButtonContent: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px'
+    }
   };
 
   return (
@@ -76,7 +82,12 @@ export function MatchHeader({
         {showRun && (
           <>
             <PrimaryButton
-              text="Run"
+              text={
+                <div style={styles.runButtonContent}>
+                  <PlayArrowIcon sx={{ fontSize: '1.2rem' }} />
+                  <span>Run</span>
+                </div>
+              }
               onClick={onRun}
               disabled={loading}
               color="blue"
