@@ -8,6 +8,24 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
+export async function connectWithRetry() {
+  let retries = 5;
+
+  while (retries) {
+    try {
+      await pool.query("SELECT 1");
+      console.log("User DB connected");
+      return;
+    } catch (err) {
+      console.log("User DB not ready, retrying...");
+      retries--;
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+
+  throw new Error("Could not connect to User DB");
+}
+
 export async function get_user_by_id(user_id) {
     const res = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
     return res.rows[0];
@@ -61,4 +79,22 @@ export async function delete_user(id) {
         DELETE FROM users
         WHERE id = $1
     `, [id]);
+}
+
+export async function get_submissions_by_question(question_id, user_id) {
+    const res = await pool.query(`
+        SELECT * FROM submission_attempts
+        WHERE question_id = $1 AND user_id = $2
+        ORDER BY submitted_at DESC
+    `, [question_id, user_id]);
+    return res.rows;
+}
+
+export async function create_submission(user_id, question_id, lang, code, status) {
+    const res = await pool.query(`
+        INSERT INTO submission_attempts (user_id, question_id, lang, code, status, submitted_at)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING *
+    `, [user_id, question_id, lang, code, status]);
+    return res.rows[0];
 }
