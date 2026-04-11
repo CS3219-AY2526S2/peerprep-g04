@@ -1,5 +1,5 @@
 import { app } from "./src/app.js";
-import { create_question_from_obj } from "./src/database/db.js";
+import { create_question_from_obj, connectWithRetry } from "./src/database/db.js";
 
 async function insert_dummy_questions() {
     const seedQuestions = [
@@ -135,8 +135,14 @@ async function insert_dummy_questions() {
     }
 }
 
-app.listen(process.env.PORT, (err) => {
+app.listen(process.env.PORT, async (err) => {
     if (err) console.log(err);
+
+    await connectWithRetry().catch(err => {
+        console.error("Failed to connect to Question DB:", err);
+        process.exit(1);
+    });
+
     console.log(`listening on localhost:${process.env.PORT}`);
     
     insert_dummy_questions();

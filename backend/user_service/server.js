@@ -13,7 +13,7 @@ app.listen(process.env.PORT, async (err) => {
 
     // Adding retry logic in case database not ready
     await connectWithRetry().catch(err => {
-        console.error("Failed to connect to DB:", err);
+        console.error("Failed to connect to  User DB:", err);
         process.exit(1);
     });
 

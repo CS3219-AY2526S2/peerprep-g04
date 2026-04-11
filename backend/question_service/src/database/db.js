@@ -9,6 +9,23 @@ export const pool = new Pool({
 });
 
 // returns { title, difficulty, tags, body, test_case_input, test_case_output } or undefined if no question is found
+export async function connectWithRetry() {
+  let retries = 5;
+
+  while (retries) {
+    try {
+      await pool.query("SELECT 1");
+      console.log("Qn DB connected");
+      return;
+    } catch (err) {
+      console.log("Qn DB not ready, retrying...");
+      retries--;
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+
+  throw new Error("Could not connect to Question DB");
+}
 
 export async function get_question_by_id(id) {
     const result = await pool.query(
@@ -31,8 +48,6 @@ export async function get_question_by_id(id) {
 
     return result.rows[0];
 }
-
-
 
 export async function get_question_by_title(title) {
     const result = await pool.query(
