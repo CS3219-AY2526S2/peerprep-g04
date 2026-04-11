@@ -3,6 +3,16 @@ import React from "react";
 export function Tag({ text, selected = false, onClick, color, onDelete }) {
   const [isHover, setIsHover] = React.useState(false);
 
+  const palette = color || {
+    bg: "#f8faff",
+    bgHover: "#f1f5f9",
+    border: "#e2e8f0",
+    borderHover: "#cbd5e1",
+    text: "#64748b",
+    textHover: "#1e293b",
+    selectedBg: 'lightblue',
+  };
+
   const themes = {
     green: {
       bg: "#dcfce7",

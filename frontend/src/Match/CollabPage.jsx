@@ -1,6 +1,7 @@
 import styles from './CollabPage.module.css';
 import { useEffect, useState, useRef, useContext } from 'react';
 import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Editor from '@monaco-editor/react';
 import * as Y from 'yjs';
@@ -47,6 +48,7 @@ export function CollabPage(props) {
   const { stateData, onLeave } = props;
   const { question_id, match_id } = stateData;
 
+
   const [question, setQuestion] = useState({});
   const [tab, setTab] = useState("Description");
   const [submissions, setSubmissions] = useState([]);
@@ -56,9 +58,12 @@ export function CollabPage(props) {
 
   const {
     lang,
+  const {
+    lang,
     setLang,
     loading,
     open,
+    setOpen,
     setOpen,
     output,
     outputErr,
@@ -69,7 +74,13 @@ export function CollabPage(props) {
   const [openChat, setOpenChat] = useState(false);
   const { messages, sendMessage, leave } = useChatService(user, match_id);
 
+  } = useCodeExecution();
+
+  const [openChat, setOpenChat] = useState(false);
+  const { messages, sendMessage, leave } = useChatService(user, match_id);
+
   const editorRef = useRef();
+  const yTextRef = useRef();
   const yTextRef = useRef();
 
   useEffect(() => {
@@ -83,13 +94,22 @@ export function CollabPage(props) {
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
 
+
     const yDoc = new Y.Doc();
+
 
     const provider = new WebsocketProvider(
       `ws://${import.meta.env.VITE_COLLABORATION_SERVICE_API}?token=${accessToken}`,
       match_id.toString(),
       yDoc
+      `ws://${import.meta.env.VITE_COLLABORATION_SERVICE_API}?token=${accessToken}`,
+      match_id.toString(),
+      yDoc
     );
+
+    provider.awareness.setLocalStateField('user', {
+      name: user?.username || 'Anonymous',
+    });
 
     provider.awareness.setLocalStateField('user', {
       name: user?.username || 'Anonymous',
