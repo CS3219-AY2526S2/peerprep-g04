@@ -67,7 +67,7 @@ export function useUserService() {
       const res = await user_api.get('/verify-token', {
         headers: {authorization: `Bearer ${accessToken}`},
       });
-      setAccessToken(accessToken);
+      setAccessToken(res.data.access_token);
       setUser(getUser(res.data));
       return true;
     } catch (err) {
@@ -158,6 +158,31 @@ export function useUserService() {
     setLoading(false);
   }
 
+  async function createSubmission(submissionData) {
+    try {
+      const res = await user_api.post('/create-submission', submissionData, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      toast('Submission created successfully');
+      return res.data.submission;
+    } catch (err) {
+      toast(err?.response?.data?.message ?? err.message);
+      return null;
+    }
+  }
+  
+  async function get_question_attempts(questionId) {
+    try {
+      const res = await user_api.get(`/get-submission-history/${questionId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      return res.data.submissions;
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+      return [];
+    }
+  }
+
   function logout() {
     setUser(null);
     localStorage.removeItem('accessToken');
@@ -174,6 +199,8 @@ export function useUserService() {
     forgetPassword,
     resetPassword,
     updateUser,
+    createSubmission,
+    get_question_attempts,
     logout
   }
 }

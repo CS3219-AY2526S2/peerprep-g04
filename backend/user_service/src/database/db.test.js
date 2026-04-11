@@ -124,6 +124,3 @@ test('get user by id', async () => {
     const res2 = await get_user_by_id(res.id);
     expect(res2).toMatchObject(tom);
 })
-
-
-

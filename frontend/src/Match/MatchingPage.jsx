@@ -1,7 +1,9 @@
 import { useInterval } from '../hooks/useInterval';
 import styles from './MatchingPage.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MatchHeader } from '../components/MatchHeader.jsx';
+import { useTimeout } from '../hooks/useTimeout.jsx';
+import { toast } from 'react-toastify';
 
 export function MatchingPage(props) {
   const { onLeave } = props;
@@ -13,6 +15,12 @@ export function MatchingPage(props) {
   const timeStr = minutes > 0
     ? `${minutes}m ${seconds.toString().padStart(2, '0')}s`
     : `${seconds}s`;
+
+  // add timeout on the frontend.
+  useTimeout(() => {
+    toast('you timeout after 30s', { position: 'top-center' });
+    onLeave();
+  }, 30000);
 
   return (
     <div>

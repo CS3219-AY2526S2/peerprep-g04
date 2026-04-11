@@ -41,7 +41,10 @@ export function init_websocket_server(server) {
                     if (state === states.matched) {
                         const match = await get_match_by_user_id(msg.user_id);
                         const opponent_id = match.user1_id === msg.user_id ? match.user2_id : match.user1_id;
-                        notify_opponent_left(opponent_id, msg.user_id);
+                        const opponent_state = await get_user_state(opponent_id);
+                        if (opponent_state === states.matched) {
+                            notify_opponent_left(opponent_id, msg.user_id);
+                        }
                     }
                     leave(msg.user_id);
                 }
@@ -62,7 +65,10 @@ export function init_websocket_server(server) {
                     if (state === states.matched) {
                         const match = await get_match_by_user_id(user_id);
                         const opponent_id = match.user1_id === user_id ? match.user2_id : match.user1_id;
-                        notify_opponent_disconnected(opponent_id, user_id);
+                        const opponent_state = await get_user_state(opponent_id);
+                        if (opponent_state === states.matched) {
+                            notify_opponent_disconnected(opponent_id, user_id);
+                        }
                     }
 
                     break;

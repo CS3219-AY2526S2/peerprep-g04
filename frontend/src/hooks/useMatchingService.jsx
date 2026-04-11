@@ -30,6 +30,7 @@ export function useMatchingService() {
     socketRef.current = new WebSocket(`ws://${import.meta.env.VITE_MATCHING_SERVICE_API}`);
 
     socketRef.current?.addEventListener('open', () => {
+      if (socketRef.current?.readyState !== WebSocket.OPEN) return;
       socketRef.current?.send(JSON.stringify({ type: 'register', user_id, username }));
     });
 
@@ -69,7 +70,11 @@ export function useMatchingService() {
     });
 
     
-    return () => socketRef.current?.close();
+    return () => {
+      // only close if websocket is open.
+      if (socketRef.current?.readyState == WebSocket.OPEN)
+      socketRef.current?.close();
+    }
   }, [user_id]);
 
   function leave() {
@@ -84,7 +89,6 @@ export function useMatchingService() {
       if (message === 'match found') {
         setState(states.matched);
         setStateData(res.data);
-        console.log(res.data);
       } else if (message === 'user added to queue') {
         setState(states.matching);
       }

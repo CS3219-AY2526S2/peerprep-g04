@@ -9,8 +9,8 @@ export async function handle_update_question(req, res) {
         return res.status(400).json({ message: 'question id to update is missing from url' });
     }
     
-    const { title, difficulty, tags, body } = req.body;
-    if (!(title || difficulty || tags || body)) {
+    const { title, difficulty, tags, body, test_case } = req.body;
+    if (!(title || difficulty || tags || body || test_case)) {
         return res.status(400).json({ message: 'no fields given to update' });
     }
 
@@ -26,11 +26,14 @@ export async function handle_update_question(req, res) {
             ...(difficulty && { difficulty: difficulty.toLowerCase() }),
             ...(tags && { tags: tags.map(tag => tag.toLowerCase()) }),
             ...(body && { body }),
+            test_case: test_case ? { 
+                input: test_case.input, 
+                expected_output: test_case.expected_output 
+            } : undefined,
         };
         await update_question(question.id, new_question);
         return res.status(200).json({ message: 'message updated successfully' });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
-
 }

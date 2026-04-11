@@ -7,7 +7,8 @@ services:
         VITE_QUESTION_SERVICE_API: localhost:3001
         VITE_MATCHING_SERVICE_API: localhost:3003
         VITE_COLLABORATION_SERVICE_API: localhost:1234
-        VITE_GOOGLE_AI_API_KEY: ${VITE_GOOGLE_AI_API_KEY}
+        VITE_CHAT_SERVICE_API: localhost:3004
+        VITE_GOOGLE_AI_API_KEY: AIzaSyBmNWRflDyS9QzoeWuaB5kKlH_mptWVBeg
     ports:
       - "5173:5173"
 
@@ -75,8 +76,15 @@ services:
       redis:
         condition: service_started
 
+  chat-service:
+    build: ./backend/chat_service
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+
   postgres:
-    image: postgres:15
+    image: postgres:18
     container_name: app-postgres
     restart: always
     environment:
@@ -85,7 +93,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
       - ./database-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -94,7 +102,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:7
+    image: redis:8
     ports:
       - "6379:6379"
 

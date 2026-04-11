@@ -57,7 +57,7 @@ export function QsList() {
     await delete_question(selectedQuestionId, accessToken);
     setReload((r) => !r);
     setLoadingDelete(false);
-    handleCloseDelete();
+    setOpenDelete(false);
   };
 
   const filteredQuestions = questions.filter((q) => {

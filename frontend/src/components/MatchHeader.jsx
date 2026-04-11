@@ -6,7 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import { languages } from '../hooks/useCodeExecution.jsx';
 import { PrimaryButton } from '../components/PrimaryButton.jsx';
 
-export function MatchHeader({ lang, setLang, onRun, onLeave, loading, showRun = false }) {
+export function MatchHeader({ 
+  lang, setLang, onRun, onSubmit, onLeave, loading, showRun = false, showChat = false, onOpenChat,
+}) {
   const styles = {
     header: {
       display: 'flex',
@@ -25,6 +27,7 @@ export function MatchHeader({ lang, setLang, onRun, onLeave, loading, showRun = 
       alignItems: 'center',
       justifyContent: 'center',
       flex: 1,
+      gap: '12px',
     },
     right: {
       display: 'flex',
@@ -63,14 +66,30 @@ export function MatchHeader({ lang, setLang, onRun, onLeave, loading, showRun = 
       ) : <div style={styles.left} /> }
 
       <div style={styles.center}>
-        {showRun && (
-          <PrimaryButton
-            text="Run"
-            onClick={onRun}
-            disabled={loading}
-            color="blue"
+        {showChat && 
+          <PrimaryButton 
+            text='Chat' 
             fullWidth={false}
+            onClick={onOpenChat}
           />
+        }
+        {showRun && (
+          <>
+            <PrimaryButton
+              text="Run"
+              onClick={onRun}
+              disabled={loading}
+              color="blue"
+              fullWidth={false}
+            />
+            <PrimaryButton
+              text="Submit"
+              onClick={onSubmit}
+              disabled={loading}
+              color="green-outline"
+              fullWidth={false}
+            />
+          </>
         )}
       </div>
 

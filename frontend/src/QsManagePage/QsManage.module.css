@@ -2,13 +2,14 @@
   display: flex;
   flex: 1;
   width: 100%;
-  min-height: 0;
+  min-height: 88vh;
 }
 
 .warningMain {
   width: 100%;
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }

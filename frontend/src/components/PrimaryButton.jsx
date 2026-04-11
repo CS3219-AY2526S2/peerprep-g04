@@ -45,6 +45,13 @@ export function PrimaryButton({
         border: 'none',
         boxShadow: '0 4px 20px rgba(239, 68, 68, 0.3)',
         cursor: 'pointer',
+      },
+      'green-outline': {
+        background: 'white',
+        color: '#16a34a',
+        border: '1.5px solid #16a34a',
+        boxShadow: '0 2px 8px rgba(22, 163, 74, 0.05)',
+        cursor: 'pointer',
       }
     };
   
@@ -52,6 +59,7 @@ export function PrimaryButton({
       blue: '0 8px 28px rgba(29, 78, 216, 0.4)',
       white: "0 6px 18px rgba(0,0,0,0.08)",
       red: '0 8px 28px rgba(239, 68, 68, 0.4)',
+      'green-outline': '0 6px 18px rgba(22, 163, 74, 0.15)',
     };
   
     const [isHover, setIsHover] = React.useState(false);

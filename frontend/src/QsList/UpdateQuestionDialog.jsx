@@ -11,7 +11,6 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 
-import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Typography from "@mui/material/Typography";
@@ -19,6 +18,7 @@ import Typography from "@mui/material/Typography";
 import MDEditor from "@uiw/react-md-editor";
 
 import { PrimaryButton } from "../components/PrimaryButton";
+import { Tag } from "../components/Tag";
 import { update_question, get_question_by_id } from "../hooks/useQuestionService";
 import { toast } from "react-toastify";
 
@@ -87,7 +87,6 @@ export function UpdateQuestionDialog({
   async function handleUpdate() {
     if (!questionId || !hasChanges()) return;
 
-    // 校验 Test Case
     if (!testCaseInput.trim() || !testCaseOutput.trim()) {
       toast("Test Case Input and Output cannot be empty", { type: "error" });
       return;
@@ -159,7 +158,7 @@ export function UpdateQuestionDialog({
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               {tags.map((t) => (
-                <Chip key={t} label={t} onDelete={deleteTag(t)} />
+                <Tag key={t} text={t} onDelete={deleteTag(t)} />
               ))}
             </div>
 

@@ -1,5 +1,5 @@
 import { test, expect, afterAll, beforeEach } from 'vitest';
-import { enqueue_user, get_match_by_user_id, pool, redis, save_match, leave, get_user_state, states, try_match } from './db';
+import { enqueue_user, get_match_by_user_id, pool, redis, save_match, leave, get_user_state, states, try_match, is_user_in_queue } from './db';
 
 beforeEach(async () => {
     await redis.flushAll();
@@ -108,4 +108,21 @@ test('1 user in queue, 2 matching users try to match', async () => {
     expect(res.some(r => r.matched)).toBeTruthy();
     expect(res.some(r => !r.matched)).toBeTruthy();
     expect(res.find(r => r.matched).common_difficulties).toEqual(['easy']);
-})
+});
+
+test('enter queue and leave', async () => {
+    const user1 = {
+        user_id: 1,
+        topics: ['array'],
+        difficulties: ['easy'],
+    }
+
+    await enqueue_user(...Object.values(user1));
+    const in_queue = await is_user_in_queue(user1.user_id);
+    expect(in_queue).toBe(true);
+
+    await leave(user1.user_id);
+    const not_in_queue = await is_user_in_queue(user1.user_id);
+    expect(not_in_queue).toBe(false);
+
+});

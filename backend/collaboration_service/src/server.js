@@ -1,14 +1,12 @@
-#!/usr/bin/env node
-
-import WebSocket from 'ws'
+import { WebSocketServer } from 'ws'
 import http from 'http'
 import * as number from 'lib0/number'
 import { setupWSConnection } from './utils.js'
 import jwt from 'jsonwebtoken';
 
-const wss = new WebSocket.Server({ noServer: true })
-const host = process.env.HOST || 'localhost'
-const port = number.parseInt(process.env.PORT || '3004')
+const wss = new WebSocketServer({ noServer: true })
+const host = process.env.HOST || '0.0.0.0'
+const port = number.parseInt(process.env.PORT || '1234')
 
 const server = http.createServer((_request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/plain' })
