@@ -89,7 +89,6 @@ export function OutputPanel({
             tabs={["Test Case", "Console"]} 
             active={activeTab} 
             onChange={setActiveTab} 
-            // This injects the colored dot right inside the Test Case tab
             dots={{ "Test Case": testStatus }}
           />
         </div>
@@ -110,11 +109,8 @@ export function OutputPanel({
             </div>
           ) : (
             <>
-              {/* --- TEST CASE VIEW --- */}
               {activeTab === "Test Case" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                  
-                  {/* First element at the top: The Tag */}
                   {testStatus && (
                     <div style={{ display: "flex" }}>
                       <Tag text={testStatus} color={testStatus === "Passed" ? "green" : "red"} />
@@ -142,7 +138,6 @@ export function OutputPanel({
                 </div>
               )}
 
-              {/* --- CONSOLE VIEW --- */}
               {activeTab === "Console" && (
                 <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                   <span style={styles.label}>Output</span>

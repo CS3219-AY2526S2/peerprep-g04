@@ -41,11 +41,11 @@ export function useCodeExecution() {
   async function runCode(code, stdin = null, expectedOutput = null) {
     if (!code || !code.trim()) {
       toast("Please write some code first!", { type: "warning" });
-      return;
+      return null; // Return null so the caller knows it aborted
     }
 
-    // Determine if we are evaluating a test or just running raw code
     const hasTestCase = expectedOutput !== null && expectedOutput !== undefined && expectedOutput.trim() !== "";
+    let calculatedStatus = hasTestCase ? null : 'Completed'; // Fallback if no tests exist
 
     setLoading(true);
     setOpen(true);
@@ -72,7 +72,10 @@ export function useCodeExecution() {
       if (stderr || compile_output) {
         setOutputErr(true);
         setOutput(stderr || compile_output);
-        if (hasTestCase) setTestStatus('Error');
+        if (hasTestCase) {
+          setTestStatus('Error');
+          calculatedStatus = 'Error';
+        }
       } else {
         setOutputErr(false);
         const actualOutput = stdout || '';
@@ -88,28 +91,36 @@ export function useCodeExecution() {
             
             if (JSON.stringify(actualJson) === JSON.stringify(expectedJson)) {
               setTestStatus('Passed');
+              calculatedStatus = 'Passed';
             } else {
               setTestStatus('Failed');
+              calculatedStatus = 'Failed';
             }
           } catch (e) {
             if (actualClean === expectedClean) {
               setTestStatus('Passed');
+              calculatedStatus = 'Passed';
             } else {
               setTestStatus('Failed');
+              calculatedStatus = 'Failed';
             }
           }
         }
       }
+      
+      return calculatedStatus;
+
     } catch (err) {
       console.error("Judge0 API Error:", err?.response?.data || err.message);
       toast(err?.response?.data?.error || err.message, { type: "error" });
       setOutput("Execution failed.");
       setOutputErr(true);
       if (hasTestCase) setTestStatus('Error');
+      return 'Error';
     } finally {
       setLoading(false);
     }
-  } 
+  }
 
   return {
     lang,

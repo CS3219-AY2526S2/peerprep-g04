@@ -117,12 +117,22 @@ export function CollabPage(props) {
       return;
     }
 
+    const runResult = await runCode(currentCode, testCaseInput, testCaseOutput);
+
+    if (!runResult) return; 
+
+    let finalStatus = "Attempted";
+    if (runResult === "Passed") finalStatus = "Accepted";
+    else if (runResult === "Failed") finalStatus = "Failed";
+    else if (runResult === "Error") finalStatus = "Error";
+    else if (runResult === "Completed") finalStatus = "Completed";
+
     const submissionData = {
       user_id: user.user_id,
       question_id: question_id,
       lang: lang,
       code: currentCode,
-      status: 'Accepted' // hardcoded
+      status: finalStatus 
     };
 
     const newSubmission = await createSubmission(submissionData);
@@ -222,7 +232,7 @@ export function CollabPage(props) {
                         <tr key={idx}>
                           <td>{formatDateTime(s.submitted_at)}</td>
                           <td>{formatLanguage[s.lang] || s.lang}</td>
-                          <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#d97706' }}>
+                          <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#ef4444' }}>
                             {s.status}
                           </td>
                           <td>
