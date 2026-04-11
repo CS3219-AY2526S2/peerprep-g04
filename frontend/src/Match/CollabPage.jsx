@@ -18,6 +18,8 @@ import { Card } from '../components/Card.jsx';
 import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
 import { Table } from '../components/Table.jsx';
+import { ChatPage } from './ChatPage.jsx';
+import { useChatService } from '../hooks/useChatService.jsx';
 
 const diffColors = {
   easy: {
@@ -50,6 +52,25 @@ const formatLanguage = {
   "javascript": "JavaScript",
   "python": "Python",
 };
+
+function formatDateTime(dateString) {
+  const d = new Date(dateString);
+  
+  const datePart = d.toLocaleDateString('en-GB', { 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  });
+  
+  const timePart = d.toLocaleTimeString('en-GB', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    hour12: false 
+  });
+
+  return `${datePart}, ${timePart}`;
+}
 
 function Output(props) {
   const { loading, open, setOpen, output } = props;
@@ -104,6 +125,9 @@ export function CollabPage(props) {
     outputErr,
     runCode,
   } = useCodeExecution();
+
+  const [openChat, setOpenChat] = useState(false);
+  const { messages, sendMessage, leave } = useChatService(user, match_id);
 
   const editorRef = useRef();
   const yTextRef = useRef();
@@ -170,23 +194,9 @@ export function CollabPage(props) {
     }
   };
 
-  function formatDateTime(dateString) {
-    const d = new Date(dateString);
-    
-    const datePart = d.toLocaleDateString('en-GB', { 
-      day: '2-digit', 
-      month: 'short', 
-      year: 'numeric' 
-    });
-    
-    const timePart = d.toLocaleTimeString('en-GB', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit', 
-      hour12: false 
-    });
-  
-    return `${datePart}, ${timePart}`;
+  function myLeave() {
+    onLeave();
+    leave();
   }
 
   return (
@@ -196,9 +206,11 @@ export function CollabPage(props) {
         setLang={setLang}
         onRun={() => runCode(editorRef.current?.getValue())}
         onSubmit={handleSubmit}
-        onLeave={onLeave}
+        onLeave={myLeave}
         loading={loading}
         showRun={true}
+        showChat={true}
+        onOpenChat={() => setOpenChat(open => !open)}
       />
 
       <div className={styles.body}>
@@ -304,6 +316,12 @@ export function CollabPage(props) {
           outputErr={outputErr}
         />
       </div>
+      <ChatPage 
+        user={user} 
+        open={openChat} 
+        messages={messages} 
+        sendMessage={sendMessage} 
+      />
     </div>
   );
 }
