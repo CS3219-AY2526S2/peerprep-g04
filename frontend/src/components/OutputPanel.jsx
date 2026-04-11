@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Tag } from "./Tag";
 import { Tabs } from "./Tabs";
+import { ChatPanel } from "./ChatPanel";
 
 export function OutputPanel({
   loading,
@@ -14,9 +15,38 @@ export function OutputPanel({
   testStatus,
   testCaseInput,
   testCaseOutput,
+  user,
+  messages,
+  sendMessage,
   containerStyle = {} 
 }) {
   const [activeTab, setActiveTab] = useState("Test Case");
+  const [unreadCount, setUnreadCount] = useState(0);
+  const processedMessageCount = useRef(messages.length);
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+    if (!open) setOpen(true);
+  };
+
+  useEffect(() => {
+    if (messages.length > processedMessageCount.current) {
+      const lastMessage = messages[messages.length - 1];
+      
+      if (activeTab !== "Chat" && lastMessage?.username !== user?.username) {
+        setUnreadCount(prev => prev + 1);
+      }
+      
+      processedMessageCount.current = messages.length;
+    }
+  }, [messages, activeTab, user?.username]);
+
+  useEffect(() => {
+    if (activeTab === "Chat") {
+      setUnreadCount(0);
+      processedMessageCount.current = messages.length;
+    }
+  }, [activeTab, messages.length]);
 
   const styles = {
     terminal: {
@@ -37,13 +67,17 @@ export function OutputPanel({
       alignItems: "flex-start",
       padding: "12px 16px 0 16px",
       background: "#ffffff",
+      cursor: "pointer",
+      userSelect: "none",
     },
     terminalBody: {
-      minHeight: "200px",
-      maxHeight: "400px",
-      overflowY: "auto",
+      height: "350px",
+      boxSizing: "border-box",
+      overflowY: activeTab === "Chat" ? "hidden" : "auto",
       backgroundColor: "#ffffff",
-      padding: "0 20px 20px 20px",
+      display: "flex",
+      flexDirection: "column",
+      padding: activeTab === "Chat" ? "0" : "0 20px 20px 20px",
     },
     codeBlock: {
       margin: "4px 0 0 0",
@@ -83,18 +117,30 @@ export function OutputPanel({
         {`@keyframes output-panel-spin { to { transform: rotate(360deg); } }`}
       </style>
 
-      <div style={styles.terminalHeader}>
+      {/* onClick attached to the entire header */}
+      <div style={styles.terminalHeader} onClick={() => setOpen(!open)}>
         <div style={{ flex: 1, display: "flex", alignItems: "flex-start", gap: "16px" }}>
-          <Tabs 
-            tabs={["Test Case", "Console"]} 
-            active={activeTab} 
-            onChange={setActiveTab} 
-            dots={{ "Test Case": testStatus }}
-          />
+          
+          {/* Wraps the Tabs to prevent click propagation. This ensures clicking a tab switches the view instead of collapsing the panel. */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <Tabs 
+              tabs={["Test Case", "Console", "Chat"]} 
+              active={activeTab} 
+              onChange={handleTabChange} 
+              dots={{ 
+                  "Test Case": testStatus,
+                  "Chat": unreadCount > 0 ? "New" : null 
+              }}
+            />
+          </div>
         </div>
         
+        {/* Added stopPropagation here so clicking the arrow doesn't double-trigger the header toggle */}
         <IconButton 
-          onClick={() => setOpen(!open)} 
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(!open);
+          }} 
           sx={{ height: "28px", width: "28px", marginBottom: "12px" }}
         >
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
@@ -110,7 +156,7 @@ export function OutputPanel({
           ) : (
             <>
               {activeTab === "Test Case" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px", paddingTop: "12px" }}>
                   {testStatus && (
                     <div style={{ display: "flex" }}>
                       <Tag text={testStatus} color={testStatus === "Passed" ? "green" : "red"} />
@@ -139,7 +185,7 @@ export function OutputPanel({
               )}
 
               {activeTab === "Console" && (
-                <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                <div style={{ display: "flex", flexDirection: "column", height: "100%", paddingTop: "12px" }}>
                   <span style={styles.label}>Output</span>
                   <pre style={{ 
                     ...styles.codeBlock, 
@@ -148,6 +194,16 @@ export function OutputPanel({
                   }}>
                     {output || "No console output."}
                   </pre>
+                </div>
+              )}
+
+              {activeTab === "Chat" && (
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                  <ChatPanel 
+                      user={user}
+                      messages={messages}
+                      sendMessage={sendMessage}
+                  />
                 </div>
               )}
             </>

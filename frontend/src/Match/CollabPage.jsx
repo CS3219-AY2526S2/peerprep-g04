@@ -277,6 +277,9 @@ export function CollabPage(props) {
           testStatus={testStatus} 
           testCaseInput={testCaseInput}
           testCaseOutput={testCaseOutput} 
+          user={user}
+          messages={messages}
+          sendMessage={sendMessage}
         />
       </div>
       
