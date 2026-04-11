@@ -17,6 +17,7 @@ import { Table } from '../components/Table.jsx';
 import { OutputPanel } from '../components/OutputPanel';
 import { ChatPage } from './ChatPage.jsx';
 import { useChatService } from '../hooks/useChatService.jsx';
+import { create_submission, get_submission_history } from '../hooks/useSubmissionService';
 
 const formatLanguage = {
   "javascript": "JavaScript",
@@ -51,7 +52,7 @@ export function CollabPage(props) {
   const [submissions, setSubmissions] = useState([]);
 
   const { title = '', difficulty = '', tags = [], body = '' } = question;
-  const { user, accessToken, get_question_attempts, createSubmission } = useContext(UserContext);
+  const { user, accessToken } = useContext(UserContext);
 
   const {
     lang,
@@ -73,8 +74,11 @@ export function CollabPage(props) {
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
-    get_question_attempts(question_id).then(history => setSubmissions(history || []));
-  }, [question_id]);
+
+    get_submission_history(question_id, accessToken).then(history => {
+      setSubmissions(history || []);
+    });
+  }, [question_id, accessToken]);
 
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
@@ -128,14 +132,13 @@ export function CollabPage(props) {
     else if (runResult === "Completed") finalStatus = "Completed";
 
     const submissionData = {
-      user_id: user.user_id,
       question_id: question_id,
       lang: lang,
       code: currentCode,
       status: finalStatus 
     };
 
-    const newSubmission = await createSubmission(submissionData);
+    const newSubmission = await create_submission(submissionData, accessToken);
     
     if (newSubmission) {
       setSubmissions(prev => [newSubmission, ...prev]);
@@ -276,6 +279,7 @@ export function CollabPage(props) {
           testCaseOutput={testCaseOutput} 
         />
       </div>
+      
       <ChatPage 
         user={user} 
         open={openChat} 
