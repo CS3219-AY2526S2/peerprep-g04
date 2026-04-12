@@ -9,6 +9,7 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
+    z-index: 999;
 }
 
 .chatDisplay {
@@ -25,6 +26,8 @@
     align-items: stretch;
     gap: 4px;
     background-color: ivory;
+    font-family: 'DM Sans', sans-serif;
+    z-index: 999;
 }
 
 .chatDisplay > div:first-child {
