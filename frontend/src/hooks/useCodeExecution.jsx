@@ -41,11 +41,11 @@ export function useCodeExecution() {
   async function runCode(code, stdin = null, expectedOutput = null) {
     if (!code || !code.trim()) {
       toast("Please write some code first!", { type: "warning" });
-      return null; // Return null so the caller knows it aborted
+      return null;
     }
 
     const hasTestCase = expectedOutput !== null && expectedOutput !== undefined && expectedOutput.trim() !== "";
-    let calculatedStatus = hasTestCase ? null : 'Completed'; // Fallback if no tests exist
+    let calculatedStatus = hasTestCase ? null : 'Completed';
 
     setLoading(true);
     setOpen(true);
