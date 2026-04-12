@@ -5,13 +5,13 @@ import request from 'supertest';
 
 beforeEach(async () => {
     await pool.query(`
-        DELETE FROM users;
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `);
 });
 
 afterAll(async () => {
     await pool.query(`
-        DELETE FROM users;
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `);
 });
 
@@ -32,8 +32,7 @@ test('delete user successful', async () => {
         .set('authorization', `Bearer ${res.body.access_token}`);
     
     expect(res2.status).toBe(200);
-
-})
+});
 
 test('delete user non admin user try to delete other user', async () => {
     const res_tom = await request(app)
@@ -60,5 +59,47 @@ test('delete user non admin user try to delete other user', async () => {
         .set('authorization', `Bearer ${res_jim.body.access_token}`);
     
     expect(res2.status).toBe(403);
+});
 
-})
+test('database trigger: cannot delete the last owner', async () => {
+    const owner = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'owner',
+            email: 'owner@gmail.com',
+            password: 'abc'
+        });
+
+    await pool.query(`
+        UPDATE users SET access = 'owner' WHERE id = ${owner.body.user_id}
+    `);
+
+    const res = await request(app)
+        .delete(`/delete-user/${owner.body.user_id}`)
+        .set('authorization', `Bearer ${owner.body.access_token}`);
+    
+    expect(res.status).toBe(500);
+});
+
+test('database trigger: cannot demote the last owner', async () => {
+    const owner = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'owner',
+            email: 'owner@gmail.com',
+            password: 'abc'
+        });
+
+    await pool.query(`
+        UPDATE users SET access = 'owner' WHERE id = ${owner.body.user_id}
+    `);
+
+    const res = await request(app)
+        .patch(`/update-user/${owner.body.user_id}`)
+        .set('authorization', `Bearer ${owner.body.access_token}`)
+        .send({
+            access: 'admin'
+        });
+    
+    expect(res.status).toBe(500);
+});

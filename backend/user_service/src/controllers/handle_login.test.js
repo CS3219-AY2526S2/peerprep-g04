@@ -6,13 +6,13 @@ import { ACCESS } from "../access.js";
 
 beforeEach(async () => {
     await pool.query(`
-        DELETE FROM users;
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `);
 });
 
 afterAll(async () => {
     await pool.query(`
-        DELETE FROM users;
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `);
 });
 
