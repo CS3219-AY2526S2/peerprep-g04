@@ -15,7 +15,6 @@ import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
 import { Table } from '../components/Table.jsx';
 import { OutputPanel } from '../components/OutputPanel';
-import { ChatPage } from './ChatPage.jsx';
 import { useChatService } from '../hooks/useChatService.jsx';
 import { create_submission, get_submission_history } from '../hooks/useSubmissionService';
 
@@ -282,13 +281,6 @@ export function CollabPage(props) {
           sendMessage={sendMessage}
         />
       </div>
-      
-      <ChatPage 
-        user={user} 
-        open={openChat} 
-        messages={messages} 
-        sendMessage={sendMessage} 
-      />
     </div>
   );
 }

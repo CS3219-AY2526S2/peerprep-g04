@@ -7,11 +7,11 @@ import jwt from 'jsonwebtoken';
 import { create_user } from "../database/db.js";
 
 beforeEach(async () => {
-    await pool.query(`DELETE FROM users;`);
+    await pool.query(`TRUNCATE TABLE users RESTART IDENTITY CASCADE;`);
 });
 
 afterAll(async () => {
-    await pool.query(`DELETE FROM users;`);
+    await pool.query(`TRUNCATE TABLE users RESTART IDENTITY CASCADE;`);
 });
 
 test('get all users', async () => {

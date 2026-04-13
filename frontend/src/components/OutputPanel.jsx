@@ -64,8 +64,8 @@ export function OutputPanel({
     terminalHeader: {
       display: "flex",
       justifyContent: "space-between",
-      alignItems: "flex-start",
-      padding: "12px 16px 0 16px",
+      alignItems: "center",
+      padding: "6px 16px",
       background: "#ffffff",
       cursor: "pointer",
       userSelect: "none",
@@ -117,11 +117,8 @@ export function OutputPanel({
         {`@keyframes output-panel-spin { to { transform: rotate(360deg); } }`}
       </style>
 
-      {/* onClick attached to the entire header */}
       <div style={styles.terminalHeader} onClick={() => setOpen(!open)}>
-        <div style={{ flex: 1, display: "flex", alignItems: "flex-start", gap: "16px" }}>
-          
-          {/* Wraps the Tabs to prevent click propagation. This ensures clicking a tab switches the view instead of collapsing the panel. */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "16px" }}>
           <div onClick={(e) => e.stopPropagation()}>
             <Tabs 
               tabs={["Test Case", "Console", "Chat"]} 
@@ -135,13 +132,12 @@ export function OutputPanel({
           </div>
         </div>
         
-        {/* Added stopPropagation here so clicking the arrow doesn't double-trigger the header toggle */}
         <IconButton 
           onClick={(e) => {
             e.stopPropagation();
             setOpen(!open);
           }} 
-          sx={{ height: "28px", width: "28px", marginBottom: "12px" }}
+          sx={{ height: "28px", width: "28px", }}
         >
           {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
         </IconButton>

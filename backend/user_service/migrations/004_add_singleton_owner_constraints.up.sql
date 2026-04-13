@@ -1,16 +1,13 @@
-CREATE DATABASE peerprep_user_service;
+BEGIN;
 
-\c peerprep_user_service;
+DROP TRIGGER IF EXISTS ensure_owner_exists_trigger ON users;
+DROP INDEX IF EXISTS only_one_owner_idx;
 
 CREATE TYPE access_role AS ENUM ('admin', 'user', 'owner');
 
-CREATE TABLE users (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    access access_role
-);
+ALTER TABLE users 
+ALTER COLUMN access TYPE access_role 
+USING access::access_role;
 
 CREATE UNIQUE INDEX only_one_owner_idx ON users (access) WHERE access = 'owner';
 
@@ -36,3 +33,5 @@ AFTER DELETE OR UPDATE OF access ON users
 DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW
 EXECUTE FUNCTION ensure_only_one_owner();
+
+COMMIT;

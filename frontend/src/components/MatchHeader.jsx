@@ -8,7 +8,7 @@ import { languages } from '../hooks/useCodeExecution.jsx';
 import { PrimaryButton } from '../components/PrimaryButton.jsx';
 
 export function MatchHeader({ 
-  lang, setLang, onRun, onSubmit, onLeave, loading, showRun = false, showChat = false, onOpenChat,
+  lang, setLang, onRun, onSubmit, onLeave, loading, showRun = false,
 }) {
   const styles = {
     header: {
@@ -72,13 +72,6 @@ export function MatchHeader({
       ) : <div style={styles.left} /> }
 
       <div style={styles.center}>
-        {showChat && 
-          <PrimaryButton 
-            text='Chat' 
-            fullWidth={false}
-            onClick={onOpenChat}
-          />
-        }
         {showRun && (
           <>
             <PrimaryButton
