@@ -5,11 +5,15 @@ import { app } from "../app.js";
 import { ACCESS } from "../access.js";
 
 beforeEach(async () => {
-    await pool.query(`DELETE FROM users;`);
+    await pool.query(`
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+    `);
 });
 
 afterAll(async () => {
-    await pool.query(`DELETE FROM users;`);
+    await pool.query(`
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+    `);
 });
 
 // check your email if a reset email password is sent.

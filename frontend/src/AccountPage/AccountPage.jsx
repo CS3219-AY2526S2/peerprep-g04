@@ -6,16 +6,17 @@ import { UserContext } from '../hooks/useUserService';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ToggleableTextField } from '../components/ToggleableTextField';
 import { Card } from '../components/Card';
-import { useNavigate, Navigate } from 'react-router';
+import { Navigate } from 'react-router';
+import { DeleteDialog } from '../components/DeleteDialog'
 
 export function AccountPage() {
-  const { user, loading, updateUser, logout } = useContext(UserContext);
+  const { user, loading, updateUser, deleteUser, logout } = useContext(UserContext);
 
   const [username, setUsername] = useState(user?.username ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
 
-  const navigate = useNavigate();
+  const [openDel, setOpenDel] = useState(false);
 
   const hasChanges =
     username !== user?.username ||
@@ -86,12 +87,32 @@ export function AccountPage() {
                   type="submit"
                   disabled={!hasChanges || loading}
                 />
+
+                <PrimaryButton
+                  text="Delete"
+                  color='red'
+                  onClick={() => setOpenDel(true)}
+                  disabled={user.access === 'owner'}
+                />
               </div>
             </form>
           </Card>
-          
+
         </div>
       </div>
+
+      <DeleteDialog
+        open={openDel}
+        onClose={() => setOpenDel(false)}
+        onConfirm={async () => {
+          const res = await deleteUser(user.user_id);
+          if (res) {
+            setOpenDel(false);
+            logout(); 
+          }
+        }}
+        message='Are you sure you want to delete your account?'
+      />
     </div>
   );
 }
