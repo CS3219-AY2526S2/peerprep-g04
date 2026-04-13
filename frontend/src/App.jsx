@@ -31,6 +31,7 @@ function App() {
     if (path.includes('match')) setTab(1);
     else if (path.includes('question-management')) setTab(2);
     else if (path.includes('user-management')) setTab(3);
+    else if (path.includes('dashboard')) setTab(4);
     else if (path === '/signed-in') setTab(0);
     else setTab(null);
   }, [location.pathname]);
@@ -50,6 +51,9 @@ function App() {
         break;
       case 3:
         navigate('/signed-in/user-management');
+        break;
+      case 4:
+        navigate('/signed-in/dashboard');
         break;
       default:
         break;

@@ -23,6 +23,7 @@ export function Header({ onChange }) {
     if (path.includes("match")) return 1;
     if (path.includes("question-management")) return 2;
     if (path.includes("user-management")) return 3;
+    if (path.includes("dashboard")) return 4;
     if (path === "/signed-in") return 0;
 
     return false;
@@ -85,6 +86,9 @@ export function Header({ onChange }) {
       case 3:
         navigate("/signed-in/user-management");
         break;
+      case 4:
+        navigate("/signed-in/dashboard");
+        break;
       default:
         break;
     }
@@ -98,6 +102,7 @@ export function Header({ onChange }) {
         <Tabs value={tab} onChange={handleTabChange} sx={{ minHeight: 'unset' }}>
           <Tab label="Home" value={0} sx={styles.tab} />
           <Tab label="Match" value={1} sx={styles.tab} />
+          <Tab label="Dashboard" value={4} sx={styles.tab} />
 
           {isAdminOrOwner && (
             <Tab
