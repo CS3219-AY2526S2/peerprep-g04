@@ -23,14 +23,22 @@ export async function handle_delete_user(req, res) {
         return res.status(500).json({ message: err.message });
     }
 
-    if (req.user.access !== ACCESS.admin && req.user.id !== user_to_del.id) {
-        return res.status(403).json({ message: 'user is not admin, cannot delete other users' });
+    if (req.user.access === ACCESS.user && req.user.id !== user_to_del.id) {
+        return res.status(403).json({ message: 'user cannot delete other user accounts' });
     }
+
+    if (req.user.access === ACCESS.admin && user_to_del.access !== ACCESS.user) {
+        return res.status(403).json(
+            { message: 'admin cannot delete admin or owner account, can only delete user account' }
+        );
+    }
+
+    // the owner delete check is a database trigger.
 
     try {
         await delete_user(user_to_del.id);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
     }
 
     return res.status(200).json({ message: 'user successfully deleted' });

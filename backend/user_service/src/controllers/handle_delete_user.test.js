@@ -1,7 +1,8 @@
 import { app } from "../app.js";
-import { pool } from "../database/db.js";
+import { create_user, pool } from "../database/db.js";
 import { beforeEach, afterAll, test, expect } from "vitest";
 import request from 'supertest';
+import jwt from 'jsonwebtoken'
 
 beforeEach(async () => {
     await pool.query(`
@@ -103,3 +104,34 @@ test('database trigger: cannot demote the last owner', async () => {
     
     expect(res.status).toBe(500);
 });
+
+test('admin can only delete user account', async () => {
+    const admin = await create_user('tim', 'tim@gmail.com', 'abc', 'admin');
+    const admin2 = await create_user('jim', 'jim@gmail.com', 'abc', 'admin');
+    const admin_token = jwt.sign(
+        { user_id: admin.id , access: admin.access}, 
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '1d'}
+    );
+
+    const res = await request(app)
+        .delete(`/delete-user/${admin2.id}`)
+        .set('authorization', `Bearer ${admin_token}`);
+
+    expect(res.status).toBe(403);
+
+    const user = await create_user('sim', 'sim@gmail.com', 'abc', 'user');
+    const res2 = await request(app)
+        .delete(`/delete-user/${user.id}`)
+        .set('authorization', `Bearer ${admin_token}`);
+    
+    expect(res2.status).toBe(200);
+
+    const owner = await create_user('dim', 'dim@gmail.com', 'abc', 'owner');
+    const res3 = await request(app)
+        .delete(`/delete-user/${owner.id}`)
+        .set('authorization', `Bearer ${admin_token}`);
+
+    expect(res3.status).toBe(403);
+});
+
