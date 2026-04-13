@@ -158,6 +158,24 @@ export function useUserService() {
     setLoading(false);
   }
 
+  async function deleteUser(user_id) {
+    try {
+      const res = await user_api.delete(
+        `/delete-user/${user_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
+      toast('User deleted successfully');
+      return true;
+    } catch (err) {
+      toast(err?.response?.data?.message ?? err.message);
+      return false;
+    }
+  }
+
   async function createSubmission(submissionData) {
     try {
       const res = await user_api.post('/create-submission', submissionData, {
@@ -199,6 +217,7 @@ export function useUserService() {
     forgetPassword,
     resetPassword,
     updateUser,
+    deleteUser,
     createSubmission,
     get_question_attempts,
     logout
