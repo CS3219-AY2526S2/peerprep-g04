@@ -96,6 +96,7 @@ services:
       DB_PORT: 5432
       DB_DATABASE: peerprep_submission_service
       JWT_SECRET_KEY: secret
+      MATCHING_SERVICE_URL: http://matching-service:3003
 
   postgres:
     image: postgres:18

@@ -208,6 +208,16 @@ export async function save_match(user1_id, user2_id, topics, difficulties, quest
     return res.rows[0].id
 }
 
+export async function get_match_count_by_user_id(user_id) {
+    const res = await pool.query(
+        `SELECT COUNT(*)::int AS total_matches
+         FROM matches
+         WHERE user1_id = $1 OR user2_id = $1`,
+        [user_id]
+    );
+    return res.rows[0].total_matches;
+}
+
 export async function get_match_by_user_id(user_id) {
     const result = await pool.query(
         `
