@@ -31,6 +31,11 @@ export function CreateQuestionDialog({
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState("");
   const [body, setBody] = useState("");
+  
+
+  const [testCaseInput, setTestCaseInput] = useState("");
+  const [testCaseOutput, setTestCaseOutput] = useState("");
+  
   const [loading, setLoading] = useState(false);
 
   function addTag(t) {
@@ -43,16 +48,31 @@ export function CreateQuestionDialog({
   }
 
   async function handleCreate() {
+
     if (!(title && difficulty && tags.length && body)) {
       toast("Some fields are still empty", { type: "error" });
       return;
     }
 
+    if (!testCaseInput.trim() || !testCaseOutput.trim()) {
+      toast("Please fill in both Test Case Input and Expected Output", { type: "error" });
+      return;
+    }
+
     setLoading(true);
-    const res = await create_question(
-      { title, difficulty, tags, body },
-      accessToken
-    );
+
+    const payload = {
+      title,
+      difficulty,
+      tags,
+      body,
+      test_case: {
+        input: testCaseInput,
+        expected_output: testCaseOutput,
+      }
+    };
+
+    const res = await create_question(payload, accessToken);
     setLoading(false);
 
     if (res) {
@@ -67,6 +87,8 @@ export function CreateQuestionDialog({
     setTags([]);
     setTag("");
     setBody("");
+    setTestCaseInput("");
+    setTestCaseOutput("");
     onClose();
   }
 
@@ -75,7 +97,7 @@ export function CreateQuestionDialog({
       open={open}
       onClose={handleClose}
       fullWidth
-      maxWidth={false}
+      maxWidth="md"
     >
       <DialogTitle style={{ fontFamily: "'DM Sans', sans-serif", textAlign: "center" }}>
         Create Question
@@ -113,7 +135,7 @@ export function CreateQuestionDialog({
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
               {tags.map((t) => (
-                <Tag key={t} text={t} />
+                <Tag key={t} text={t} onDelete={deleteTag(t)} />
               ))}
             </div>
 
@@ -131,8 +153,7 @@ export function CreateQuestionDialog({
                   }
                 }}
               />
-
-              <IconButton onClick={() => tag && addTag(tag)} >
+              <IconButton onClick={() => tag && addTag(tag)}>
                 <AddIcon fontSize="small" />
               </IconButton>
             </div>
@@ -145,6 +166,26 @@ export function CreateQuestionDialog({
               height={300}
             />
           </div>
+
+          {/* --- Test Case --- */}
+          <TextField
+            label="Input (JSON or Raw Text)"
+            placeholder='e.g., {"nums": [2,7,11,15], "target": 9}'
+            multiline
+            minRows={3}
+            fullWidth
+            value={testCaseInput}
+            onChange={(e) => setTestCaseInput(e.target.value)}
+          />
+          <TextField
+            label="Expected Output (JSON or Raw Text)"
+            placeholder='e.g., [0, 1]'
+            multiline
+            minRows={3}
+            fullWidth
+            value={testCaseOutput}
+            onChange={(e) => setTestCaseOutput(e.target.value)}
+          />
         </div>
       </DialogContent>
 
@@ -162,7 +203,6 @@ export function CreateQuestionDialog({
             fullWidth
             onClick={handleClose}
           />
-
           <PrimaryButton
             text={loading ? "Creating..." : "Create"}
             color="blue"

@@ -2,7 +2,7 @@ import { get_submissions_by_question } from "../database/db.js";
 
 export async function handle_get_submission_history(req, res) {
     try {
-        const userId = req.user.id;
+        const userId = req.user_id;
         const questionId = parseInt(req.params.questionId, 10);
 
         if (isNaN(questionId)) {

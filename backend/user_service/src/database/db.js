@@ -8,6 +8,24 @@ export const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
+export async function connectWithRetry() {
+  let retries = 5;
+
+  while (retries) {
+    try {
+      await pool.query("SELECT 1");
+      console.log("User DB connected");
+      return;
+    } catch (err) {
+      console.log("User DB not ready, retrying...");
+      retries--;
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+
+  throw new Error("Could not connect to User DB");
+}
+
 export async function get_user_by_id(user_id) {
     const res = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
     return res.rows[0];

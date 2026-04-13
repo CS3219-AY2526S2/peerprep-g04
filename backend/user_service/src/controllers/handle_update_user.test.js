@@ -2,17 +2,16 @@ import { app } from "../app.js";
 import { pool } from "../database/db.js";
 import { beforeEach, afterAll, test, expect } from "vitest";
 import request from 'supertest';
-import { access } from "node:fs";
 
 beforeEach(async () => {
     await pool.query(`
-        DELETE FROM users;
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `);
 });
 
 afterAll(async () => {
     await pool.query(`
-        DELETE FROM users;
+        TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `);
 });
 
@@ -235,3 +234,57 @@ test('owner can update other user', async () => {
   
     expect(res.status).toBe(403);
   });
+
+  test('database trigger: cannot demote the last owner', async () => {
+    const owner = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'owner',
+            email: 'owner@gmail.com',
+            password: 'abc'
+        });
+
+    await pool.query(`
+        UPDATE users SET access = 'owner' WHERE id = ${owner.body.user_id}
+    `);
+
+    const res = await request(app)
+        .patch(`/update-user/${owner.body.user_id}`)
+        .set('authorization', `Bearer ${owner.body.access_token}`)
+        .send({
+            access: 'admin'
+        });
+    
+    expect(res.status).toBe(500); 
+});
+
+test('database constraint: cannot promote a second owner', async () => {
+    const owner1 = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'owner1',
+            email: 'owner1@gmail.com',
+            password: 'abc'
+        });
+
+    await pool.query(`
+        UPDATE users SET access = 'owner' WHERE id = ${owner1.body.user_id}
+    `);
+
+    const user2 = await request(app)
+        .post('/create-user')
+        .send({
+            username: 'user2',
+            email: 'user2@gmail.com',
+            password: 'abc'
+        });
+
+    const res = await request(app)
+        .patch(`/update-user/${user2.body.user_id}`)
+        .set('authorization', `Bearer ${owner1.body.access_token}`)
+        .send({
+            access: 'owner'
+        });
+    
+    expect(res.status).toBe(500); 
+});

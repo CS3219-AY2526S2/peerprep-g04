@@ -30,7 +30,7 @@ export function AiChatPage() {
       return (
         <div ref={ref} className={styles.chatDisplay}>
           <div>
-            <VertIcon className='drag-handle' height='16px' width='16px' style={{cursor: 'grab'}}/>
+            <div>•</div>
             <div style={{marginRight: 'auto'}}>Gemini</div>
             <Button 
               variant='outlined' 
@@ -53,7 +53,7 @@ export function AiChatPage() {
               }
             })}
           </div>
-          <div>
+          <div className='no-drag'>
             <TextField 
               fullWidth 
               size='small' 
@@ -73,9 +73,9 @@ export function AiChatPage() {
 
   return (
     <Draggable
-      handle='.drag-handle'
       bounds='parent'
       nodeRef={ref}
+      cancel='.no-drag'
     >
      {whatPage()}
     </Draggable>

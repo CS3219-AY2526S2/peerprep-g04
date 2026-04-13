@@ -3,50 +3,20 @@ import { useEffect, useState, useRef, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { get_question_by_id } from '../hooks/useQuestionService';
 import Editor from '@monaco-editor/react';
-import Typography from '@mui/material/Typography';
 import * as Y from 'yjs';
 import { MonacoBinding } from "y-monaco";
 import { WebsocketProvider } from "y-websocket";
 import Markdown from 'react-markdown';
 import { UserContext } from '../hooks/useUserService.jsx';
-import IconButton from '@mui/material/IconButton';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useCodeExecution } from '../hooks/useCodeExecution.jsx';
 import { MatchHeader } from '../components/MatchHeader.jsx';
 import { Card } from '../components/Card.jsx';
 import { Tabs } from '../components/Tabs.jsx';
 import { Tag } from '../components/Tag.jsx';
 import { Table } from '../components/Table.jsx';
-import { ChatPage } from './ChatPage.jsx';
+import { OutputPanel } from '../components/OutputPanel';
 import { useChatService } from '../hooks/useChatService.jsx';
-
-const diffColors = {
-  easy: {
-    bg: "#dcfce7",
-    bgHover: "#bbf7d0",
-    border: "#86efac",
-    borderHover: "#4ade80",
-    text: "#166534",
-    textHover: "#14532d",
-  },
-  medium: {
-    bg: "#fef3c7",
-    bgHover: "#fde68a",
-    border: "#fcd34d",
-    borderHover: "#f59e0b",
-    text: "#92400e",
-    textHover: "#78350f",
-  },
-  hard: {
-    bg: "#fee2e2",
-    bgHover: "#fecaca",
-    border: "#fca5a5",
-    borderHover: "#ef4444",
-    text: "#991b1b",
-    textHover: "#7f1d1d",
-  },
-};
+import { create_submission, get_submission_history } from '../hooks/useSubmissionService';
 
 const formatLanguage = {
   "javascript": "JavaScript",
@@ -72,38 +42,6 @@ function formatDateTime(dateString) {
   return `${datePart}, ${timePart}`;
 }
 
-function Output(props) {
-  const { loading, open, setOpen, output } = props;
-
-  function renderContent() {
-    if (loading) {
-      return (
-        <div className={styles.terminalSpinner}>
-          <div className={styles.spinner}></div>
-        </div>
-      );
-    }
-
-    return (
-      <div className={styles.terminalBody}>
-        <code>{output}</code>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.terminal}>
-      <div className={styles.terminalHeader}>
-        <span>Terminal</span>
-        <IconButton onClick={() => setOpen(!open)} sx={{ height: '24px', width: '24px' }}>
-          {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-        </IconButton>
-      </div>
-      {open && renderContent()}
-    </div>
-  );
-}
-
 export function CollabPage(props) {
   const { stateData, onLeave } = props;
   const { question_id, match_id } = stateData;
@@ -113,7 +51,7 @@ export function CollabPage(props) {
   const [submissions, setSubmissions] = useState([]);
 
   const { title = '', difficulty = '', tags = [], body = '' } = question;
-  const { user, accessToken, get_question_attempts, createSubmission } = useContext(UserContext);
+  const { user, accessToken } = useContext(UserContext);
 
   const {
     lang,
@@ -123,6 +61,7 @@ export function CollabPage(props) {
     setOpen,
     output,
     outputErr,
+    testStatus,
     runCode,
   } = useCodeExecution();
 
@@ -134,8 +73,11 @@ export function CollabPage(props) {
 
   useEffect(() => {
     get_question_by_id(question_id).then(q => q && setQuestion(q));
-    get_question_attempts(question_id).then(history => setSubmissions(history || []));
-  }, [question_id]);
+
+    get_submission_history(question_id, accessToken).then(history => {
+      setSubmissions(history || []);
+    });
+  }, [question_id, accessToken]);
 
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
@@ -178,15 +120,24 @@ export function CollabPage(props) {
       return;
     }
 
+    const runResult = await runCode(currentCode, testCaseInput, testCaseOutput);
+
+    if (!runResult) return; 
+
+    let finalStatus = "Attempted";
+    if (runResult === "Passed") finalStatus = "Accepted";
+    else if (runResult === "Failed") finalStatus = "Failed";
+    else if (runResult === "Error") finalStatus = "Error";
+    else if (runResult === "Completed") finalStatus = "Completed";
+
     const submissionData = {
-      user_id: user.user_id,
       question_id: question_id,
       lang: lang,
       code: currentCode,
-      status: 'Accepted' // hardcoded
+      status: finalStatus 
     };
 
-    const newSubmission = await createSubmission(submissionData);
+    const newSubmission = await create_submission(submissionData, accessToken);
     
     if (newSubmission) {
       setSubmissions(prev => [newSubmission, ...prev]);
@@ -199,12 +150,22 @@ export function CollabPage(props) {
     leave();
   }
 
+  const testCaseInput = question.test_case_input || question.test_case?.input || '';
+  const testCaseOutput = question.test_case_output || question.test_case?.expected_output || '';
+
   return (
     <div className={styles.main}>
       <MatchHeader
         lang={lang}
         setLang={setLang}
-        onRun={() => runCode(editorRef.current?.getValue())}
+        onRun={() => {
+          const code = editorRef.current?.getValue();
+          if (testCaseInput && testCaseOutput) {
+            runCode(code, testCaseInput, testCaseOutput);
+          } else {
+            runCode(code);
+          }
+        }}
         onSubmit={handleSubmit}
         onLeave={myLeave}
         loading={loading}
@@ -214,7 +175,6 @@ export function CollabPage(props) {
       />
 
       <div className={styles.body}>
-
         {/* LEFT SIDE */}
         <div className={styles.bodyLeft}>
           <Card
@@ -234,14 +194,14 @@ export function CollabPage(props) {
                 <Tag
                   key={difficulty}
                   text={difficulty}
-                  color={diffColors[difficulty]}
+                  color={difficulty === 'easy' ? 'green' : difficulty === 'medium' ? 'yellow' : 'red'}
                 />
               )}
               {tags.map((t) => (
                 <Tag key={t} text={t} />
               ))}
             </div>
-
+          
             <Tabs
               tabs={["Description", "Submissions"]}
               active={tab}
@@ -274,7 +234,7 @@ export function CollabPage(props) {
                         <tr key={idx}>
                           <td>{formatDateTime(s.submitted_at)}</td>
                           <td>{formatLanguage[s.lang] || s.lang}</td>
-                          <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#d97706' }}>
+                          <td style={{ color: s.status === 'Accepted' ? '#16a34a' : '#ef4444' }}>
                             {s.status}
                           </td>
                           <td>
@@ -307,21 +267,20 @@ export function CollabPage(props) {
           </div>
         </div>
 
-        {/* TERMINAL */}
-        <Output
-          loading={loading}
-          open={open}
-          setOpen={setOpen}
-          output={output}
-          outputErr={outputErr}
+        <OutputPanel 
+          loading={loading} 
+          open={open} 
+          setOpen={setOpen} 
+          output={output} 
+          outputErr={outputErr} 
+          testStatus={testStatus} 
+          testCaseInput={testCaseInput}
+          testCaseOutput={testCaseOutput} 
+          user={user}
+          messages={messages}
+          sendMessage={sendMessage}
         />
       </div>
-      <ChatPage 
-        user={user} 
-        open={openChat} 
-        messages={messages} 
-        sendMessage={sendMessage} 
-      />
     </div>
   );
 }
