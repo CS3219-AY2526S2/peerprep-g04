@@ -14,6 +14,7 @@ import { QsList } from './QsList/QsList.jsx';
 import { MatchMainPage } from './Match/MatchMainPage.jsx';
 import { UserManagementPage } from './UserManagement/UserManagementPage.jsx';
 import { UserListPage } from './UserManagement/UserListPage.jsx';
+import { DashboardPage } from './DashboardPage/DashboardPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
           {
             path: 'account',
             element: <AccountPage />
+          },
+          {
+            path: 'dashboard',
+            element: <DashboardPage />
           },
           {
             path: 'match',

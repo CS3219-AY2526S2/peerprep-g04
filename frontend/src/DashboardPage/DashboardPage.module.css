@@ -1,0 +1,191 @@
+.main {
+    width: 100%;
+    flex: 1;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 24px;
+    gap: 1rem;
+    max-width: 960px;
+    margin: 0 auto;
+    animation: slideUp 0.2s ease forwards;
+}
+
+.title {
+    text-align: center;
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 800;
+    font-style: italic;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+/* ── Stat row ─────────────────────────────────────── */
+
+.statsRow {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.miniCards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    flex: 1;
+}
+
+.rateLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #64748b;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.rateValue {
+    font-size: 3.5rem;
+    font-weight: 800;
+    font-family: 'DM Sans', sans-serif;
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.ratePercent {
+    font-size: 1.8rem;
+}
+
+.rateSubLabel {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 0.4rem;
+}
+
+.miniValue {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    color: #0f172a;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.miniLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+}
+
+/* ── Charts row ───────────────────────────────────── */
+
+.chartsRow {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.langRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.langName {
+    font-size: 0.82rem;
+    color: #475569;
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.barTrack {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.barFill {
+    height: 100%;
+    background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.langCount {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.activityChart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 80px;
+    padding-top: 8px;
+}
+
+.activityCol {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    cursor: default;
+}
+
+.activityBar {
+    width: 100%;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+    transition: height 0.3s ease;
+}
+
+.activityBar:hover {
+    background: linear-gradient(180deg, #60a5fa, #2563eb);
+}
+
+/* ── Misc ─────────────────────────────────────────── */
+
+.empty {
+    color: #94a3b8;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40vh;
+    color: #64748b;
+    font-family: 'DM Sans', sans-serif;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0px);  opacity: 1; }
+}
