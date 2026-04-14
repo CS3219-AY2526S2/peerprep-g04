@@ -128,7 +128,6 @@ export function CollabPage(props) {
     if (runResult === "Passed") finalStatus = "Accepted";
     else if (runResult === "Failed") finalStatus = "Failed";
     else if (runResult === "Error") finalStatus = "Error";
-    else if (runResult === "Completed") finalStatus = "Completed";
 
     const submissionData = {
       question_id: question_id,
