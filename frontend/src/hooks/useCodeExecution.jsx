@@ -44,8 +44,7 @@ export function useCodeExecution() {
       return null;
     }
 
-    const hasTestCase = expectedOutput !== null && expectedOutput !== undefined && expectedOutput.trim() !== "";
-    let calculatedStatus = hasTestCase ? null : 'Completed';
+    let calculatedStatus = null;
 
     setLoading(true);
     setOpen(true);
@@ -72,38 +71,34 @@ export function useCodeExecution() {
       if (stderr || compile_output) {
         setOutputErr(true);
         setOutput(stderr || compile_output);
-        if (hasTestCase) {
-          setTestStatus('Error');
-          calculatedStatus = 'Error';
-        }
+        setTestStatus('Error');
+        calculatedStatus = 'Error';
       } else {
         setOutputErr(false);
         const actualOutput = stdout || '';
         setOutput(actualOutput);
 
-        if (hasTestCase) {
-          const actualClean = actualOutput.trim();
-          const expectedClean = expectedOutput.trim();
+        const actualClean = actualOutput.trim();
+        const expectedClean = expectedOutput ? expectedOutput.trim() : '';
 
-          try {
-            const actualJson = JSON.parse(actualClean);
-            const expectedJson = JSON.parse(expectedClean);
-            
-            if (JSON.stringify(actualJson) === JSON.stringify(expectedJson)) {
-              setTestStatus('Passed');
-              calculatedStatus = 'Passed';
-            } else {
-              setTestStatus('Failed');
-              calculatedStatus = 'Failed';
-            }
-          } catch (e) {
-            if (actualClean === expectedClean) {
-              setTestStatus('Passed');
-              calculatedStatus = 'Passed';
-            } else {
-              setTestStatus('Failed');
-              calculatedStatus = 'Failed';
-            }
+        try {
+          const actualJson = JSON.parse(actualClean);
+          const expectedJson = JSON.parse(expectedClean);
+          
+          if (JSON.stringify(actualJson) === JSON.stringify(expectedJson)) {
+            setTestStatus('Passed');
+            calculatedStatus = 'Passed';
+          } else {
+            setTestStatus('Failed');
+            calculatedStatus = 'Failed';
+          }
+        } catch (e) {
+          if (actualClean === expectedClean) {
+            setTestStatus('Passed');
+            calculatedStatus = 'Passed';
+          } else {
+            setTestStatus('Failed');
+            calculatedStatus = 'Failed';
           }
         }
       }
@@ -115,7 +110,7 @@ export function useCodeExecution() {
       toast(err?.response?.data?.error || err.message, { type: "error" });
       setOutput("Execution failed.");
       setOutputErr(true);
-      if (hasTestCase) setTestStatus('Error');
+      setTestStatus('Error');
       return 'Error';
     } finally {
       setLoading(false);

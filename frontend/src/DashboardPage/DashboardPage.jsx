@@ -23,7 +23,7 @@ function buildActivityData(activity) {
 const STATUS_COLOR = {
   Accepted: "#16a34a",
   Failed: "#dc2626",
-  Error: "#ea580c",
+  Error: "#dc2626",
 };
 
 export function DashboardPage() {
@@ -119,11 +119,14 @@ export function DashboardPage() {
             ) : (
               <div className={styles.activityChart}>
                 {activityData.map(({ date, count }) => (
-                  <div key={date} className={styles.activityCol} title={`${date}: ${count}`}>
-                    <div
-                      className={styles.activityBar}
-                      style={{ height: `${(count / maxActivity) * 100}%` }}
-                    />
+                  <div key={date} className={styles.activityCol}>
+                    <div className={styles.barWrapper}>
+                      <div className={styles.tooltip}>{count}</div>
+                      <div
+                        className={styles.activityBar}
+                        style={{ height: `${(count / maxActivity) * 100}%` }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
