@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import styles from "./DashboardPage.module.css";
+import { useNavigate } from "react-router";
 import { UserContext } from "../hooks/useUserService";
 import { Card } from "../components/Card";
 import { Table } from "../components/Table";
+import { PrimaryButton } from "../components/PrimaryButton";
 import { toast } from "react-toastify";
 import { submission_api } from "../hooks/useSubmissionService";
 
@@ -30,6 +32,7 @@ export function DashboardPage() {
   const { accessToken } = useContext(UserContext);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!accessToken) return;
@@ -157,6 +160,12 @@ export function DashboardPage() {
             </tbody>
           </table>
         </Table>
+
+        <PrimaryButton
+          text="Start"
+          color="blue"
+          onClick={() => navigate('/signed-in/match')}
+        />
       </div>
     </div>
   );
