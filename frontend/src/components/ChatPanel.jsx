@@ -65,6 +65,7 @@ export function ChatPanel({ user, messages, sendMessage }) {
       borderBottomRightRadius: isMe ? '4px' : '18px',
       borderBottomLeftRadius: isMe ? '18px' : '4px',
       maxWidth: '100%',
+      whiteSpace: 'pre-wrap',
     }),
 
     inputArea: {

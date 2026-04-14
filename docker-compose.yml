@@ -83,6 +83,7 @@ services:
       - "3004:3004"
     environment:
       PORT: 3004
+      JWT_SECRET_KEY: secret
 
   submission-service:
     build: ./backend/submission_service
