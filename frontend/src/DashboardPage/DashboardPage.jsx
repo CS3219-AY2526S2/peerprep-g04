@@ -3,13 +3,8 @@ import styles from "./DashboardPage.module.css";
 import { UserContext } from "../hooks/useUserService";
 import { Card } from "../components/Card";
 import { Table } from "../components/Table";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-const submission_api = axios.create({
-  baseURL: `http://${import.meta.env.VITE_SUBMISSION_SERVICE_API}`,
-  headers: { "Content-Type": "application/json" },
-});
+import { submission_api } from "../hooks/useSubmissionService";
 
 function buildActivityData(activity) {
   const map = {};

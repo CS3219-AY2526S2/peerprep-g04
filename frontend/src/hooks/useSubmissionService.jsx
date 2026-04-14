@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const submission_api = axios.create({
+export const submission_api = axios.create({
   baseURL: `http://${import.meta.env.VITE_SUBMISSION_SERVICE_API}`,
   headers: {
     'Content-Type': 'application/json',

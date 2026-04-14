@@ -29,9 +29,9 @@ export async function create_submission(user_id, question_id, lang, code, status
 export async function get_user_stats(user_id) {
     const totals_res = await pool.query(`
         SELECT
-            COUNT(*)::int                                                        AS total_submissions,
-            COUNT(*) FILTER (WHERE status = 'Accepted')::int                    AS accepted_count,
-            COUNT(DISTINCT question_id)::int                                     AS questions_attempted,
+            COUNT(*)::int AS total_submissions,
+            COUNT(*) FILTER (WHERE status = 'Accepted')::int AS accepted_count,
+            COUNT(DISTINCT question_id)::int AS questions_attempted,
             COUNT(DISTINCT question_id) FILTER (WHERE status = 'Accepted')::int AS questions_solved
         FROM submission_attempts
         WHERE user_id = $1
