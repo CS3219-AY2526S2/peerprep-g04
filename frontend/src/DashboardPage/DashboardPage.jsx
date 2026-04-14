@@ -28,7 +28,7 @@ function buildActivityData(activity) {
 const STATUS_COLOR = {
   Accepted: "#16a34a",
   Failed: "#dc2626",
-  Error: "#ea580c",
+  Error: "#dc2626",
 };
 
 export function DashboardPage() {
