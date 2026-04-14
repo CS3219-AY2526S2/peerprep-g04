@@ -62,7 +62,7 @@ export function DashboardPage() {
   return (
     <div className={styles.main}>
       <div className={styles.body}>
-        <h1 className={styles.title}>Performance Dashboard</h1>
+        <h1 className={styles.title}>Your Stats</h1>
 
         {/* Row 1: acceptance rate + stat cards */}
         <div className={styles.statsRow}>
