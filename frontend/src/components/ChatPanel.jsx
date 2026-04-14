@@ -16,6 +16,7 @@ export function ChatPanel({ user, messages, sendMessage }) {
       borderRadius: '16px',
       overflow: 'hidden',
     },
+
     messagesList: {
       flex: 1,
       minHeight: 0,
@@ -26,6 +27,7 @@ export function ChatPanel({ user, messages, sendMessage }) {
       overflowY: 'auto',
       backgroundColor: '#f8fafc',
     },
+
     emptyState: {
       textAlign: 'center', 
       color: '#94a3b8', 
@@ -33,13 +35,15 @@ export function ChatPanel({ user, messages, sendMessage }) {
       fontSize: '0.85rem',
       fontFamily: "'DM Sans', sans-serif"
     },
+
     messageRow: (isMe) => ({
       alignSelf: isMe ? 'flex-end' : 'flex-start',
       display: 'flex',
       flexDirection: 'column',
       alignItems: isMe ? 'flex-end' : 'flex-start',
-      maxWidth: '85%',
+      maxWidth: '75%',
     }),
+
     senderName: {
       fontSize: '0.7rem',
       color: '#64748b',
@@ -47,11 +51,12 @@ export function ChatPanel({ user, messages, sendMessage }) {
       marginLeft: '8px',
       fontFamily: "'DM Sans', sans-serif",
     },
+
     bubble: (isMe) => ({
       padding: '10px 16px',
       fontSize: '0.9rem',
       borderRadius: '18px',
-      wordWrap: 'break-word',
+      overflowWrap: 'break-word',
       fontFamily: "'DM Sans', sans-serif",
       boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
       backgroundColor: isMe ? '#2563eb' : '#ffffff',
@@ -59,7 +64,9 @@ export function ChatPanel({ user, messages, sendMessage }) {
       border: isMe ? 'none' : '1.5px solid #e2e8f0',
       borderBottomRightRadius: isMe ? '4px' : '18px',
       borderBottomLeftRadius: isMe ? '18px' : '4px',
+      maxWidth: '100%',
     }),
+
     inputArea: {
       display: 'flex',
       alignItems: 'center',
@@ -109,6 +116,7 @@ export function ChatPanel({ user, messages, sendMessage }) {
       {/* INPUT AREA */}
       <div style={styles.inputArea}>
         <TextField 
+          multiline
           fullWidth 
           size='small' 
           placeholder='Type a message...' 

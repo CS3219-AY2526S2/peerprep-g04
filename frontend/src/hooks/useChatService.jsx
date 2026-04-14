@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useState, useEffect } from "react";
 import { io } from 'socket.io-client';
 
-export function useChatService(user, roomId) {
+export function useChatService(user, roomId, token) {
   const [messages, setMessages] = useState([]);
   const chatSocketRef = useRef();
 
@@ -10,7 +10,7 @@ export function useChatService(user, roomId) {
   useEffect(() => {
     if (!user?.username || !roomId) return;
     
-    chatSocketRef.current = io(`http://${import.meta.env.VITE_CHAT_SERVICE_API}`);
+    chatSocketRef.current = io(`http://${import.meta.env.VITE_CHAT_SERVICE_API}`, { auth: { token }});
 
     chatSocketRef.current.on('join room', (messages) => {
       setMessages(messages);
@@ -24,7 +24,7 @@ export function useChatService(user, roomId) {
 
     return () => chatSocketRef.current.disconnect();
 
-  }, [user?.username, roomId]);
+  }, [user?.username, roomId, token]);
 
   function sendMessage(message) {
     chatSocketRef.current?.emit('new message', user.username, message);

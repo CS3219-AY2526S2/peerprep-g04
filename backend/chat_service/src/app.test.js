@@ -2,17 +2,19 @@ import { server } from "./app";
 import { io as Client } from 'socket.io-client';
 import { resetServer } from "./message";
 import { io } from "./app";
+import jwt from 'jsonwebtoken';
 
 import { beforeEach, afterEach, vi, test, expect } from 'vitest';
 
 let client1, client2;
 let PORT = 6069;
 let URL = `http://localhost:${PORT}`;
+const token = jwt.sign({ username: 'testUser' }, process.env.JWT_SECRET_KEY);
 
 beforeEach(() => {
     server.listen(PORT);
-    client1 = Client(URL);
-    client2 = Client(URL);
+    client1 = Client(URL, { auth: { token }});
+    client2 = Client(URL, { auth: { token }});
 });
 
 afterEach(() => {
@@ -121,4 +123,42 @@ test('change room', async () => {
     await vi.waitFor(() => {
         expect(cb).toHaveBeenCalledTimes(1);
     }, waiting);
-})
+});
+
+test('connection fails with invalid token', async () => {
+    const invalidToken = 'not.a.real.token';
+    const client = Client(URL, { 
+        auth: { token: invalidToken },
+        reconnection: false 
+    });
+
+    const errorCb = vi.fn();
+    
+    client.on('connect_error', (err) => {
+        errorCb(err.message);
+    });
+
+    await vi.waitFor(() => {
+        expect(errorCb).toHaveBeenCalledWith("Authentication error: Invalid token");
+    }, waiting);
+
+    expect(client.connected).toBe(false);
+    
+    client.disconnect();
+});
+
+test('connection fails with missing token', async () => {
+    const client = Client(URL, { reconnection: false });
+
+    const errorCb = vi.fn();
+    
+    client.on('connect_error', (err) => {
+        errorCb(err.message);
+    });
+
+    await vi.waitFor(() => {
+        expect(errorCb).toHaveBeenCalledWith("Authentication error: Token missing");
+    }, waiting);
+
+    client.disconnect();
+});

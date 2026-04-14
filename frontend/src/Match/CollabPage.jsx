@@ -66,7 +66,7 @@ export function CollabPage(props) {
   } = useCodeExecution();
 
   const [openChat, setOpenChat] = useState(false);
-  const { messages, sendMessage, leave } = useChatService(user, match_id);
+  const { messages, sendMessage, leave } = useChatService(user, match_id, accessToken);
 
   const editorRef = useRef();
   const yTextRef = useRef();
