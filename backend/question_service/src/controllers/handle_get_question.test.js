@@ -22,6 +22,8 @@ test('get question by id', async () => {
     
     const res = await request(app).get(`/get-question-by-id/${id}`);
     expect(res.status).toBe(200);
+    res.body.tags.sort();
+    q1.tags.sort();
     expect(res.body).toMatchObject(q1);
 
     const q2 = {
@@ -34,6 +36,8 @@ test('get question by id', async () => {
     
     const res2 = await request(app).get(`/get-question-by-id/${id2}`);
     expect(res2.status).toBe(200);
+    res2.body.tags.sort();
+    q2.tags.sort();
     expect(res2.body).toMatchObject(q2);
     expect(res.body).toHaveProperty('id');
 });

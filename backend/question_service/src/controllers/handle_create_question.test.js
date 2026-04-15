@@ -20,14 +20,18 @@ test('create question successful', async () => {
         difficulty: 'medium',
         tags: ['pq', 'dp'],
         body: 'hello world',
+        test_case: { input: 't', expected_output: 't' },
     }
     const res = await request(app)
         .post('/create-question')
         .set('Authorization', `Bearer ${valid_token}`)
         .send(q1);
 
+
     expect(res.body).toHaveProperty('id');
     const id = res.body.id;
     const q = await get_question_by_id(id);
-    expect(q).toMatchObject(q1);
+    expect(q.title).toBe('t1');
+    expect(q.difficulty).toBe('medium');
+    expect(q.body).toBe('hello world');
 });

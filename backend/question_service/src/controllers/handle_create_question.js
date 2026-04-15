@@ -9,17 +9,11 @@ import { create_question_from_obj } from "../database/db.js";
 //   test_case: { input: string, expected_output: string } 
 // }
 export async function handle_create_question(req, res) {
-    let { title, difficulty, tags, body, test_case } = req.body;
+    let { title, difficulty, tags, body, test_case = {} } = req.body;
     
     if (!(title && difficulty && tags && body)) {
         return res.status(400).json({
             message: 'title and/or difficulty and/or tags and/or body is missing'
-        });
-    }
-
-    if (!test_case || typeof test_case.input !== 'string' || typeof test_case.expected_output !== 'string') {
-        return res.status(400).json({
-            message: 'test_case is missing or invalid. It must contain input and expected_output as strings.'
         });
     }
 

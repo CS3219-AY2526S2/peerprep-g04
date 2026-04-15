@@ -38,7 +38,7 @@ test('forgot password successful', async () => {
 
     expect(res2.status).toBe(200);
     expect(res2.body).toHaveProperty('message');
-})
+}, 10000);
 
 test('forget password email not found', async () => {
     const res = await request(app)

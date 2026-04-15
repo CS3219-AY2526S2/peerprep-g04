@@ -104,6 +104,9 @@ test('update question', async () => {
     const id = await create_question_from_obj(q1);
     await update_question(id, q2);
     const question = await get_question_by_id(id);
+    
+    q2.tags.sort();
+    question.tags.sort();
     expect(question).toMatchObject(q2);
 })
 
