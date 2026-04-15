@@ -93,7 +93,7 @@ export function useMatchingService() {
         setState(states.matching);
       }
     } catch (err) {
-      toast(err?.reponse?.data?.message ?? err?.message);
+      toast(err?.reponse?.data?.message ?? err?.message, { type: 'error' });
     } 
   }
 

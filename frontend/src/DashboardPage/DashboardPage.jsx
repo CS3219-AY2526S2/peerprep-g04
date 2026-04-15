@@ -39,7 +39,7 @@ export function DashboardPage() {
     submission_api
       .get("/user-stats", { headers: { Authorization: `Bearer ${accessToken}` } })
       .then((res) => setStats(res.data))
-      .catch((err) => toast(err?.response?.data?.message ?? err.message))
+      .catch((err) => toast(err?.response?.data?.message ?? err.message, { type: "error" }))
       .finally(() => setLoading(false));
   }, [accessToken]);
 

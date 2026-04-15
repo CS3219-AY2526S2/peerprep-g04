@@ -16,7 +16,7 @@ export async function create_submission(submission_obj, token) {
 
     return res.data.submission;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return undefined;
   }
 }
@@ -29,7 +29,7 @@ export async function get_submission_history(questionId, token) {
 
     return res.data.submissions || [];
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return undefined;
   }
 }

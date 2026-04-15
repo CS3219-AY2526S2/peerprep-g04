@@ -18,7 +18,7 @@ export async function get_all_users(token) {
     const res = await user_api.get('/get-all-users', { headers: { authorization: `Bearer ${token}` } });
     return res.data.users;
   } catch (err) {
-    toast(err?.response?.message || err.message);
+    toast(err?.response?.message || err.message, { type: 'error' });
     return undefined;
   }
 }
@@ -29,7 +29,7 @@ export async function get_user_by_id(id, token) {
     const res = await user_api.get(`/get-user-by-id/${id}`, { headers: { authorization: `Bearer ${token}` } });
     return res.data.user;
   } catch (err) {
-    toast(err?.response?.message || err.message);
+    toast(err?.response?.message || err.message, { type: 'error' });
     return undefined;
   }
 }
@@ -40,7 +40,7 @@ export async function external_update_user(id, user, token) {
     toast('user updated successfully');
     return true;
   } catch (err) {
-    toast(err?.response?.message || err.message);
+    toast(err?.response?.message || err.message, { type: 'error' });
     return false;
   }
 }
@@ -86,7 +86,7 @@ export function useUserService() {
       setUser(getUser(res.data));
       out = true;
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
     }
     setLoading(false);
     return out;
@@ -102,7 +102,7 @@ export function useUserService() {
       setUser(getUser(res.data));
       out = true;
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
     }
     setLoading(false);
     return out;
@@ -114,7 +114,7 @@ export function useUserService() {
       const res = await user_api.post(`forget-password/${email}`);
       toast(res.data.message);
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
     }
     setLoading(false);
   }
@@ -131,7 +131,7 @@ export function useUserService() {
       toast('password reset successfully');
       out = true;
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
     }
     setLoading(false);
     return out;
@@ -153,7 +153,7 @@ export function useUserService() {
       setUser(getUser(res.data));
       toast('User data updated successfully');
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
     }
     setLoading(false);
   }
@@ -171,7 +171,7 @@ export function useUserService() {
       toast('User deleted successfully');
       return true;
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
       return false;
     }
   }
@@ -184,7 +184,7 @@ export function useUserService() {
       toast('Submission created successfully');
       return res.data.submission;
     } catch (err) {
-      toast(err?.response?.data?.message ?? err.message);
+      toast(err?.response?.data?.message ?? err.message, { type: 'error' });
       return null;
     }
   }

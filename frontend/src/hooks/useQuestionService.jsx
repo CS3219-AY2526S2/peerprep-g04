@@ -14,7 +14,7 @@ question_api.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      toast.error("Session expired. Please log in again.");
+      toast("Session expired. Please log in again.", { type: "error" });
       
       localStorage.removeItem('accessToken');
             
@@ -35,7 +35,7 @@ export async function get_question_by_id(id) {
     const res = await question_api.get(`/get-question-by-id/${id}`);
     return res.data;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return undefined;
   }
 }
@@ -46,7 +46,7 @@ export async function get_all_questions_without_body() {
     const res = await question_api.get('/get-all-questions-without-body');
     return res.data.questions;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return undefined;
   }
 }
@@ -57,7 +57,7 @@ export async function get_all_question_tags() {
     const res = await question_api.get('/get-all-tags');
     return res.data.tags;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return undefined;
   }
 }
@@ -71,7 +71,7 @@ export async function create_question(question_obj, token) {
     toast('question successfully created');
     return res.data.id;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return undefined;
   }
 }
@@ -82,10 +82,10 @@ export async function update_question(id, question_obj, token) {
     const res = await question_api.patch(`/update-question/${id}`, question_obj,
       { headers: {Authorization: `Bearer ${token}`}}
     );
-    toast('question successfull updated');
+    toast('question successfully updated');
     return true;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return false;
   }
 }
@@ -98,7 +98,7 @@ export async function delete_question(id, token) {
     toast('question successfully deleted');
     return true;
   } catch (err) {
-    toast(err?.response?.data?.message ?? err.message);
+    toast(err?.response?.data?.message ?? err.message, { type: "error" });
     return false;
   }
 }

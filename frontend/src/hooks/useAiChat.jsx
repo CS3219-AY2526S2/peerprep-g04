@@ -32,7 +32,7 @@ export function useAiChat() {
         const text = response.text;
         setMessages(messages => [...messages, { side: sides.ai, text }]);
       } catch (err) {
-        toast(err?.message);
+        toast(err?.message, { type: "error" });
       }
      
     setLoading(false);
