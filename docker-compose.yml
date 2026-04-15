@@ -24,7 +24,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: peerprep_user_service
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://redis:6379/1
       JWT_SECRET_KEY: secret
       GMAIL: peerprepg04@gmail.com
       GMAIL_APP_PASSWORD: uqvu qfwl tmeq rimg
@@ -44,7 +44,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: peerprep_question_service
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://redis:6379/1
       JWT_SECRET_KEY: secret
     depends_on:
       postgres:
@@ -62,7 +62,7 @@ services:
       DB_PORT: 5432
       DB_DATABASE: peerprep_matching_service
       JWT_SECRET_KEY: secret
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://redis:6379/0
       QUESTION_SERVICE_URL: http://question-service:3001
     depends_on:
       postgres:
