@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!user) navigate('/');
+    if (!user && location.pathname.startsWith('/signed-in')) navigate('/');
   }, [user]);
 
   useEffect(() => {

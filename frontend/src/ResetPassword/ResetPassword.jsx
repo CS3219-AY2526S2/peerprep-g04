@@ -14,6 +14,8 @@ export function ResetPasswordForm() {
   const { setShowHeader } = useContext(HeaderContext);
   const navigate = useNavigate();
 
+  console.log('hello world');
+
   useEffect(() => {
     setShowHeader(false);
     return () => setShowHeader(true);
