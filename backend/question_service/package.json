@@ -19,6 +19,7 @@
     "node-pg-migrate": "^8.0.4",
     "nodemailer": "^8.0.1",
     "pg": "^8.17.2",
+    "redis": "^5.12.1",
     "supertest": "^7.2.2",
     "vitest": "^4.0.18"
   }
