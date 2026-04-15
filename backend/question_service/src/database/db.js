@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { createClient } from 'redis';
 
 export const pool = new Pool({
     user: process.env.DB_USER,
@@ -7,6 +8,10 @@ export const pool = new Pool({
     port: process.env.DB_PORT,
     database: process.env.DB_DATABASE,
 });
+
+export const redis = createClient({ url: process.env.REDIS_URL });
+redis.on("error", (err) => console.error("Redis error:", err));
+await redis.connect();
 
 // returns { title, difficulty, tags, body, test_case_input, test_case_output } or undefined if no question is found
 export async function connectWithRetry() {

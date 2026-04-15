@@ -8,6 +8,27 @@ const question_api = axios.create({
   },
 });
 
+question_api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      toast.error("Session expired. Please log in again.");
+      
+      localStorage.removeItem('accessToken');
+            
+      setTimeout(() => {
+        window.location.href = '/'; 
+      }, 1500);
+      
+      return new Promise(() => {}); 
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
 // all methods here return a truthy value if successful, else a falsy value.
 export async function get_question_by_id(id) {
   try {

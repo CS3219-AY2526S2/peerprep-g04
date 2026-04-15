@@ -1,6 +1,6 @@
 import { app } from "./src/app.js";
 import { hash_password } from "./src/controllers/utils.js";
-import { create_user, get_user_by_email, get_user_by_username, connectWithRetry } from "./src/database/db.js";
+import { create_user, get_user_by_email, get_user_by_username, connectWithRetry, redis } from "./src/database/db.js";
 
 async function seed_dummy_users() {
     const dummyUsers = [
@@ -50,6 +50,7 @@ app.listen(process.env.PORT || 3000, async (err) => {
         process.exit(1);
     });
 
+    await redis.flushDb();
     await seed_dummy_users();
     
     console.log(`listening on localhost:${process.env.PORT || 3000}`);

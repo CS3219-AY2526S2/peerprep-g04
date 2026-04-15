@@ -1,5 +1,5 @@
 import { ACCESS } from "../access.js";
-import { get_user_by_email, get_user_by_id, get_user_by_username, update_user } from "../database/db.js";
+import { get_user_by_email, get_user_by_id, get_user_by_username, update_user, redis } from "../database/db.js";
 import { format_user } from "./utils.js";
 import { hash_password } from "./utils.js";
 
@@ -64,6 +64,12 @@ export async function handle_update_user(req, res) {
         }
         
         const new_user = await update_user(user_id_to_update, username, email, password_hash, access);
+
+        if (user_to_update.access !== access || password) {
+            const currentTimeSeconds = Math.floor(Date.now() / 1000);                    
+            await redis.set(`user_invalidated:${user_id_to_update}`, currentTimeSeconds, { EX: 86400 });
+        }
+
         return res.status(200).json({
             message: 'user updated successfully',
             ...format_user(new_user)
