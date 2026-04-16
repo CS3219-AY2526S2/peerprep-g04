@@ -18,7 +18,7 @@ export async function get_all_users(token) {
     const res = await user_api.get('/get-all-users', { headers: { authorization: `Bearer ${token}` } });
     return res.data.users;
   } catch (err) {
-    toast(err?.response?.message || err.message, { type: 'error' });
+    toast(err?.response?.data?.message || err.message, { type: 'error' });
     return undefined;
   }
 }
@@ -29,7 +29,7 @@ export async function get_user_by_id(id, token) {
     const res = await user_api.get(`/get-user-by-id/${id}`, { headers: { authorization: `Bearer ${token}` } });
     return res.data.user;
   } catch (err) {
-    toast(err?.response?.message || err.message, { type: 'error' });
+    toast(err?.response?.data?.message || err.message, { type: 'error' });
     return undefined;
   }
 }
@@ -40,7 +40,7 @@ export async function external_update_user(id, user, token) {
     toast('user updated successfully');
     return true;
   } catch (err) {
-    toast(err?.response?.message || err.message, { type: 'error' });
+    toast(err?.response?.data?.message || err.message, { type: 'error' });
     return false;
   }
 }
