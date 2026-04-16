@@ -9,7 +9,7 @@ services:
         VITE_COLLABORATION_SERVICE_API: localhost:1234
         VITE_CHAT_SERVICE_API: localhost:3004
         VITE_SUBMISSION_SERVICE_API: localhost:3005
-        VITE_GOOGLE_AI_API_KEY: AIzaSyBmNWRflDyS9QzoeWuaB5kKlH_mptWVBeg
+        VITE_GOOGLE_AI_API_KEY: AQ.Ab8RN6L_lIqX16q2by-E35pHoEkURM9WYw1n8wWNjvu7ILtCEg
     ports:
       - "5173:5173"
 

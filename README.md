@@ -11,6 +11,7 @@
 - Credit to https://github.com/yjs/y-websocket-server for their implementation of a yjs backend server which our collaboration service is built from.
 
 ### How to run
+- create a free api key on Google AI Studio and paste it in services/frontend/build/args/VITE_GOOGLE_API_KEY
 - Install Docker and Docker compose
 - run `docker compose build`
 - run `docker compose up`
