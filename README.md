@@ -9,3 +9,9 @@
 ### Credits
 - Credit to Judge0 for their code execution API.
 - Credit to https://github.com/yjs/y-websocket-server for their implementation of a yjs backend server which our collaboration service is built from.
+
+### How to run
+- Install Docker and Docker compose
+- run `docker compose build`
+- run `docker compose up`
+- open docker desktop and click on the url for frontend container.
