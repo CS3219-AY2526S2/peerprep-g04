@@ -7,8 +7,8 @@
 - The teaching team should be given access to the repositories, as we may require viewing the history of the repository in case of any disputes or disagreements. 
 
 ### Credits
-- Credit to Judge0 for their code execution API.
-- Credit to https://github.com/yjs/y-websocket-server for their implementation of a yjs backend server which our collaboration service is built from.
+- Judge0 for their code execution API.
+- https://github.com/yjs/y-websocket-server for their implementation of a yjs backend server which our collaboration service is built from.
 
 ### How to run
 - create a free api key on Google AI Studio and paste it in services/frontend/build/args/VITE_GOOGLE_API_KEY
